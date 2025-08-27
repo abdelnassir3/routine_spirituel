@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="description" content="RISAQ - Application de routines spirituelles et invocations quotidiennes. Gérez vos prières, dhikr et lectures spirituelles avec compteur intelligent.">
+  <meta name="keywords" content="routines spirituelles, prières, dhikr, invocations, islam, compteur, tasbih">
+  <meta name="author" content="RISAQ Team">
+  
+  <!-- PWA meta tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="RISAQ">
+  <meta name="application-name" content="RISAQ">
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="msapplication-TileColor" content="#2E7D32">
+  <meta name="msapplication-TileImage" content="icons/Icon-192.png">
+  
+  <!-- iOS icons -->
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/Icon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-180.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://risaq.app/">
+  <meta property="og:title" content="RISAQ - Routines Spirituelles">
+  <meta property="og:description" content="Gérez vos routines spirituelles quotidiennes avec compteur intelligent et support multilingue.">
+  <meta property="og:image" content="icons/og-image.png">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://risaq.app/">
+  <meta property="twitter:title" content="RISAQ - Routines Spirituelles">
+  <meta property="twitter:description" content="Gérez vos routines spirituelles quotidiennes avec compteur intelligent et support multilingue.">
+  <meta property="twitter:image" content="icons/twitter-image.png">
+
+  <title>RISAQ - Routines Spirituelles</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 6px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #2E7D32;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1B5E20;
+    }
+    
+    /* Focus visible for accessibility */
+    :focus-visible {
+      outline: 2px solid #2E7D32;
+      outline-offset: 2px;
+    }
+    
+    /* Body styling */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      min-height: 100vh;
+    }
+    
+    /* Loading screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      transition: opacity 0.3s ease;
+    }
+    
+    .loading-logo {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(46, 125, 50, 0.2);
+      margin-bottom: 32px;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .loading-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .loading-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2E7D32;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    
+    .loading-subtitle {
+      font-size: 14px;
+      color: #4CAF50;
+      opacity: 0.8;
+    }
+    
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(46, 125, 50, 0.2);
+      border-radius: 2px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    
+    .loading-progress-bar {
+      height: 100%;
+      background: #2E7D32;
+      border-radius: 2px;
+      animation: progress 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(0.95);
+        opacity: 0.9;
+      }
+    }
+    
+    @keyframes progress {
+      0% {
+        width: 0%;
+        margin-left: 0;
+      }
+      50% {
+        width: 60%;
+        margin-left: 0;
+      }
+      100% {
+        width: 100%;
+        margin-left: 100%;
+      }
+    }
+    
+    /* Remove Flutter loading indicator */
+    .flutter-loader {
+      display: none !important;
+    }
+    
+    /* Responsive font sizes */
+    @media (max-width: 768px) {
+      .loading-text {
+        font-size: 20px;
+      }
+      .loading-subtitle {
+        font-size: 12px;
+      }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+      }
+      
+      .loading-screen {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+      }
+      
+      .loading-logo {
+        background: #263238;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+      
+      .loading-text {
+        color: #81C784;
+      }
+      
+      .loading-subtitle {
+        color: #A5D6A7;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: #263238;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: #4CAF50;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: #66BB6A;
+      }
+    }
+    
+    /* Print styles */
+    @media print {
+      .loading-screen {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Custom loading screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-logo">
+      <img src="icons/Icon-192.png" alt="RISAQ Logo">
+    </div>
+    <div class="loading-text">RISAQ</div>
+    <div class="loading-subtitle">Chargement...</div>
+    <div class="loading-progress">
+      <div class="loading-progress-bar"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Remove loading screen when Flutter is ready
+    window.addEventListener('flutter-initialized', function() {
+      setTimeout(function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.style.opacity = '0';
+          setTimeout(function() {
+            loadingScreen.style.display = 'none';
+          }, 300);
+        }
+      }, 100);
+    });
+    
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('flutter_service_worker.js');
+      });
+    }
+  </script>
+  
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

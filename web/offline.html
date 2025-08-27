@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RISAQ - Mode Hors Ligne</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .offline-container {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 500px;
+      box-shadow: 0 10px 40px rgba(46, 125, 50, 0.1);
+    }
+    
+    .offline-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      background: #F5F5F5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .offline-icon svg {
+      width: 60px;
+      height: 60px;
+      fill: #9E9E9E;
+    }
+    
+    .offline-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: #FF5252;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid white;
+    }
+    
+    .offline-badge svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+    
+    h1 {
+      color: #2E7D32;
+      font-size: 28px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    p {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    
+    .features {
+      text-align: left;
+      margin: 32px 0;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: #E8F5E9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .feature-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: #2E7D32;
+    }
+    
+    .feature-text {
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .retry-button {
+      background: #2E7D32;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .retry-button:hover {
+      background: #1B5E20;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+    
+    .retry-button:active {
+      transform: translateY(0);
+    }
+    
+    @media (max-width: 600px) {
+      .offline-container {
+        padding: 32px 24px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      p {
+        font-size: 14px;
+      }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+      }
+      
+      .offline-container {
+        background: #263238;
+      }
+      
+      h1 {
+        color: #81C784;
+      }
+      
+      p {
+        color: #B0BEC5;
+      }
+      
+      .feature-text {
+        color: #ECEFF1;
+      }
+      
+      .feature-icon {
+        background: #37474F;
+      }
+      
+      .offline-icon {
+        background: #37474F;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">
+      <!-- WiFi icon -->
+      <svg viewBox="0 0 24 24">
+        <path d="M1,9L3,11C7.97,6.03 16.03,6.03 21,11L23,9C16.93,2.93 7.08,2.93 1,9M5,13L7,15C9.76,12.24 14.24,12.24 17,15L19,13C15.14,9.14 8.87,9.14 5,13M9,17L12,20L15,17C13.35,15.34 10.66,15.34 9,17Z"/>
+      </svg>
+      <div class="offline-badge">
+        <!-- X icon -->
+        <svg viewBox="0 0 24 24">
+          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+        </svg>
+      </div>
+    </div>
+    
+    <h1>Mode Hors Ligne</h1>
+    <p>
+      Vous n'êtes pas connecté à Internet, mais RISAQ continue de fonctionner !
+    </p>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">
+          <!-- Check icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+        </div>
+        <span class="feature-text">Vos routines sont accessibles</span>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">
+          <!-- Check icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+        </div>
+        <span class="feature-text">Le compteur fonctionne normalement</span>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">
+          <!-- Check icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+        </div>
+        <span class="feature-text">Vos progressions sont sauvegardées</span>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">
+          <!-- Info icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+          </svg>
+        </div>
+        <span class="feature-text">Les données seront synchronisées à la reconnexion</span>
+      </div>
+    </div>
+    
+    <button class="retry-button" onclick="window.location.reload()">
+      Réessayer
+    </button>
+  </div>
+  
+  <script>
+    // Check connection status periodically
+    setInterval(() => {
+      if (navigator.onLine) {
+        window.location.reload();
+      }
+    }, 5000);
+    
+    // Listen for online event
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

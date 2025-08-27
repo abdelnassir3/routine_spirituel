@@ -1,0 +1,224 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.x'
+        channel: 'stable'
+    
+    - name: 📦 Get dependencies
+      run: flutter pub get
+    
+    - name: 🔒 Run Security Audit
+      run: dart run tools/security_audit.dart
+      continue-on-error: true
+      
+    - name: 🔍 Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        
+    - name: 📊 Dependency Check
+      run: |
+        flutter pub outdated
+        # Check for known vulnerabilities
+        dart pub global activate dependency_validator
+        dependency_validator || true
+        
+    - name: 🧪 Run Security Tests
+      run: |
+        # Create security tests if they exist
+        if [ -d "test/security" ]; then
+          flutter test test/security/
+        fi
+        
+    - name: 📝 Static Analysis
+      run: |
+        flutter analyze --no-fatal-infos
+        
+    - name: 🔐 Check Permissions
+      run: |
+        echo "Checking Android permissions..."
+        grep -E "uses-permission" android/app/src/main/AndroidManifest.xml || true
+        
+        echo "Checking iOS permissions..."
+        grep -E "Usage" ios/Runner/Info.plist || true
+        
+    - name: 📋 Generate Security Report
+      if: always()
+      run: |
+        echo "# Security Audit Report" > security_report.md
+        echo "Date: $(date)" >> security_report.md
+        echo "Branch: ${{ github.ref }}" >> security_report.md
+        echo "Commit: ${{ github.sha }}" >> security_report.md
+        echo "" >> security_report.md
+        
+        echo "## Audit Results" >> security_report.md
+        dart run tools/security_audit.dart >> security_report.md 2>&1 || true
+        
+    - name: 💾 Upload Security Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-report
+        path: security_report.md
+        
+    - name: 💬 Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('security_report.md', 'utf8');
+          
+          // Extract score from report
+          const scoreMatch = report.match(/SECURITY SCORE: (\d+)\/100/);
+          const score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+          
+          let emoji = '🚨';
+          if (score >= 90) emoji = '🏆';
+          else if (score >= 80) emoji = '✅';
+          else if (score >= 70) emoji = '⚠️';
+          
+          const comment = `## ${emoji} Security Audit Results
+          
+          **Score: ${score}/100**
+          
+          <details>
+          <summary>View Full Report</summary>
+          
+          \`\`\`
+          ${report.substring(0, 3000)}
+          \`\`\`
+          
+          </details>
+          
+          ${score < 80 ? '⚠️ **Security improvements needed!**' : '✅ **Security check passed!**'}
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  owasp-dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'RISAQ'
+        path: '.'
+        format: 'HTML'
+        args: >
+          --enableRetired
+          --enableExperimental
+          
+    - name: 💾 Upload OWASP Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: owasp-dependency-check-report
+        path: reports/
+
+  code-scanning:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: 'javascript'
+        
+    - name: 🔍 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  mobile-security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📱 Check for mobile security issues
+      run: |
+        echo "Checking for common mobile security issues..."
+        
+        # Check for certificate pinning
+        echo "Certificate Pinning:"
+        grep -r "CertificatePinning\|certificate" lib/ || echo "❌ No certificate pinning found"
+        
+        # Check for jailbreak/root detection
+        echo "Jailbreak/Root Detection:"
+        grep -r "jailbreak\|rooted\|FlutterJailbreakDetection" lib/ || echo "❌ No jailbreak detection found"
+        
+        # Check for obfuscation in build
+        echo "Obfuscation:"
+        grep -r "obfuscate" scripts/ || echo "❌ No obfuscation configuration found"
+        
+        # Check for secure storage usage
+        echo "Secure Storage:"
+        grep -r "FlutterSecureStorage" lib/ && echo "✅ Secure storage is used" || echo "❌ No secure storage found"
+        
+        # Check for biometric authentication
+        echo "Biometric Authentication:"
+        grep -r "LocalAuthentication\|BiometricService" lib/ && echo "✅ Biometric auth is implemented" || echo "❌ No biometric auth found"
+
+  security-headers-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🌐 Check Web Security Headers
+      run: |
+        echo "Checking web security configuration..."
+        
+        # Check for CSP
+        echo "Content Security Policy:"
+        grep -r "Content-Security-Policy" web/ || echo "⚠️ No CSP found"
+        
+        # Check for PWA security
+        echo "PWA Security:"
+        grep -r "https" web/manifest.json && echo "✅ HTTPS enforced" || echo "❌ HTTPS not enforced"
+        
+        # Check for service worker security
+        echo "Service Worker:"
+        if [ -f "web/pwa-config.js" ]; then
+          echo "✅ PWA config found"
+        else
+          echo "⚠️ PWA config not found"
+        fi

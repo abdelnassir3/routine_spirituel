@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "▶ iPhone 16 Plus (boot & debug)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "toolArgs": ["-d", "C3EBA221-1A69-4269-AD05-0C55B7083ADE"],
+      "preLaunchTask": "Boot iPhone 16 Plus (UDID)"
+    },
+    {
+      "name": "▶ iPad Pro 11 M4 (boot & debug)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "toolArgs": ["-d", "629215D3-FDA7-453F-A9FA-E40A978BA7AD"],
+      "preLaunchTask": "Boot iPad Pro 11 M4 (UDID)"
+    },
+    {
+      "name": "▶ macOS",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "toolArgs": ["-d", "macos"]
+    }
+  ]
+}

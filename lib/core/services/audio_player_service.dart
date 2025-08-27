@@ -1,0 +1,58 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+
+class AudioPlayerService {
+  AudioPlayerService() : _player = AudioPlayer();
+  final AudioPlayer _player;
+
+  Future<void> playFile(String path) async {
+    await _player.setFilePath(path);
+    await _player.play();
+    await _player.processingStateStream
+        .firstWhere((s) => s == ProcessingState.completed);
+    await _player.stop();
+  }
+
+  Future<void> playFromBytes(Uint8List audioData) async {
+    try {
+      // Créer un fichier temporaire pour stocker les données audio
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+          '${tempDir.path}/temp_audio_${DateTime.now().millisecondsSinceEpoch}.mp3');
+      await tempFile.writeAsBytes(audioData);
+
+      // Jouer le fichier
+      await _player.setFilePath(tempFile.path);
+      await _player.play();
+
+      // Attendre la fin de la lecture
+      await _player.processingStateStream
+          .firstWhere((s) => s == ProcessingState.completed);
+      await _player.stop();
+
+      // Supprimer le fichier temporaire
+      await tempFile.delete();
+    } catch (e) {
+      print('Erreur lors de la lecture audio: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> stop() async {
+    await _player.stop();
+  }
+
+  void dispose() {
+    _player.dispose();
+  }
+}
+
+final audioPlayerServiceProvider = Provider<AudioPlayerService>((ref) {
+  final svc = AudioPlayerService();
+  ref.onDispose(svc.dispose);
+  return svc;
+});

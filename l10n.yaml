@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: app_fr.arb
+use-deferred-loading: false
+preferred-supported-locales:
+  - fr
+  - ar

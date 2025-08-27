@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Boot iPhone 16 Plus (UDID)",
+      "type": "shell",
+      "command": "zsh",
+      "args": [
+        "-lc",
+        "UDID='C3EBA221-1A69-4269-AD05-0C55B7083ADE'; open -a Simulator --args -CurrentDeviceUDID \"$UDID\" || open -a Simulator || true; xcrun simctl boot \"$UDID\" 2>/dev/null || true; xcrun simctl bootstatus \"$UDID\" -b -l; sleep 2;"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Boot iPad Pro 11 M4 (UDID)",
+      "type": "shell",
+      "command": "zsh",
+      "args": [
+        "-lc",
+        "UDID='629215D3-FDA7-453F-A9FA-E40A978BA7AD'; open -a Simulator --args -CurrentDeviceUDID \"$UDID\" || open -a Simulator || true; xcrun simctl boot \"$UDID\" 2>/dev/null || true; xcrun simctl bootstatus \"$UDID\" -b -l; sleep 2;"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

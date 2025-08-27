@@ -120,3 +120,8 @@ lib/
 - **Async** : Préférer FutureProvider et StreamProvider de Riverpod
 - **Tests** : Coverage minimum 80% pour services critiques
 - **Documentation** : Commentaires en français pour la logique métier
+
+# Règles du projet
+@docs/BRIEF.md
+@docs/CONTRAINTES.md
+@docs/SERVEURS.md

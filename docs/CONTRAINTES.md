@@ -1,50 +1,83 @@
 # Contraintes Techniques - Projet Spiritual Routines
 
+**Derni√®re mise √† jour: 2025-08-27 02:10**
+
 ## Contraintes de performance
 - **Latence UI**: <200ms pour toutes interactions
-- **Time to Interactive**: <2 secondes au dÈmarrage ‡ froid
-- **Utilisation mÈmoire**: <150MB en fonctionnement normal
-- **Bundle size**: <35MB pour dÈploiement stores
-- **Latence TTS**: <450ms P95 pour synthËse vocale
+- **Time to Interactive**: <2 secondes au dÔøΩmarrage ÔøΩ froid
+- **Utilisation mÔøΩmoire**: <150MB en fonctionnement normal
+- **Bundle size**: <35MB pour dÔøΩploiement stores
+- **Latence TTS**: <450ms P95 pour synthÔøΩse vocale
 
-## Contraintes de sÈcuritÈ
+## Contraintes de sÔøΩcuritÔøΩ
 - **Chiffrement**: AES-256 pour stockage local sensible
-- **Authentification**: BiomÈtrique (Face ID/Touch ID/Empreinte) + PIN fallback
-- **Logging**: Filtrage automatique PII (email, tÈlÈphone, tokens, etc.)
-- **ConformitÈ**: OWASP Mobile Top 10, grade minimum B (85/100)
-- **Transport**: HTTPS forcÈ, certificate pinning en production
+- **Authentification**: BiomÔøΩtrique (Face ID/Touch ID/Empreinte) + PIN fallback
+- **Logging**: Filtrage automatique PII (email, tÔøΩlÔøΩphone, tokens, etc.)
+- **ConformitÔøΩ**: OWASP Mobile Top 10, grade minimum B (85/100)
+- **Transport**: HTTPS forcÔøΩ, certificate pinning en production
 
 ## Contraintes multilingues
-- **Langues supportÈes**: FranÁais + Arabe avec support RTL/LTR natif
-- **Polices**: Noto Naskh Arabic (arabe) + Inter (franÁais/interface)
-- **Direction texte**: Auto-dÈtection RTL/LTR avec mirroring icÙnes
-- **Claviers**: Support claviers arabes et franÁais
-- **Formatage**: Nombres arabes vs europÈens selon contexte
+- **Langues supportÔøΩes**: FranÔøΩais + Arabe avec support RTL/LTR natif
+- **Polices**: Noto Naskh Arabic (arabe) + Inter (franÔøΩais/interface)
+- **Direction texte**: Auto-dÔøΩtection RTL/LTR avec mirroring icÔøΩnes
+- **Claviers**: Support claviers arabes et franÔøΩais
+- **Formatage**: Nombres arabes vs europÔøΩens selon contexte
 
 ## Contraintes plateforme
 - **iOS/Android**: Support production complet (95%)
 - **macOS**: Beta avec limitations background audio (60%)
-- **Web**: ExpÈrimental avec stubs Isar requis (40%)
+- **Web**: ExpÔøΩrimental avec stubs Isar requis (40%)
 - **Offline-first**: Fonctionnement complet sans connexion
 - **Cache**: 7j/100MB pour TTS, purge automatique
 
 ## Contraintes techniques
 - **Framework**: Flutter 3.x minimum avec null safety
 - **State management**: Riverpod 2.5+ obligatoire
-- **Base de donnÈes**: Drift (SQL) + Isar (NoSQL) pour persistance
+- **Base de donn√©es**: Drift (SQL) + Isar (NoSQL) pour persistance
 - **Audio**: just_audio + audio_service pour background
 - **Tests**: Coverage minimum 60% global, 80% services critiques
+- **Build runner**: Obligatoire apr√®s modifications mod√®les (drift/isar/freezed)
 
 ## Contraintes serveur
-- **VPS Edge-TTS**: 168.231.112.71:8010 (timeout 15s)
-- **VPS Coqui**: 168.231.112.71:8001 (timeout 15s)
+- **VPS Edge-TTS**: 168.231.112.71:8010 (timeout 15s, circuit breaker 5 √©checs)
+- **VPS Coqui**: 168.231.112.71:8001 (timeout 15s, circuit breaker 5 √©checs)
 - **Fallback**: Flutter TTS local si VPS indisponible
-- **Circuit breaker**: DÈsactivation aprËs 5 Èchecs consÈcutifs
-- **Cache hit**: Objectif 85% pour rÈduire co˚ts serveur
+- **Circuit breaker**: DÔøΩsactivation aprÔøΩs 5 ÔøΩchecs consÔøΩcutifs
+- **Cache hit**: Objectif 85% pour rÔøΩduire coÔøΩts serveur
 
 ## Contraintes UX/UI
-- **Material Design 3**: Obligatoire avec thËme unifiÈ
-- **AccessibilitÈ**: WCAG AA minimum, cibles tactiles e48dp
-- **Animations**: d250ms, dÈsactivables pour accessibilitÈ
-- **Feedback haptique**: Contextuel avec 3 niveaux d'intensitÈ
-- **Mode sombre**: Support automatique systËme
+- **Material Design 3**: Obligatoire avec thÔøΩme unifiÔøΩ
+- **AccessibilitÔøΩ**: WCAG AA minimum, cibles tactiles e48dp
+- **Animations**: d250ms, dÔøΩsactivables pour accessibilitÔøΩ
+- **Feedback haptique**: Contextuel avec 3 niveaux d'intensitÔøΩ
+- **Mode sombre**: Support automatique syst√®me
+
+## Charte Qualit√© & Bonnes Pratiques
+
+### Standards Code
+- **Null Safety** : Obligatoire strict avec versions Dart 3.x+
+- **Linting** : flutter_lints + rules suppl√©mentaires (25+ rules actives)
+- **Formatage** : dart format avec line length 80, trim trailing whitespace
+- **Import** : always_use_package_imports pour lib/, pas de relative imports
+- **Logs** : avoid_print en production, utiliser app_logger centralis√©
+
+### Tests & Qualit√©
+- **Coverage minimum** : 60% global, 80% services critiques
+- **Types tests** : Unit (mod√®les), Widget (UI), Integration (flux complets)
+- **Commandes** : flutter test --reporter=expanded --coverage
+- **Mock/Stub** : Provider overrides pour tests isol√©s Riverpod
+- **Test package** : Requis en dev_dependencies
+
+### Outils D√©veloppement
+- **Scripts** : scripts/{lint.sh,test.sh,build.sh} ex√©cutables
+- **Hooks Git** : Pre-commit avec dart format + flutter analyze
+- **CI/CD** : GitHub Actions avec steps lint ‚Üí test ‚Üí build ‚Üí deploy
+- **S√©curit√©** : Pas de secrets en dur, .env dans .gitignore, audit p√©riodique
+- **Documentation** : README avec setup, CONTRAINTES techniques √† jour
+
+### Workflow Qualit√©  
+1. **D√©veloppement** : dart format + flutter analyze en continu
+2. **Pre-commit** : lint.sh automatique
+3. **Pull Request** : CI/CD avec tests + coverage
+4. **Release** : build.sh + tests integration complets
+5. **Post-release** : Monitoring crash rate <0.1%

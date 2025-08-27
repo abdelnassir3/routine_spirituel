@@ -1,30 +1,33 @@
 # Brief Projet - Spiritual Routines (RISAQ)
 
+**DerniÃ¨re mise Ã  jour: 2025-08-27 02:10**
+
 ## Vue d'ensemble
-Application Flutter de routines spirituelles bilingue français-arabe avec fonctionnalités avancées de compteur intelligent, synthèse vocale hybride, et mode offline-first.
+Application Flutter de routines spirituelles bilingue franÃ§ais-arabe avec fonctionnalitÃ©s avancÃ©es de compteur intelligent, synthÃ¨se vocale hybride Edge-TTS/Coqui/Flutter, et mode offline-first complet.
 
 ## Objectifs produit
 - **Mission**: Moderniser les pratiques spirituelles quotidiennes avec technologie mobile
-- **Vision**: App de référence pour routines spirituelles avec IA et accessibilité
+- **Vision**: App de rï¿½fï¿½rence pour routines spirituelles avec IA et accessibilitï¿½
 - **Cible**: Pratiquants musulmans francophones et arabophones
 
-## Fonctionnalités core
-- **Compteur persistant**: Décrément avec haptic feedback, reprise après interruption
-- **Lecteur bilingue**: Affichage RTL/LTR simultané avec surlignage audio synchronisé
-- **TTS intelligent**: Détection automatique contenu coranique ’ routage API spécialisée
-- **Mode mains-libres**: Auto-avance pour pratique pendant autres activités
-- **Catégorisation**: Organisation par thème (louange, protection, pardon, etc.)
+## Fonctionnalitï¿½s core
+- **Compteur persistant**: Dï¿½crï¿½ment avec haptic feedback, reprise aprï¿½s interruption
+- **Lecteur bilingue**: Affichage RTL/LTR simultanï¿½ avec surlignage audio synchronisï¿½
+- **TTS intelligent**: Dï¿½tection automatique contenu coranique ï¿½ routage API spï¿½cialisï¿½e
+- **Mode mains-libres**: Auto-avance pour pratique pendant autres activitï¿½s
+- **Catï¿½gorisation**: Organisation par thï¿½me (louange, protection, pardon, etc.)
 
-## Différenciation
-- Architecture audio hybride (APIs Quran + TTS synthèse)
-- Support RTL/LTR natif avec polices optimisées
-- Persistance multi-niveau (Drift + Isar + cache sécurisé)
-- Sécurité OWASP Grade B avec authentification biométrique
+## Diffï¿½renciation
+- Architecture audio hybride (APIs Quran + TTS synthï¿½se)
+- Support RTL/LTR natif avec polices optimisï¿½es
+- Persistance multi-niveau (Drift + Isar + cache sï¿½curisï¿½)
+- Sï¿½curitï¿½ OWASP Grade B avec authentification biomï¿½trique
 - Fonctionnement offline complet avec synchronisation
 
 ## KPI cibles
-- **Rétention D30**: >50%
+- **RÃ©tention D30**: >50%
 - **Session moyenne**: >10min
-- **Taux complétion routine**: >75%
+- **Taux complÃ©tion routine**: >75%
 - **Crash rate**: <0.1%
 - **Performance**: TTI <2s, latence UI <200ms
+- **Coverage tests**: 60% minimum (actuellement ~30%)

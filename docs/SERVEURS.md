@@ -1,13 +1,15 @@
 # Configuration Serveurs - Projet Spiritual Routines
 
+**DerniÃ¨re mise Ã  jour: 2025-08-27 02:10**
+
 ## Serveur Edge-TTS (Principal)
 - **URL**: http://168.231.112.71:8010/api/tts
 - **Port**: 8010
 - **Protocole**: HTTP (HTTPS en production)
 - **Timeout**: 15 secondes
-- **Usage**: Synthèse vocale français/arabe général
+- **Usage**: Synthï¿½se vocale franï¿½ais/arabe gï¿½nï¿½ral
 - **Fallback**: Flutter TTS local si indisponible
-- **Coût**: ~8¬/mois selon utilisation
+- **Coï¿½t**: ~8ï¿½/mois selon utilisation
 
 ### Endpoints Edge-TTS
 ```
@@ -22,13 +24,13 @@ Body: {
 Response: audio/mpeg base64 encoded
 ```
 
-## Serveur Coqui XTTS-v2 (Haute Qualité)
+## Serveur Coqui XTTS-v2 (Haute Qualitï¿½)
 - **URL**: http://168.231.112.71:8001/api/xtts
 - **Port**: 8001
 - **Protocole**: HTTP
 - **Timeout**: 15 secondes
-- **Usage**: TTS haute qualité pour contenu spécialisé
-- **Status**: Configuré mais Edge-TTS préféré pour stabilité
+- **Usage**: TTS haute qualitï¿½ pour contenu spï¿½cialisï¿½
+- **Status**: Configurï¿½ mais Edge-TTS prï¿½fï¿½rï¿½ pour stabilitï¿½
 
 ### Configuration Coqui
 ```
@@ -42,52 +44,58 @@ Body: {
 ```
 
 ## APIs Quran (Contenu Coranique)
-- **AlQuran.cloud**: API principale pour récitations
-- **Everyayah.com**: API secondaire pour récitations
+- **AlQuran.cloud**: API principale pour rï¿½citations
+- **Everyayah.com**: API secondaire pour rï¿½citations
 - **Quran.com**: API de fallback
-- **Usage**: Routage automatique pour contenu coranique détecté
+- **Usage**: Routage automatique pour contenu coranique dï¿½tectï¿½
 - **Cache**: 30 jours pour audio Quran vs 7 jours TTS
 
-### Détection et Routage
+### DÃ©tection et Routage
 ```
-Contenu détecté comme coranique (confidence >85%)
-’ APIs Quran pour récitation professionnelle
-Contenu général arabe/français
-’ Edge-TTS pour synthèse vocale
+Contenu dÃ©tectÃ© comme coranique (confidence >85%)
+â†’ APIs Quran pour rÃ©citation professionnelle
+â†’ Fallback Edge-TTS si API Quran indisponible
+Contenu gÃ©nÃ©ral arabe/franÃ§ais
+â†’ Edge-TTS pour synthÃ¨se vocale
 ```
 
-## Base de Données Cloud
-- **Service**: Supabase (non configuré actuellement)
-- **Usage prévu**: Synchronisation multi-devices
-- **Sécurité**: RLS (Row Level Security) requis
+## Base de Donnï¿½es Cloud
+- **Service**: Supabase (non configurï¿½ actuellement)
+- **Usage prï¿½vu**: Synchronisation multi-devices
+- **Sï¿½curitï¿½**: RLS (Row Level Security) requis
 - **Fallback**: Fonctionnement offline complet avec Drift/Isar
 
 ## Cache et Stockage Local
-- **Cache TTS**: 100MB max, purge auto après 7 jours
-- **Cache Quran**: 30 jours, priorité haute
-- **Hit rate objectif**: 85% pour optimiser coûts serveur
-- **Stockage sécurisé**: flutter_secure_storage pour tokens/clés
+- **Cache TTS**: 100MB max, purge auto aprï¿½s 7 jours
+- **Cache Quran**: 30 jours, prioritï¿½ haute
+- **Hit rate objectif**: 85% pour optimiser coï¿½ts serveur
+- **Stockage sï¿½curisï¿½**: flutter_secure_storage pour tokens/clï¿½s
 
 ## Monitoring et Circuit Breaker
-- **Circuit breaker**: Activation après 5 échecs consécutifs
-- **Health check**: Ping périodique des VPS
-- **Fallback automatique**: Edge-TTS ’ Flutter TTS ’ Mode silencieux
-- **Métriques**: Latence P95, taux erreur, coût par requête
+- **Circuit breaker**: Activation aprï¿½s 5 ï¿½checs consï¿½cutifs
+- **Health check**: Ping pï¿½riodique des VPS
+- **Fallback automatique**: Edge-TTS ï¿½ Flutter TTS ï¿½ Mode silencieux
+- **Mï¿½triques**: Latence P95, taux erreur, coï¿½t par requï¿½te
 
-## Sécurité Serveurs
+## Sï¿½curitï¿½ Serveurs
 - **Production**: HTTPS obligatoire avec certificate pinning
-- **Développement**: HTTP autorisé pour tests locaux
-- **API Keys**: Chiffrées AES-256 dans secure storage
-- **Rate limiting**: Prévention spam avec quota utilisateur
-- **Logs serveur**: Pas de données personnelles utilisateur
+- **Dï¿½veloppement**: HTTP autorisï¿½ pour tests locaux
+- **API Keys**: Chiffrï¿½es AES-256 dans secure storage
+- **Rate limiting**: Prï¿½vention spam avec quota utilisateur
+- **Logs serveur**: Pas de donnï¿½es personnelles utilisateur
 
 ## Configuration par Environnement
 ```bash
-# Développement
+# Dï¿½veloppement
 EDGE_TTS_URL=http://168.231.112.71:8010/api/tts
 COQUI_URL=http://168.231.112.71:8001/api/xtts
 
-# Production (à configurer)
+# Production (Ã  configurer)
 EDGE_TTS_URL=https://tts.spiritual-app.com/api/tts
 COQUI_URL=https://xtts.spiritual-app.com/api/xtts
 ```
+
+## Scripts utilitaires
+- `scripts/cc-save.sh`: Savepoint Git atomique
+- `scripts/cc-guard.sh`: ExÃ©cution protÃ©gÃ©e avec rollback
+- `scripts/cc-restore.sh`: Restauration depuis savepoint

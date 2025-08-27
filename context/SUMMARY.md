@@ -1,36 +1,42 @@
-# Projet_sprit - Résumé Compact
+# Projet_sprit | memo | 2025-08-27 02:15
 
 ## CONTEXTE
-• App Flutter "Spiritual Routines (RISAQ)" - routines spirituelles bilingues FR/AR
-• Mission: Moderniser pratiques spirituelles avec tech mobile + IA
-• Cible: Pratiquants musulmans francophones/arabophones
-• Différenciation: Audio hybride, RTL/LTR natif, offline-first, sécurité OWASP Grade B
+App Flutter "Spiritual Routines (RISAQ)" multiplateforme pour routines spirituelles musulmanes. Bilingue FR/AR avec TTS hybride et mode offline complet. Architecture: Flutter 3.x + Riverpod 2.5 + Drift/Isar + just_audio. 110+ fichiers Dart, 28 services modulaires.
 
-## ARCHITECTURE & STACK
-• Flutter 3.x + Riverpod 2.5+ + Drift/Isar + just_audio + audio_service
-• TTS hybride: Edge-TTS (primaire) + Coqui XTTS-v2 + Flutter TTS (fallback)
-• Détection contenu coranique >85% → APIs Quran vs synthèse générale
-• Material Design 3 unifié, 28+ services modulaires
-• Persistance: Drift (SQL) + Isar (NoSQL) + cache sécurisé
+## CONTRAINTES
+- Perf: latence UI <200ms, TTI <2s, mémoire <150MB, bundle <35MB
+- Sécu: AES-256, auth biométrique, OWASP Grade B (85/100)
+- Multi: RTL/LTR natif, polices Noto/Inter
+- Plateformes: iOS/Android 95%, macOS 60%, Web 40%
+- Tests: coverage 60% min (actuellement ~30%)
 
-## CONTRAINTES CRITIQUES
-• Performance: latence UI <200ms, TTI <2s, mémoire <150MB, bundle <35MB
-• Sécurité: AES-256, auth biométrique + PIN, HTTPS + certificate pinning
-• Multilingue: FR+AR RTL/LTR, polices Noto Naskh Arabic + Inter
-• Support: iOS/Android 95%, macOS 60%, Web 40%
+## DÉCISIONS
+- TTS hybride: Edge-TTS primaire → Coqui fallback → Flutter local
+- Détection coranique confidence >85% → APIs Quran dédiées
+- Persistance triple: Drift SQL + Isar NoSQL + secure_storage
+- Scripts protection: cc-save.sh, cc-guard.sh pour savepoints Git
+- Material Design 3 avec thème InspiredTheme unifié
 
-## SERVEURS & PARAMÈTRES
-• VPS Edge-TTS: http://168.231.112.71:8010/api/tts (timeout 15s, 8€/mois)
-• VPS Coqui: http://168.231.112.71:8001/api/xtts (timeout 15s)
-• APIs Quran: AlQuran.cloud + Everyayah.com + Quran.com
-• Cache: hit rate 85%, 100MB max, purge auto 7j
-• Corpus: assets/corpus/quran_full.json (6236 versets)
+## TODO
+1. 🚨 Import corpus Coran vide (assets/corpus/quran_combined.json)
+2. 🔴 Fix TabController crash (modern_settings_page.dart)
+3. 🟡 Refactoring duplication 40% (3 readers, 6 thèmes)
+4. 🟢 Coverage tests 30% → 60%
+5. ⚪ Config Supabase + RLS pour sync cloud
 
-## TODO CRITIQUE
-1. Fix TabController crash modern_settings_page.dart
-2. Import corpus Coran (quran_combined.json vide)
-3. Consolidation 40% code dupliqué (3 thèmes, 6 readers)
-4. Configuration Supabase + RLS
-5. Tests coverage 60% minimum
+## ERREURS RÉSOLUES
+- Edge-TTS timeout → circuit breaker 5 échecs
+- Détection coranique → threshold confidence 85%
+- RTL/LTR → Directionality widgets auto
+- Cache TTS → 100MB/7j avec hit rate 85%
 
-KPI: Rétention D30 >50%, session >10min, crash <0.1%
+## PARAMS CRITIQUES
+- Edge-TTS: http://168.231.112.71:8010/api/tts (timeout 15s)
+- Coqui: http://168.231.112.71:8001/api/xtts (timeout 15s)
+- Corpus: assets/corpus/quran_combined.json (6236 versets)
+- Build: dart run build_runner build --delete-conflicting-outputs
+- Tests: flutter test --coverage
+- Scripts: scripts/cc-save.sh, cc-guard.sh, cc-restore.sh
+
+---
+Tags: [Projet_sprit, TTS, Edge, XTTS, Flutter]

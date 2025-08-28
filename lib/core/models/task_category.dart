@@ -11,4 +11,3 @@ enum TaskCategory {
   final String emoji;
   const TaskCategory(this.label, this.emoji);
 }
-

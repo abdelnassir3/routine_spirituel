@@ -61,9 +61,9 @@ class HandsFreeController extends StateNotifier<bool> {
       print('⚠️ Mode mains libres déjà en cours, arrêt forcé');
       await stop();
     }
-    
+
     print('🚀 Démarrage du mode mains libres pour session: $sessionId');
-    
+
     state = true;
     _running = true;
     _posSub?.cancel();
@@ -102,17 +102,18 @@ class HandsFreeController extends StateNotifier<bool> {
     }
     while (_running) {
       print('🔄 Récupération de la progression pour session: $sessionId');
-      
+
       final p = await _ref
           .read(progressServiceProvider)
           .getCurrentProgress(sessionId);
-      
+
       if (p == null) {
         print('⚠️ Aucune progression trouvée pour session: $sessionId');
         break;
       }
-      
-      print('📊 Progression trouvée - TaskId: ${p.taskId}, Reps: ${p.remainingReps}');
+
+      print(
+          '📊 Progression trouvée - TaskId: ${p.taskId}, Reps: ${p.remainingReps}');
 
       // Mettre à jour l'interface reader avec la tâche actuelle
       final currentTask = await _ref.read(taskDaoProvider).getById(p.taskId);
@@ -121,13 +122,13 @@ class HandsFreeController extends StateNotifier<bool> {
         // pour que l'interface se mette à jour immédiatement
         _ref.read(readerCurrentTaskProvider.notifier).state = currentTask;
         _ref.read(smartCounterProvider.notifier).setInitial(p.remainingReps);
-        
+
         // Log pour débugger
         print('🔄 Mode mains libres: passage à la tâche ${currentTask.id}');
         print('   📝 Notes FR: ${currentTask.notesFr}');
         print('   📝 Notes AR: ${currentTask.notesAr}');
         print('   🔢 Répétitions: ${p.remainingReps}');
-        
+
         // Attendre un peu pour que l'UI se mette à jour
         await Future.delayed(const Duration(milliseconds: 200));
       }
@@ -224,14 +225,15 @@ class HandsFreeController extends StateNotifier<bool> {
           // Utiliser le service TTS hybride en cas d'erreur cloud
           try {
             await hybridTts.playText(
-              text, 
-              voice: lang, 
-              speed: sp, 
+              text,
+              voice: lang,
+              speed: sp,
               pitch: pt,
               allowFallback: true, // Permettre le fallback automatique
             );
           } catch (e) {
-            print('⚠️ Erreur TTS hybride après échec cloud, continuez quand même: $e');
+            print(
+                '⚠️ Erreur TTS hybride après échec cloud, continuez quand même: $e');
             // Ne pas faire planter le mode mains libres pour une erreur TTS
           }
         }
@@ -239,14 +241,16 @@ class HandsFreeController extends StateNotifier<bool> {
         // Utiliser le service TTS hybride avec fallback en mode mains libres
         try {
           await hybridTts.playText(
-            text, 
-            voice: lang, 
-            speed: sp, 
+            text,
+            voice: lang,
+            speed: sp,
             pitch: pt,
-            allowFallback: true, // Permettre le fallback automatique en mode mains libres
+            allowFallback:
+                true, // Permettre le fallback automatique en mode mains libres
           );
         } catch (e) {
-          print('⚠️ Erreur TTS hybride en mode mains libres, continuez quand même: $e');
+          print(
+              '⚠️ Erreur TTS hybride en mode mains libres, continuez quand même: $e');
           // Ne pas faire planter le mode mains libres pour une erreur TTS
           // L'utilisateur peut continuer manuellement
         }

@@ -21,83 +21,83 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   late AnimationController _waveController;
   late AnimationController _shineController;
   late AnimationController _textController;
-  
+
   // Animations complexes
   late Animation<double> _logoScale;
   late Animation<double> _logoRotation;
   late Animation<double> _logoOpacity;
   late Animation<double> _logoBlur;
   late Animation<Offset> _logoSlide;
-  
+
   // Animations de particules
   late Animation<double> _particleSpread;
   late Animation<double> _particleOpacity;
-  
+
   // Animations d'ondes
   late Animation<double> _waveScale;
   late Animation<double> _waveOpacity;
-  
+
   // Animation de brillance
   late Animation<double> _shinePosition;
   late Animation<double> _shineOpacity;
-  
+
   // Animation du texte
   late Animation<double> _textScale;
   late Animation<double> _textOpacity;
   late Animation<Offset> _textSlide;
-  
+
   // Particules
   final List<Particle> _particles = [];
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // Vibration subtile au démarrage
     HapticFeedback.lightImpact();
-    
+
     _initializeAnimations();
     _generateParticles();
     _startAnimationSequence();
   }
-  
+
   void _initializeAnimations() {
     // Controller principal avec durée totale
     _masterController = AnimationController(
       duration: const Duration(milliseconds: 4500),
       vsync: this,
     );
-    
+
     // Controller du logo
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    
+
     // Controller des particules
     _particleController = AnimationController(
       duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
-    
+
     // Controller des ondes
     _waveController = AnimationController(
       duration: const Duration(milliseconds: 2500),
       vsync: this,
     );
-    
+
     // Controller de brillance
     _shineController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     // Controller du texte
     _textController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    
+
     // Animations du logo avec courbes sophistiquées
     _logoScale = TweenSequence<double>([
       TweenSequenceItem(
@@ -111,7 +111,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
         weight: 40,
       ),
     ]).animate(_logoController);
-    
+
     _logoRotation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: -0.5, end: 0.1)
@@ -124,7 +124,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
         weight: 30,
       ),
     ]).animate(_logoController);
-    
+
     _logoOpacity = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -132,7 +132,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _logoController,
       curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
     ));
-    
+
     _logoBlur = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: 10.0, end: 0.0),
@@ -143,7 +143,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
         weight: 20,
       ),
     ]).animate(_logoController);
-    
+
     _logoSlide = Tween<Offset>(
       begin: const Offset(0, -0.5),
       end: Offset.zero,
@@ -151,7 +151,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _logoController,
       curve: Curves.easeOutQuart,
     ));
-    
+
     // Animations des particules
     _particleSpread = Tween<double>(
       begin: 0.0,
@@ -160,7 +160,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _particleController,
       curve: Curves.easeOutExpo,
     ));
-    
+
     _particleOpacity = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: 0.0, end: 0.8),
@@ -175,7 +175,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
         weight: 30,
       ),
     ]).animate(_particleController);
-    
+
     // Animations des ondes
     _waveScale = Tween<double>(
       begin: 0.5,
@@ -184,7 +184,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _waveController,
       curve: Curves.easeOut,
     ));
-    
+
     _waveOpacity = Tween<double>(
       begin: 0.6,
       end: 0.0,
@@ -192,7 +192,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _waveController,
       curve: Curves.easeOut,
     ));
-    
+
     // Animation de brillance
     _shinePosition = Tween<double>(
       begin: -1.0,
@@ -201,7 +201,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _shineController,
       curve: Curves.easeInOut,
     ));
-    
+
     _shineOpacity = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: 0.0, end: 0.5),
@@ -216,7 +216,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
         weight: 20,
       ),
     ]).animate(_shineController);
-    
+
     // Animations du texte
     _textScale = Tween<double>(
       begin: 0.8,
@@ -225,7 +225,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _textController,
       curve: Curves.easeOutBack,
     ));
-    
+
     _textOpacity = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -233,7 +233,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       parent: _textController,
       curve: Curves.easeIn,
     ));
-    
+
     _textSlide = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
@@ -242,7 +242,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       curve: Curves.easeOutQuart,
     ));
   }
-  
+
   void _generateParticles() {
     final random = math.Random();
     for (int i = 0; i < 50; i++) {
@@ -258,43 +258,43 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       ));
     }
   }
-  
+
   Future<void> _startAnimationSequence() async {
     // Séquence d'animations orchestrée
     await Future.delayed(const Duration(milliseconds: 200));
-    
+
     // Démarrer le logo avec effet d'entrée spectaculaire
     _logoController.forward();
-    
+
     // Déclencher les ondes après 300ms
     await Future.delayed(const Duration(milliseconds: 300));
     _waveController.repeat();
-    
+
     // Particules après 500ms
     await Future.delayed(const Duration(milliseconds: 500));
     _particleController.forward();
-    
+
     // Brillance après 800ms
     await Future.delayed(const Duration(milliseconds: 800));
     _shineController.forward();
-    
+
     // Texte après 1200ms
     await Future.delayed(const Duration(milliseconds: 1200));
     _textController.forward();
-    
+
     // Vibration de confirmation
     await Future.delayed(const Duration(milliseconds: 500));
     HapticFeedback.mediumImpact();
-    
+
     // Attendre avant la navigation
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     // Navigation avec transition fluide
     if (mounted) {
       context.go('/');
     }
   }
-  
+
   @override
   void dispose() {
     _masterController.dispose();
@@ -305,11 +305,11 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     _textController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E21),
       body: Stack(
@@ -329,7 +329,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               ),
             ),
           ),
-          
+
           // Effet de particules flottantes
           AnimatedBuilder(
             animation: _particleController,
@@ -344,7 +344,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               );
             },
           ),
-          
+
           // Logo principal avec effets
           Center(
             child: AnimatedBuilder(
@@ -359,7 +359,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                   children: [
                     // Ondes d'énergie
                     ..._buildEnergyWaves(),
-                    
+
                     // Logo avec transformations 3D
                     SlideTransition(
                       position: _logoSlide,
@@ -382,21 +382,24 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                   shape: BoxShape.circle,
                                   gradient: RadialGradient(
                                     colors: [
-                                      Colors.cyan.withOpacity(0.3 * _logoOpacity.value),
-                                      Colors.blue.withOpacity(0.1 * _logoOpacity.value),
+                                      Colors.cyan.withOpacity(
+                                          0.3 * _logoOpacity.value),
+                                      Colors.blue.withOpacity(
+                                          0.1 * _logoOpacity.value),
                                       Colors.transparent,
                                     ],
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.cyan.withOpacity(0.5 * _logoOpacity.value),
+                                      color: Colors.cyan.withOpacity(
+                                          0.5 * _logoOpacity.value),
                                       blurRadius: 50,
                                       spreadRadius: 20,
                                     ),
                                   ],
                                 ),
                               ),
-                              
+
                               // Logo avec effet de flou et brillance
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
@@ -408,11 +411,14 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                   child: ShaderMask(
                                     shaderCallback: (bounds) {
                                       return LinearGradient(
-                                        begin: Alignment(-1 + _shinePosition.value, -1),
-                                        end: Alignment(-0.5 + _shinePosition.value, 0.5),
+                                        begin: Alignment(
+                                            -1 + _shinePosition.value, -1),
+                                        end: Alignment(
+                                            -0.5 + _shinePosition.value, 0.5),
                                         colors: [
                                           Colors.white.withOpacity(0.0),
-                                          Colors.white.withOpacity(_shineOpacity.value),
+                                          Colors.white
+                                              .withOpacity(_shineOpacity.value),
                                           Colors.white.withOpacity(0.0),
                                         ],
                                         stops: const [0.0, 0.5, 1.0],
@@ -434,9 +440,11 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                               Colors.white.withOpacity(0.05),
                                             ],
                                           ),
-                                          borderRadius: BorderRadius.circular(20),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
                                           border: Border.all(
-                                            color: Colors.white.withOpacity(0.2),
+                                            color:
+                                                Colors.white.withOpacity(0.2),
                                             width: 1,
                                           ),
                                         ),
@@ -459,7 +467,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               },
             ),
           ),
-          
+
           // Texte animé
           Positioned(
             bottom: 100,
@@ -518,7 +526,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       ),
     );
   }
-  
+
   List<Widget> _buildEnergyWaves() {
     return List.generate(3, (index) {
       return Transform.scale(
@@ -556,7 +564,7 @@ class Particle {
   final double speed;
   final double angle;
   final double opacity;
-  
+
   Particle({
     required this.position,
     required this.size,
@@ -571,23 +579,23 @@ class ParticlePainter extends CustomPainter {
   final List<Particle> particles;
   final double progress;
   final double opacity;
-  
+
   ParticlePainter({
     required this.particles,
     required this.progress,
     required this.opacity,
   });
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
     final center = Offset(size.width / 2, size.height / 2);
-    
+
     for (final particle in particles) {
       final distance = progress * 300 * particle.speed;
       final x = center.dx + math.cos(particle.angle) * distance;
       final y = center.dy + math.sin(particle.angle) * distance;
-      
+
       // Gradient radial pour chaque particule
       paint.shader = RadialGradient(
         colors: [
@@ -599,7 +607,7 @@ class ParticlePainter extends CustomPainter {
         center: Offset(x, y),
         radius: particle.size * 2,
       ));
-      
+
       canvas.drawCircle(
         Offset(x, y),
         particle.size * (1 + progress * 0.5),
@@ -607,7 +615,7 @@ class ParticlePainter extends CustomPainter {
       );
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

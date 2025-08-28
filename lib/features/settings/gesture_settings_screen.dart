@@ -8,20 +8,21 @@ import '../../core/widgets/haptic_wrapper.dart';
 /// Écran de configuration des gestes intelligents
 class GestureSettingsScreen extends ConsumerStatefulWidget {
   const GestureSettingsScreen({super.key});
-  
+
   @override
-  ConsumerState<GestureSettingsScreen> createState() => _GestureSettingsScreenState();
+  ConsumerState<GestureSettingsScreen> createState() =>
+      _GestureSettingsScreenState();
 }
 
 class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
   int _testCounter = 0;
   bool _isPaused = false;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final gesturePrefs = ref.watch(gesturePreferencesProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestes Intelligents'),
@@ -34,13 +35,14 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
             subtitle: const Text('Contrôlez l\'app avec des gestes tactiles'),
             value: gesturePrefs.enabled,
             onChanged: (value) async {
-              await ref.read(gesturePreferencesProvider.notifier)
+              await ref
+                  .read(gesturePreferencesProvider.notifier)
                   .setEnabled(value);
             },
           ),
-          
+
           const Divider(),
-          
+
           // Configuration
           Padding(
             padding: const EdgeInsets.all(16),
@@ -52,7 +54,7 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Sensibilité
                 Text(
                   'Sensibilité',
@@ -68,24 +70,27 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                     onChanged: gesturePrefs.enabled
                         ? (value) async {
                             if (value != null) {
-                              await ref.read(gesturePreferencesProvider.notifier)
+                              await ref
+                                  .read(gesturePreferencesProvider.notifier)
                                   .setSensitivity(value);
                             }
                           }
                         : null,
                   );
                 }),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Mode gaucher
                 SwitchListTile(
                   title: const Text('Mode gaucher'),
-                  subtitle: const Text('Inverse la direction des gestes pour les gauchers'),
+                  subtitle: const Text(
+                      'Inverse la direction des gestes pour les gauchers'),
                   value: gesturePrefs.leftHandedMode,
                   onChanged: gesturePrefs.enabled
                       ? (value) async {
-                          await ref.read(gesturePreferencesProvider.notifier)
+                          await ref
+                              .read(gesturePreferencesProvider.notifier)
                               .setLeftHandedMode(value);
                         }
                       : null,
@@ -93,9 +98,9 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Guide des gestes
           Padding(
             padding: const EdgeInsets.all(16),
@@ -107,7 +112,7 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Gestes de base
                 _GestureGuideItem(
                   icon: Icons.touch_app,
@@ -124,14 +129,14 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   gesture: 'Appui long',
                   action: 'Réinitialiser le compteur',
                 ),
-                
+
                 const SizedBox(height: 16),
                 Text(
                   'Swipes',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 8),
-                
+
                 _GestureGuideItem(
                   icon: Icons.swipe_up,
                   gesture: 'Swipe vers le haut',
@@ -152,14 +157,14 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   gesture: 'Swipe vers la gauche',
                   action: 'Retirer 10',
                 ),
-                
+
                 const SizedBox(height: 16),
                 Text(
                   'Gestes avancés',
                   style: theme.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 8),
-                
+
                 _GestureGuideItem(
                   icon: Icons.circle_outlined,
                   gesture: 'Dessiner un cercle',
@@ -173,9 +178,9 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Zone de test
           Padding(
             padding: const EdgeInsets.all(16),
@@ -194,7 +199,7 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Zone interactive
                 if (gesturePrefs.enabled)
                   GestureCounterZone(
@@ -246,7 +251,7 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                       ],
                     ),
                   ),
-                
+
                 if (_isPaused) ...[
                   const SizedBox(height: 8),
                   Center(
@@ -259,9 +264,9 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Patterns personnalisés
           Padding(
             padding: const EdgeInsets.all(16),
@@ -280,7 +285,6 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
                 ListTile(
                   leading: const Icon(Icons.save),
                   title: const Text('Sauvegarde rapide'),
@@ -290,7 +294,6 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                     onChanged: gesturePrefs.enabled ? (value) {} : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.undo),
                   title: const Text('Annuler'),
@@ -300,7 +303,6 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
                     onChanged: gesturePrefs.enabled ? (value) {} : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.skip_next),
                   title: const Text('Aller à la fin'),
@@ -313,13 +315,13 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
         ],
       ),
     );
   }
-  
+
   String _getSensitivityLabel(GestureSensitivity sensitivity) {
     switch (sensitivity) {
       case GestureSensitivity.low:
@@ -330,7 +332,7 @@ class _GestureSettingsScreenState extends ConsumerState<GestureSettingsScreen> {
         return 'Élevé';
     }
   }
-  
+
   String _getSensitivityDescription(GestureSensitivity sensitivity) {
     switch (sensitivity) {
       case GestureSensitivity.low:
@@ -348,17 +350,17 @@ class _GestureGuideItem extends StatelessWidget {
   final IconData icon;
   final String gesture;
   final String action;
-  
+
   const _GestureGuideItem({
     required this.icon,
     required this.gesture,
     required this.action,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(

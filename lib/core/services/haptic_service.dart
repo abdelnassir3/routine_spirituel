@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_logger.dart';
 
 /// Service de retour haptique pour améliorer l'expérience utilisateur
-/// 
+///
 /// Fournit des vibrations et retours tactiles contextuels pour :
 /// - Actions de prière (début, fin, milestones)
 /// - Interactions UI (boutons, swipes)
@@ -15,44 +15,45 @@ import '../utils/app_logger.dart';
 /// - Feedback de progression
 class HapticService {
   static HapticService? _instance;
-  
+
   // Préférences utilisateur
   bool _isEnabled = true;
   HapticIntensity _intensity = HapticIntensity.medium;
   bool _canVibrate = false;
   bool _hasAmplitudeControl = false;
-  
+
   // Clés de préférences
   static const String _keyEnabled = 'haptic_enabled';
   static const String _keyIntensity = 'haptic_intensity';
-  
+
   // Singleton
   static HapticService get instance {
     _instance ??= HapticService._();
     return _instance!;
   }
-  
+
   HapticService._() {
     _initialize();
   }
-  
+
   Future<void> _initialize() async {
     try {
       // Charger les préférences
       final prefs = await SharedPreferences.getInstance();
       _isEnabled = prefs.getBool(_keyEnabled) ?? true;
-      final intensityIndex = prefs.getInt(_keyIntensity) ?? HapticIntensity.medium.index;
+      final intensityIndex =
+          prefs.getInt(_keyIntensity) ?? HapticIntensity.medium.index;
       _intensity = HapticIntensity.values[intensityIndex];
-      
+
       // Vérifier les capacités de l'appareil
       if (Platform.isAndroid || Platform.isIOS) {
         _canVibrate = await Haptics.canVibrate() ?? false;
-        
+
         if (Platform.isAndroid) {
           _hasAmplitudeControl = await Vibration.hasAmplitudeControl() ?? false;
         }
       }
-      
+
       AppLogger.logDebugInfo('HapticService initialized', {
         'enabled': _isEnabled,
         'intensity': _intensity.name,
@@ -63,38 +64,39 @@ class HapticService {
       AppLogger.logError('HapticService initialization failed', e);
     }
   }
-  
+
   // ===== Configuration =====
-  
+
   bool get isEnabled => _isEnabled;
   HapticIntensity get intensity => _intensity;
   bool get canVibrate => _canVibrate;
-  
+
   Future<void> setEnabled(bool enabled) async {
     _isEnabled = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyEnabled, enabled);
-    
+
     AppLogger.logUserAction('haptic_feedback_toggled', {'enabled': enabled});
   }
-  
+
   Future<void> setIntensity(HapticIntensity intensity) async {
     _intensity = intensity;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_keyIntensity, intensity.index);
-    
+
     // Tester le nouveau niveau
     await testHaptic();
-    
-    AppLogger.logUserAction('haptic_intensity_changed', {'intensity': intensity.name});
+
+    AppLogger.logUserAction(
+        'haptic_intensity_changed', {'intensity': intensity.name});
   }
-  
+
   // ===== Haptic Patterns pour Prières =====
-  
+
   /// Vibration au début d'une session de prière
   Future<void> prayerStart() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.success);
@@ -109,11 +111,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Vibration à la fin d'une session de prière
   Future<void> prayerComplete() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         // Double success pour marquer la complétion
@@ -124,21 +126,22 @@ class HapticService {
         // Pattern célébration : série de vibrations croissantes
         await Vibration.vibrate(
           pattern: [0, 50, 50, 100, 50, 150, 50, 200],
-          intensities: _hasAmplitudeControl ? [0, 100, 0, 150, 0, 200, 0, 255] : null,
+          intensities:
+              _hasAmplitudeControl ? [0, 100, 0, 150, 0, 200, 0, 255] : null,
         );
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Vibration pour chaque compte/répétition
   Future<void> counterTick() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       final duration = _getDurationForIntensity();
-      
+
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.light);
       } else if (Platform.isAndroid) {
@@ -151,11 +154,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Vibration pour milestone (33, 66, 99 répétitions)
   Future<void> milestone(int count) async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         // Utiliser différents types selon le milestone
@@ -171,7 +174,8 @@ class HapticService {
         if (count == 33) {
           await Vibration.vibrate(pattern: [0, 200], intensities: [0, 200]);
         } else if (count == 66) {
-          await Vibration.vibrate(pattern: [0, 100, 100, 100], intensities: [0, 200, 0, 200]);
+          await Vibration.vibrate(
+              pattern: [0, 100, 100, 100], intensities: [0, 200, 0, 200]);
         } else if (count == 99 || count == 100) {
           await Vibration.vibrate(
             pattern: [0, 100, 50, 100, 50, 300],
@@ -183,13 +187,13 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   // ===== Haptic Patterns pour UI =====
-  
+
   /// Feedback léger pour les taps
   Future<void> lightTap() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.light);
@@ -203,11 +207,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Feedback moyen pour les sélections
   Future<void> selection() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.selection);
@@ -221,11 +225,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Feedback fort pour les actions importantes
   Future<void> impact() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.heavy);
@@ -239,11 +243,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Feedback pour les erreurs
   Future<void> error() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.warning);
@@ -258,11 +262,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Feedback pour le succès
   Future<void> success() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.success);
@@ -277,13 +281,13 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   // ===== Patterns spéciaux =====
-  
+
   /// Pattern pour le swipe/gesture
   Future<void> swipeGesture() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.selection);
@@ -298,11 +302,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Pattern pour le long press
   Future<void> longPress() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.medium);
@@ -316,11 +320,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Pattern pour notification/rappel
   Future<void> notification() async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isIOS) {
         await Haptics.vibrate(HapticsType.warning);
@@ -335,16 +339,16 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   // ===== Custom Patterns =====
-  
+
   /// Créer un pattern custom
   Future<void> customPattern({
     required List<int> pattern,
     List<int>? intensities,
   }) async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isAndroid) {
         await Vibration.vibrate(
@@ -359,11 +363,11 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   /// Vibration continue pour une durée donnée
   Future<void> continuous(Duration duration) async {
     if (!_isEnabled || !_canVibrate) return;
-    
+
     try {
       if (Platform.isAndroid) {
         await Vibration.vibrate(
@@ -382,9 +386,9 @@ class HapticService {
       if (kDebugMode) print('Haptic error: $e');
     }
   }
-  
+
   // ===== Helpers =====
-  
+
   int _getDurationForIntensity() {
     switch (_intensity) {
       case HapticIntensity.light:
@@ -395,10 +399,10 @@ class HapticService {
         return 30;
     }
   }
-  
+
   int _getAmplitudeForIntensity({bool light = false, bool heavy = false}) {
     if (!_hasAmplitudeControl) return -1;
-    
+
     if (light) {
       switch (_intensity) {
         case HapticIntensity.light:
@@ -428,12 +432,12 @@ class HapticService {
       }
     }
   }
-  
+
   /// Tester le feedback haptique
   Future<void> testHaptic() async {
     await impact();
   }
-  
+
   /// Arrêter toute vibration en cours
   Future<void> cancel() async {
     try {

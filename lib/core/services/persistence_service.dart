@@ -33,4 +33,3 @@ abstract class PersistenceService {
   Future<SyncResult> syncWithCloud();
   Stream<SyncStatus> watchSyncStatus();
 }
-

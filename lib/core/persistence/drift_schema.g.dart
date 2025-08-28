@@ -196,6 +196,17 @@ class ThemeRow extends DataClass implements Insertable<ThemeRow> {
         createdAt: createdAt ?? this.createdAt,
         metadata: metadata ?? this.metadata,
       );
+  ThemeRow copyWithCompanion(ThemesCompanion data) {
+    return ThemeRow(
+      id: data.id.present ? data.id.value : this.id,
+      nameFr: data.nameFr.present ? data.nameFr.value : this.nameFr,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ThemeRow(')
@@ -535,6 +546,18 @@ class RoutineRow extends DataClass implements Insertable<RoutineRow> {
         orderIndex: orderIndex ?? this.orderIndex,
         isActive: isActive ?? this.isActive,
       );
+  RoutineRow copyWithCompanion(RoutinesCompanion data) {
+    return RoutineRow(
+      id: data.id.present ? data.id.value : this.id,
+      themeId: data.themeId.present ? data.themeId.value : this.themeId,
+      nameFr: data.nameFr.present ? data.nameFr.value : this.nameFr,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      orderIndex:
+          data.orderIndex.present ? data.orderIndex.value : this.orderIndex,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('RoutineRow(')
@@ -1005,6 +1028,28 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
         notesAr: notesAr.present ? notesAr.value : this.notesAr,
         orderIndex: orderIndex ?? this.orderIndex,
       );
+  TaskRow copyWithCompanion(TasksCompanion data) {
+    return TaskRow(
+      id: data.id.present ? data.id.value : this.id,
+      routineId: data.routineId.present ? data.routineId.value : this.routineId,
+      type: data.type.present ? data.type.value : this.type,
+      category: data.category.present ? data.category.value : this.category,
+      defaultReps:
+          data.defaultReps.present ? data.defaultReps.value : this.defaultReps,
+      audioSettings: data.audioSettings.present
+          ? data.audioSettings.value
+          : this.audioSettings,
+      displaySettings: data.displaySettings.present
+          ? data.displaySettings.value
+          : this.displaySettings,
+      contentId: data.contentId.present ? data.contentId.value : this.contentId,
+      notesFr: data.notesFr.present ? data.notesFr.value : this.notesFr,
+      notesAr: data.notesAr.present ? data.notesAr.value : this.notesAr,
+      orderIndex:
+          data.orderIndex.present ? data.orderIndex.value : this.orderIndex,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('TaskRow(')
@@ -1412,6 +1457,18 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
         state: state ?? this.state,
         snapshotRef: snapshotRef.present ? snapshotRef.value : this.snapshotRef,
       );
+  SessionRow copyWithCompanion(SessionsCompanion data) {
+    return SessionRow(
+      id: data.id.present ? data.id.value : this.id,
+      routineId: data.routineId.present ? data.routineId.value : this.routineId,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      state: data.state.present ? data.state.value : this.state,
+      snapshotRef:
+          data.snapshotRef.present ? data.snapshotRef.value : this.snapshotRef,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SessionRow(')
@@ -1807,6 +1864,23 @@ class TaskProgressRow extends DataClass implements Insertable<TaskProgressRow> {
         verseIndex: verseIndex ?? this.verseIndex,
         lastUpdate: lastUpdate ?? this.lastUpdate,
       );
+  TaskProgressRow copyWithCompanion(TaskProgressCompanion data) {
+    return TaskProgressRow(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      remainingReps: data.remainingReps.present
+          ? data.remainingReps.value
+          : this.remainingReps,
+      elapsedMs: data.elapsedMs.present ? data.elapsedMs.value : this.elapsedMs,
+      wordIndex: data.wordIndex.present ? data.wordIndex.value : this.wordIndex,
+      verseIndex:
+          data.verseIndex.present ? data.verseIndex.value : this.verseIndex,
+      lastUpdate:
+          data.lastUpdate.present ? data.lastUpdate.value : this.lastUpdate,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('TaskProgressRow(')
@@ -2125,6 +2199,15 @@ class SnapshotRow extends DataClass implements Insertable<SnapshotRow> {
         payload: payload ?? this.payload,
         createdAt: createdAt ?? this.createdAt,
       );
+  SnapshotRow copyWithCompanion(SnapshotsCompanion data) {
+    return SnapshotRow(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SnapshotRow(')
@@ -2515,6 +2598,22 @@ class UserSettingsRow extends DataClass implements Insertable<UserSettingsRow> {
         haptics: haptics ?? this.haptics,
         notifications: notifications ?? this.notifications,
       );
+  UserSettingsRow copyWithCompanion(UserSettingsCompanion data) {
+    return UserSettingsRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      language: data.language.present ? data.language.value : this.language,
+      rtlPref: data.rtlPref.present ? data.rtlPref.value : this.rtlPref,
+      fontPrefs: data.fontPrefs.present ? data.fontPrefs.value : this.fontPrefs,
+      ttsVoice: data.ttsVoice.present ? data.ttsVoice.value : this.ttsVoice,
+      speed: data.speed.present ? data.speed.value : this.speed,
+      haptics: data.haptics.present ? data.haptics.value : this.haptics,
+      notifications: data.notifications.present
+          ? data.notifications.value
+          : this.notifications,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('UserSettingsRow(')
@@ -2691,7 +2790,7 @@ class UserSettingsCompanion extends UpdateCompanion<UserSettingsRow> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
-  _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ThemesTable themes = $ThemesTable(this);
   late final $RoutinesTable routines = $RoutinesTable(this);
   late final $TasksTable tasks = $TasksTable(this);
@@ -2722,7 +2821,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ];
 }
 
-typedef $$ThemesTableInsertCompanionBuilder = ThemesCompanion Function({
+typedef $$ThemesTableCreateCompanionBuilder = ThemesCompanion Function({
   required String id,
   required String nameFr,
   required String nameAr,
@@ -2741,25 +2840,174 @@ typedef $$ThemesTableUpdateCompanionBuilder = ThemesCompanion Function({
   Value<int> rowid,
 });
 
+final class $$ThemesTableReferences
+    extends BaseReferences<_$AppDatabase, $ThemesTable, ThemeRow> {
+  $$ThemesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$RoutinesTable, List<RoutineRow>>
+      _routinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.routines,
+          aliasName: $_aliasNameGenerator(db.themes.id, db.routines.themeId));
+
+  $$RoutinesTableProcessedTableManager get routinesRefs {
+    final manager = $$RoutinesTableTableManager($_db, $_db.routines)
+        .filter((f) => f.themeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_routinesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$ThemesTableFilterComposer
+    extends Composer<_$AppDatabase, $ThemesTable> {
+  $$ThemesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameFr => $composableBuilder(
+      column: $table.nameFr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+      column: $table.nameAr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get frequency => $composableBuilder(
+      column: $table.frequency, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+      column: $table.metadata, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> routinesRefs(
+      Expression<bool> Function($$RoutinesTableFilterComposer f) f) {
+    final $$RoutinesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.themeId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableFilterComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$ThemesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ThemesTable> {
+  $$ThemesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameFr => $composableBuilder(
+      column: $table.nameFr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+      column: $table.nameAr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get frequency => $composableBuilder(
+      column: $table.frequency, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+      column: $table.metadata, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ThemesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ThemesTable> {
+  $$ThemesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameFr =>
+      $composableBuilder(column: $table.nameFr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  Expression<T> routinesRefs<T extends Object>(
+      Expression<T> Function($$RoutinesTableAnnotationComposer a) f) {
+    final $$RoutinesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.themeId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$ThemesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ThemesTable,
     ThemeRow,
     $$ThemesTableFilterComposer,
     $$ThemesTableOrderingComposer,
-    $$ThemesTableProcessedTableManager,
-    $$ThemesTableInsertCompanionBuilder,
-    $$ThemesTableUpdateCompanionBuilder> {
+    $$ThemesTableAnnotationComposer,
+    $$ThemesTableCreateCompanionBuilder,
+    $$ThemesTableUpdateCompanionBuilder,
+    (ThemeRow, $$ThemesTableReferences),
+    ThemeRow,
+    PrefetchHooks Function({bool routinesRefs})> {
   $$ThemesTableTableManager(_$AppDatabase db, $ThemesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ThemesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ThemesTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$ThemesTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$ThemesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ThemesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ThemesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> nameFr = const Value.absent(),
             Value<String> nameAr = const Value.absent(),
@@ -2777,7 +3025,7 @@ class $$ThemesTableTableManager extends RootTableManager<
             metadata: metadata,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String nameFr,
             required String nameAr,
@@ -2795,103 +3043,49 @@ class $$ThemesTableTableManager extends RootTableManager<
             metadata: metadata,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$ThemesTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({routinesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (routinesRefs) db.routines],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (routinesRefs)
+                    await $_getPrefetchedData<ThemeRow, $ThemesTable,
+                            RoutineRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$ThemesTableReferences._routinesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ThemesTableReferences(db, table, p0).routinesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.themeId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$ThemesTableProcessedTableManager extends ProcessedTableManager<
+typedef $$ThemesTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $ThemesTable,
     ThemeRow,
     $$ThemesTableFilterComposer,
     $$ThemesTableOrderingComposer,
-    $$ThemesTableProcessedTableManager,
-    $$ThemesTableInsertCompanionBuilder,
-    $$ThemesTableUpdateCompanionBuilder> {
-  $$ThemesTableProcessedTableManager(super.$state);
-}
-
-class $$ThemesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ThemesTable> {
-  $$ThemesTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get nameFr => $state.composableBuilder(
-      column: $state.table.nameFr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get nameAr => $state.composableBuilder(
-      column: $state.table.nameAr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get frequency => $state.composableBuilder(
-      column: $state.table.frequency,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get metadata => $state.composableBuilder(
-      column: $state.table.metadata,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ComposableFilter routinesRefs(
-      ComposableFilter Function($$RoutinesTableFilterComposer f) f) {
-    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.themeId,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableFilterComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$ThemesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ThemesTable> {
-  $$ThemesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get nameFr => $state.composableBuilder(
-      column: $state.table.nameFr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get nameAr => $state.composableBuilder(
-      column: $state.table.nameAr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get frequency => $state.composableBuilder(
-      column: $state.table.frequency,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get metadata => $state.composableBuilder(
-      column: $state.table.metadata,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
+    $$ThemesTableAnnotationComposer,
+    $$ThemesTableCreateCompanionBuilder,
+    $$ThemesTableUpdateCompanionBuilder,
+    (ThemeRow, $$ThemesTableReferences),
+    ThemeRow,
+    PrefetchHooks Function({bool routinesRefs})>;
+typedef $$RoutinesTableCreateCompanionBuilder = RoutinesCompanion Function({
   required String id,
   required String themeId,
   required String nameFr,
@@ -2910,26 +3104,296 @@ typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<int> rowid,
 });
 
+final class $$RoutinesTableReferences
+    extends BaseReferences<_$AppDatabase, $RoutinesTable, RoutineRow> {
+  $$RoutinesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ThemesTable _themeIdTable(_$AppDatabase db) => db.themes
+      .createAlias($_aliasNameGenerator(db.routines.themeId, db.themes.id));
+
+  $$ThemesTableProcessedTableManager get themeId {
+    final $_column = $_itemColumn<String>('theme_id')!;
+
+    final manager = $$ThemesTableTableManager($_db, $_db.themes)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_themeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$TasksTable, List<TaskRow>> _tasksRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.tasks,
+          aliasName: $_aliasNameGenerator(db.routines.id, db.tasks.routineId));
+
+  $$TasksTableProcessedTableManager get tasksRefs {
+    final manager = $$TasksTableTableManager($_db, $_db.tasks)
+        .filter((f) => f.routineId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_tasksRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$SessionsTable, List<SessionRow>>
+      _sessionsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.sessions,
+              aliasName:
+                  $_aliasNameGenerator(db.routines.id, db.sessions.routineId));
+
+  $$SessionsTableProcessedTableManager get sessionsRefs {
+    final manager = $$SessionsTableTableManager($_db, $_db.sessions)
+        .filter((f) => f.routineId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_sessionsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$RoutinesTableFilterComposer
+    extends Composer<_$AppDatabase, $RoutinesTable> {
+  $$RoutinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameFr => $composableBuilder(
+      column: $table.nameFr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+      column: $table.nameAr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  $$ThemesTableFilterComposer get themeId {
+    final $$ThemesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.themeId,
+        referencedTable: $db.themes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ThemesTableFilterComposer(
+              $db: $db,
+              $table: $db.themes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> tasksRefs(
+      Expression<bool> Function($$TasksTableFilterComposer f) f) {
+    final $$TasksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.tasks,
+        getReferencedColumn: (t) => t.routineId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TasksTableFilterComposer(
+              $db: $db,
+              $table: $db.tasks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> sessionsRefs(
+      Expression<bool> Function($$SessionsTableFilterComposer f) f) {
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.routineId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableFilterComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$RoutinesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RoutinesTable> {
+  $$RoutinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameFr => $composableBuilder(
+      column: $table.nameFr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+      column: $table.nameAr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  $$ThemesTableOrderingComposer get themeId {
+    final $$ThemesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.themeId,
+        referencedTable: $db.themes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ThemesTableOrderingComposer(
+              $db: $db,
+              $table: $db.themes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$RoutinesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RoutinesTable> {
+  $$RoutinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameFr =>
+      $composableBuilder(column: $table.nameFr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  $$ThemesTableAnnotationComposer get themeId {
+    final $$ThemesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.themeId,
+        referencedTable: $db.themes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ThemesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.themes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> tasksRefs<T extends Object>(
+      Expression<T> Function($$TasksTableAnnotationComposer a) f) {
+    final $$TasksTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.tasks,
+        getReferencedColumn: (t) => t.routineId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TasksTableAnnotationComposer(
+              $db: $db,
+              $table: $db.tasks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> sessionsRefs<T extends Object>(
+      Expression<T> Function($$SessionsTableAnnotationComposer a) f) {
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.routineId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$RoutinesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $RoutinesTable,
     RoutineRow,
     $$RoutinesTableFilterComposer,
     $$RoutinesTableOrderingComposer,
-    $$RoutinesTableProcessedTableManager,
-    $$RoutinesTableInsertCompanionBuilder,
-    $$RoutinesTableUpdateCompanionBuilder> {
+    $$RoutinesTableAnnotationComposer,
+    $$RoutinesTableCreateCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder,
+    (RoutineRow, $$RoutinesTableReferences),
+    RoutineRow,
+    PrefetchHooks Function({bool themeId, bool tasksRefs, bool sessionsRefs})> {
   $$RoutinesTableTableManager(_$AppDatabase db, $RoutinesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$RoutinesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoutinesTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoutinesTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$RoutinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoutinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoutinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> themeId = const Value.absent(),
             Value<String> nameFr = const Value.absent(),
@@ -2947,7 +3411,7 @@ class $$RoutinesTableTableManager extends RootTableManager<
             isActive: isActive,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String themeId,
             required String nameFr,
@@ -2965,130 +3429,91 @@ class $$RoutinesTableTableManager extends RootTableManager<
             isActive: isActive,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$RoutinesTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {themeId = false, tasksRefs = false, sessionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (tasksRefs) db.tasks,
+                if (sessionsRefs) db.sessions
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (themeId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.themeId,
+                    referencedTable:
+                        $$RoutinesTableReferences._themeIdTable(db),
+                    referencedColumn:
+                        $$RoutinesTableReferences._themeIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (tasksRefs)
+                    await $_getPrefetchedData<RoutineRow, $RoutinesTable,
+                            TaskRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$RoutinesTableReferences._tasksRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$RoutinesTableReferences(db, table, p0).tasksRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.routineId == item.id),
+                        typedResults: items),
+                  if (sessionsRefs)
+                    await $_getPrefetchedData<RoutineRow, $RoutinesTable,
+                            SessionRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$RoutinesTableReferences._sessionsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$RoutinesTableReferences(db, table, p0)
+                                .sessionsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.routineId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$RoutinesTableProcessedTableManager extends ProcessedTableManager<
+typedef $$RoutinesTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $RoutinesTable,
     RoutineRow,
     $$RoutinesTableFilterComposer,
     $$RoutinesTableOrderingComposer,
-    $$RoutinesTableProcessedTableManager,
-    $$RoutinesTableInsertCompanionBuilder,
-    $$RoutinesTableUpdateCompanionBuilder> {
-  $$RoutinesTableProcessedTableManager(super.$state);
-}
-
-class $$RoutinesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $RoutinesTable> {
-  $$RoutinesTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get nameFr => $state.composableBuilder(
-      column: $state.table.nameFr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get nameAr => $state.composableBuilder(
-      column: $state.table.nameAr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get orderIndex => $state.composableBuilder(
-      column: $state.table.orderIndex,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isActive => $state.composableBuilder(
-      column: $state.table.isActive,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$ThemesTableFilterComposer get themeId {
-    final $$ThemesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.themeId,
-        referencedTable: $state.db.themes,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$ThemesTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.themes, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter tasksRefs(
-      ComposableFilter Function($$TasksTableFilterComposer f) f) {
-    final $$TasksTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.tasks,
-        getReferencedColumn: (t) => t.routineId,
-        builder: (joinBuilder, parentComposers) => $$TasksTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.tasks, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter sessionsRefs(
-      ComposableFilter Function($$SessionsTableFilterComposer f) f) {
-    final $$SessionsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.sessions,
-        getReferencedColumn: (t) => t.routineId,
-        builder: (joinBuilder, parentComposers) =>
-            $$SessionsTableFilterComposer(ComposerState(
-                $state.db, $state.db.sessions, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$RoutinesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $RoutinesTable> {
-  $$RoutinesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get nameFr => $state.composableBuilder(
-      column: $state.table.nameFr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get nameAr => $state.composableBuilder(
-      column: $state.table.nameAr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get orderIndex => $state.composableBuilder(
-      column: $state.table.orderIndex,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isActive => $state.composableBuilder(
-      column: $state.table.isActive,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$ThemesTableOrderingComposer get themeId {
-    final $$ThemesTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.themeId,
-        referencedTable: $state.db.themes,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ThemesTableOrderingComposer(ComposerState(
-                $state.db, $state.db.themes, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$TasksTableInsertCompanionBuilder = TasksCompanion Function({
+    $$RoutinesTableAnnotationComposer,
+    $$RoutinesTableCreateCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder,
+    (RoutineRow, $$RoutinesTableReferences),
+    RoutineRow,
+    PrefetchHooks Function({bool themeId, bool tasksRefs, bool sessionsRefs})>;
+typedef $$TasksTableCreateCompanionBuilder = TasksCompanion Function({
   required String id,
   required String routineId,
   required String type,
@@ -3117,25 +3542,286 @@ typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
   Value<int> rowid,
 });
 
+final class $$TasksTableReferences
+    extends BaseReferences<_$AppDatabase, $TasksTable, TaskRow> {
+  $$TasksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RoutinesTable _routineIdTable(_$AppDatabase db) => db.routines
+      .createAlias($_aliasNameGenerator(db.tasks.routineId, db.routines.id));
+
+  $$RoutinesTableProcessedTableManager get routineId {
+    final $_column = $_itemColumn<String>('routine_id')!;
+
+    final manager = $$RoutinesTableTableManager($_db, $_db.routines)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_routineIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$TaskProgressTable, List<TaskProgressRow>>
+      _taskProgressRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.taskProgress,
+          aliasName: $_aliasNameGenerator(db.tasks.id, db.taskProgress.taskId));
+
+  $$TaskProgressTableProcessedTableManager get taskProgressRefs {
+    final manager = $$TaskProgressTableTableManager($_db, $_db.taskProgress)
+        .filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taskProgressRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get defaultReps => $composableBuilder(
+      column: $table.defaultReps, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get audioSettings => $composableBuilder(
+      column: $table.audioSettings, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get displaySettings => $composableBuilder(
+      column: $table.displaySettings,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentId => $composableBuilder(
+      column: $table.contentId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notesFr => $composableBuilder(
+      column: $table.notesFr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notesAr => $composableBuilder(
+      column: $table.notesAr, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => ColumnFilters(column));
+
+  $$RoutinesTableFilterComposer get routineId {
+    final $$RoutinesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableFilterComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> taskProgressRefs(
+      Expression<bool> Function($$TaskProgressTableFilterComposer f) f) {
+    final $$TaskProgressTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.taskProgress,
+        getReferencedColumn: (t) => t.taskId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TaskProgressTableFilterComposer(
+              $db: $db,
+              $table: $db.taskProgress,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$TasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get defaultReps => $composableBuilder(
+      column: $table.defaultReps, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get audioSettings => $composableBuilder(
+      column: $table.audioSettings,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get displaySettings => $composableBuilder(
+      column: $table.displaySettings,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentId => $composableBuilder(
+      column: $table.contentId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notesFr => $composableBuilder(
+      column: $table.notesFr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notesAr => $composableBuilder(
+      column: $table.notesAr, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => ColumnOrderings(column));
+
+  $$RoutinesTableOrderingComposer get routineId {
+    final $$RoutinesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableOrderingComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get defaultReps => $composableBuilder(
+      column: $table.defaultReps, builder: (column) => column);
+
+  GeneratedColumn<String> get audioSettings => $composableBuilder(
+      column: $table.audioSettings, builder: (column) => column);
+
+  GeneratedColumn<String> get displaySettings => $composableBuilder(
+      column: $table.displaySettings, builder: (column) => column);
+
+  GeneratedColumn<String> get contentId =>
+      $composableBuilder(column: $table.contentId, builder: (column) => column);
+
+  GeneratedColumn<String> get notesFr =>
+      $composableBuilder(column: $table.notesFr, builder: (column) => column);
+
+  GeneratedColumn<String> get notesAr =>
+      $composableBuilder(column: $table.notesAr, builder: (column) => column);
+
+  GeneratedColumn<int> get orderIndex => $composableBuilder(
+      column: $table.orderIndex, builder: (column) => column);
+
+  $$RoutinesTableAnnotationComposer get routineId {
+    final $$RoutinesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> taskProgressRefs<T extends Object>(
+      Expression<T> Function($$TaskProgressTableAnnotationComposer a) f) {
+    final $$TaskProgressTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.taskProgress,
+        getReferencedColumn: (t) => t.taskId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TaskProgressTableAnnotationComposer(
+              $db: $db,
+              $table: $db.taskProgress,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$TasksTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TasksTable,
     TaskRow,
     $$TasksTableFilterComposer,
     $$TasksTableOrderingComposer,
-    $$TasksTableProcessedTableManager,
-    $$TasksTableInsertCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder> {
+    $$TasksTableAnnotationComposer,
+    $$TasksTableCreateCompanionBuilder,
+    $$TasksTableUpdateCompanionBuilder,
+    (TaskRow, $$TasksTableReferences),
+    TaskRow,
+    PrefetchHooks Function({bool routineId, bool taskProgressRefs})> {
   $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TasksTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TasksTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$TasksTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$TasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> routineId = const Value.absent(),
             Value<String> type = const Value.absent(),
@@ -3163,7 +3849,7 @@ class $$TasksTableTableManager extends RootTableManager<
             orderIndex: orderIndex,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String routineId,
             required String type,
@@ -3191,167 +3877,75 @@ class $$TasksTableTableManager extends RootTableManager<
             orderIndex: orderIndex,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$TasksTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {routineId = false, taskProgressRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (taskProgressRefs) db.taskProgress],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (routineId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.routineId,
+                    referencedTable: $$TasksTableReferences._routineIdTable(db),
+                    referencedColumn:
+                        $$TasksTableReferences._routineIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (taskProgressRefs)
+                    await $_getPrefetchedData<TaskRow, $TasksTable,
+                            TaskProgressRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$TasksTableReferences._taskProgressRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$TasksTableReferences(db, table, p0)
+                                .taskProgressRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.taskId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$TasksTableProcessedTableManager extends ProcessedTableManager<
+typedef $$TasksTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $TasksTable,
     TaskRow,
     $$TasksTableFilterComposer,
     $$TasksTableOrderingComposer,
-    $$TasksTableProcessedTableManager,
-    $$TasksTableInsertCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder> {
-  $$TasksTableProcessedTableManager(super.$state);
-}
-
-class $$TasksTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $TasksTable> {
-  $$TasksTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get category => $state.composableBuilder(
-      column: $state.table.category,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get defaultReps => $state.composableBuilder(
-      column: $state.table.defaultReps,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get audioSettings => $state.composableBuilder(
-      column: $state.table.audioSettings,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get displaySettings => $state.composableBuilder(
-      column: $state.table.displaySettings,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get contentId => $state.composableBuilder(
-      column: $state.table.contentId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get notesFr => $state.composableBuilder(
-      column: $state.table.notesFr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get notesAr => $state.composableBuilder(
-      column: $state.table.notesAr,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get orderIndex => $state.composableBuilder(
-      column: $state.table.orderIndex,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$RoutinesTableFilterComposer get routineId {
-    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableFilterComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter taskProgressRefs(
-      ComposableFilter Function($$TaskProgressTableFilterComposer f) f) {
-    final $$TaskProgressTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.taskProgress,
-        getReferencedColumn: (t) => t.taskId,
-        builder: (joinBuilder, parentComposers) =>
-            $$TaskProgressTableFilterComposer(ComposerState($state.db,
-                $state.db.taskProgress, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$TasksTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $TasksTable> {
-  $$TasksTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get category => $state.composableBuilder(
-      column: $state.table.category,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get defaultReps => $state.composableBuilder(
-      column: $state.table.defaultReps,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get audioSettings => $state.composableBuilder(
-      column: $state.table.audioSettings,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get displaySettings => $state.composableBuilder(
-      column: $state.table.displaySettings,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get contentId => $state.composableBuilder(
-      column: $state.table.contentId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get notesFr => $state.composableBuilder(
-      column: $state.table.notesFr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get notesAr => $state.composableBuilder(
-      column: $state.table.notesAr,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get orderIndex => $state.composableBuilder(
-      column: $state.table.orderIndex,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$RoutinesTableOrderingComposer get routineId {
-    final $$RoutinesTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableOrderingComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$SessionsTableInsertCompanionBuilder = SessionsCompanion Function({
+    $$TasksTableAnnotationComposer,
+    $$TasksTableCreateCompanionBuilder,
+    $$TasksTableUpdateCompanionBuilder,
+    (TaskRow, $$TasksTableReferences),
+    TaskRow,
+    PrefetchHooks Function({bool routineId, bool taskProgressRefs})>;
+typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   required String id,
   required String routineId,
   Value<DateTime> startedAt,
@@ -3370,26 +3964,298 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<int> rowid,
 });
 
+final class $$SessionsTableReferences
+    extends BaseReferences<_$AppDatabase, $SessionsTable, SessionRow> {
+  $$SessionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RoutinesTable _routineIdTable(_$AppDatabase db) => db.routines
+      .createAlias($_aliasNameGenerator(db.sessions.routineId, db.routines.id));
+
+  $$RoutinesTableProcessedTableManager get routineId {
+    final $_column = $_itemColumn<String>('routine_id')!;
+
+    final manager = $$RoutinesTableTableManager($_db, $_db.routines)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_routineIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$TaskProgressTable, List<TaskProgressRow>>
+      _taskProgressRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.taskProgress,
+          aliasName:
+              $_aliasNameGenerator(db.sessions.id, db.taskProgress.sessionId));
+
+  $$TaskProgressTableProcessedTableManager get taskProgressRefs {
+    final manager = $$TaskProgressTableTableManager($_db, $_db.taskProgress)
+        .filter((f) => f.sessionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taskProgressRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$SnapshotsTable, List<SnapshotRow>>
+      _snapshotsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.snapshots,
+              aliasName:
+                  $_aliasNameGenerator(db.sessions.id, db.snapshots.sessionId));
+
+  $$SnapshotsTableProcessedTableManager get snapshotsRefs {
+    final manager = $$SnapshotsTableTableManager($_db, $_db.snapshots)
+        .filter((f) => f.sessionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_snapshotsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$SessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+      column: $table.endedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get snapshotRef => $composableBuilder(
+      column: $table.snapshotRef, builder: (column) => ColumnFilters(column));
+
+  $$RoutinesTableFilterComposer get routineId {
+    final $$RoutinesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableFilterComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> taskProgressRefs(
+      Expression<bool> Function($$TaskProgressTableFilterComposer f) f) {
+    final $$TaskProgressTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.taskProgress,
+        getReferencedColumn: (t) => t.sessionId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TaskProgressTableFilterComposer(
+              $db: $db,
+              $table: $db.taskProgress,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> snapshotsRefs(
+      Expression<bool> Function($$SnapshotsTableFilterComposer f) f) {
+    final $$SnapshotsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.snapshots,
+        getReferencedColumn: (t) => t.sessionId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SnapshotsTableFilterComposer(
+              $db: $db,
+              $table: $db.snapshots,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$SessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+      column: $table.endedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get snapshotRef => $composableBuilder(
+      column: $table.snapshotRef, builder: (column) => ColumnOrderings(column));
+
+  $$RoutinesTableOrderingComposer get routineId {
+    final $$RoutinesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableOrderingComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get snapshotRef => $composableBuilder(
+      column: $table.snapshotRef, builder: (column) => column);
+
+  $$RoutinesTableAnnotationComposer get routineId {
+    final $$RoutinesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.routineId,
+        referencedTable: $db.routines,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RoutinesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.routines,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> taskProgressRefs<T extends Object>(
+      Expression<T> Function($$TaskProgressTableAnnotationComposer a) f) {
+    final $$TaskProgressTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.taskProgress,
+        getReferencedColumn: (t) => t.sessionId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TaskProgressTableAnnotationComposer(
+              $db: $db,
+              $table: $db.taskProgress,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> snapshotsRefs<T extends Object>(
+      Expression<T> Function($$SnapshotsTableAnnotationComposer a) f) {
+    final $$SnapshotsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.snapshots,
+        getReferencedColumn: (t) => t.sessionId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SnapshotsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.snapshots,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$SessionsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $SessionsTable,
     SessionRow,
     $$SessionsTableFilterComposer,
     $$SessionsTableOrderingComposer,
-    $$SessionsTableProcessedTableManager,
-    $$SessionsTableInsertCompanionBuilder,
-    $$SessionsTableUpdateCompanionBuilder> {
+    $$SessionsTableAnnotationComposer,
+    $$SessionsTableCreateCompanionBuilder,
+    $$SessionsTableUpdateCompanionBuilder,
+    (SessionRow, $$SessionsTableReferences),
+    SessionRow,
+    PrefetchHooks Function(
+        {bool routineId, bool taskProgressRefs, bool snapshotsRefs})> {
   $$SessionsTableTableManager(_$AppDatabase db, $SessionsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SessionsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SessionsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$SessionsTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$SessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> routineId = const Value.absent(),
             Value<DateTime> startedAt = const Value.absent(),
@@ -3407,7 +4273,7 @@ class $$SessionsTableTableManager extends RootTableManager<
             snapshotRef: snapshotRef,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String routineId,
             Value<DateTime> startedAt = const Value.absent(),
@@ -3425,130 +4291,95 @@ class $$SessionsTableTableManager extends RootTableManager<
             snapshotRef: snapshotRef,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$SessionsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {routineId = false,
+              taskProgressRefs = false,
+              snapshotsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (taskProgressRefs) db.taskProgress,
+                if (snapshotsRefs) db.snapshots
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (routineId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.routineId,
+                    referencedTable:
+                        $$SessionsTableReferences._routineIdTable(db),
+                    referencedColumn:
+                        $$SessionsTableReferences._routineIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (taskProgressRefs)
+                    await $_getPrefetchedData<SessionRow, $SessionsTable,
+                            TaskProgressRow>(
+                        currentTable: table,
+                        referencedTable: $$SessionsTableReferences
+                            ._taskProgressRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SessionsTableReferences(db, table, p0)
+                                .taskProgressRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.sessionId == item.id),
+                        typedResults: items),
+                  if (snapshotsRefs)
+                    await $_getPrefetchedData<SessionRow, $SessionsTable,
+                            SnapshotRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$SessionsTableReferences._snapshotsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SessionsTableReferences(db, table, p0)
+                                .snapshotsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.sessionId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$SessionsTableProcessedTableManager extends ProcessedTableManager<
+typedef $$SessionsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $SessionsTable,
     SessionRow,
     $$SessionsTableFilterComposer,
     $$SessionsTableOrderingComposer,
-    $$SessionsTableProcessedTableManager,
-    $$SessionsTableInsertCompanionBuilder,
-    $$SessionsTableUpdateCompanionBuilder> {
-  $$SessionsTableProcessedTableManager(super.$state);
-}
-
-class $$SessionsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $SessionsTable> {
-  $$SessionsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get startedAt => $state.composableBuilder(
-      column: $state.table.startedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get endedAt => $state.composableBuilder(
-      column: $state.table.endedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get snapshotRef => $state.composableBuilder(
-      column: $state.table.snapshotRef,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$RoutinesTableFilterComposer get routineId {
-    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableFilterComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter taskProgressRefs(
-      ComposableFilter Function($$TaskProgressTableFilterComposer f) f) {
-    final $$TaskProgressTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.taskProgress,
-        getReferencedColumn: (t) => t.sessionId,
-        builder: (joinBuilder, parentComposers) =>
-            $$TaskProgressTableFilterComposer(ComposerState($state.db,
-                $state.db.taskProgress, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter snapshotsRefs(
-      ComposableFilter Function($$SnapshotsTableFilterComposer f) f) {
-    final $$SnapshotsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.snapshots,
-        getReferencedColumn: (t) => t.sessionId,
-        builder: (joinBuilder, parentComposers) =>
-            $$SnapshotsTableFilterComposer(ComposerState(
-                $state.db, $state.db.snapshots, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$SessionsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $SessionsTable> {
-  $$SessionsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get startedAt => $state.composableBuilder(
-      column: $state.table.startedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get endedAt => $state.composableBuilder(
-      column: $state.table.endedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get snapshotRef => $state.composableBuilder(
-      column: $state.table.snapshotRef,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$RoutinesTableOrderingComposer get routineId {
-    final $$RoutinesTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableOrderingComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$TaskProgressTableInsertCompanionBuilder = TaskProgressCompanion
+    $$SessionsTableAnnotationComposer,
+    $$SessionsTableCreateCompanionBuilder,
+    $$SessionsTableUpdateCompanionBuilder,
+    (SessionRow, $$SessionsTableReferences),
+    SessionRow,
+    PrefetchHooks Function(
+        {bool routineId, bool taskProgressRefs, bool snapshotsRefs})>;
+typedef $$TaskProgressTableCreateCompanionBuilder = TaskProgressCompanion
     Function({
   required String id,
   required String sessionId,
@@ -3573,26 +4404,268 @@ typedef $$TaskProgressTableUpdateCompanionBuilder = TaskProgressCompanion
   Value<int> rowid,
 });
 
+final class $$TaskProgressTableReferences
+    extends BaseReferences<_$AppDatabase, $TaskProgressTable, TaskProgressRow> {
+  $$TaskProgressTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $SessionsTable _sessionIdTable(_$AppDatabase db) =>
+      db.sessions.createAlias(
+          $_aliasNameGenerator(db.taskProgress.sessionId, db.sessions.id));
+
+  $$SessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<String>('session_id')!;
+
+    final manager = $$SessionsTableTableManager($_db, $_db.sessions)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $TasksTable _taskIdTable(_$AppDatabase db) => db.tasks
+      .createAlias($_aliasNameGenerator(db.taskProgress.taskId, db.tasks.id));
+
+  $$TasksTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TasksTableTableManager($_db, $_db.tasks)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TaskProgressTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskProgressTable> {
+  $$TaskProgressTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get remainingReps => $composableBuilder(
+      column: $table.remainingReps, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get elapsedMs => $composableBuilder(
+      column: $table.elapsedMs, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get wordIndex => $composableBuilder(
+      column: $table.wordIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get verseIndex => $composableBuilder(
+      column: $table.verseIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => ColumnFilters(column));
+
+  $$SessionsTableFilterComposer get sessionId {
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableFilterComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TasksTableFilterComposer get taskId {
+    final $$TasksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.taskId,
+        referencedTable: $db.tasks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TasksTableFilterComposer(
+              $db: $db,
+              $table: $db.tasks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TaskProgressTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskProgressTable> {
+  $$TaskProgressTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get remainingReps => $composableBuilder(
+      column: $table.remainingReps,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get elapsedMs => $composableBuilder(
+      column: $table.elapsedMs, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get wordIndex => $composableBuilder(
+      column: $table.wordIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get verseIndex => $composableBuilder(
+      column: $table.verseIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => ColumnOrderings(column));
+
+  $$SessionsTableOrderingComposer get sessionId {
+    final $$SessionsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableOrderingComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TasksTableOrderingComposer get taskId {
+    final $$TasksTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.taskId,
+        referencedTable: $db.tasks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TasksTableOrderingComposer(
+              $db: $db,
+              $table: $db.tasks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TaskProgressTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskProgressTable> {
+  $$TaskProgressTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get remainingReps => $composableBuilder(
+      column: $table.remainingReps, builder: (column) => column);
+
+  GeneratedColumn<int> get elapsedMs =>
+      $composableBuilder(column: $table.elapsedMs, builder: (column) => column);
+
+  GeneratedColumn<int> get wordIndex =>
+      $composableBuilder(column: $table.wordIndex, builder: (column) => column);
+
+  GeneratedColumn<int> get verseIndex => $composableBuilder(
+      column: $table.verseIndex, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => column);
+
+  $$SessionsTableAnnotationComposer get sessionId {
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TasksTableAnnotationComposer get taskId {
+    final $$TasksTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.taskId,
+        referencedTable: $db.tasks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TasksTableAnnotationComposer(
+              $db: $db,
+              $table: $db.tasks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$TaskProgressTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TaskProgressTable,
     TaskProgressRow,
     $$TaskProgressTableFilterComposer,
     $$TaskProgressTableOrderingComposer,
-    $$TaskProgressTableProcessedTableManager,
-    $$TaskProgressTableInsertCompanionBuilder,
-    $$TaskProgressTableUpdateCompanionBuilder> {
+    $$TaskProgressTableAnnotationComposer,
+    $$TaskProgressTableCreateCompanionBuilder,
+    $$TaskProgressTableUpdateCompanionBuilder,
+    (TaskProgressRow, $$TaskProgressTableReferences),
+    TaskProgressRow,
+    PrefetchHooks Function({bool sessionId, bool taskId})> {
   $$TaskProgressTableTableManager(_$AppDatabase db, $TaskProgressTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TaskProgressTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TaskProgressTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$TaskProgressTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$TaskProgressTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaskProgressTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaskProgressTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> sessionId = const Value.absent(),
             Value<String> taskId = const Value.absent(),
@@ -3614,7 +4687,7 @@ class $$TaskProgressTableTableManager extends RootTableManager<
             lastUpdate: lastUpdate,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String sessionId,
             required String taskId,
@@ -3636,138 +4709,73 @@ class $$TaskProgressTableTableManager extends RootTableManager<
             lastUpdate: lastUpdate,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$TaskProgressTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false, taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (sessionId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.sessionId,
+                    referencedTable:
+                        $$TaskProgressTableReferences._sessionIdTable(db),
+                    referencedColumn:
+                        $$TaskProgressTableReferences._sessionIdTable(db).id,
+                  ) as T;
+                }
+                if (taskId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.taskId,
+                    referencedTable:
+                        $$TaskProgressTableReferences._taskIdTable(db),
+                    referencedColumn:
+                        $$TaskProgressTableReferences._taskIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$TaskProgressTableProcessedTableManager extends ProcessedTableManager<
+typedef $$TaskProgressTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $TaskProgressTable,
     TaskProgressRow,
     $$TaskProgressTableFilterComposer,
     $$TaskProgressTableOrderingComposer,
-    $$TaskProgressTableProcessedTableManager,
-    $$TaskProgressTableInsertCompanionBuilder,
-    $$TaskProgressTableUpdateCompanionBuilder> {
-  $$TaskProgressTableProcessedTableManager(super.$state);
-}
-
-class $$TaskProgressTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $TaskProgressTable> {
-  $$TaskProgressTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get remainingReps => $state.composableBuilder(
-      column: $state.table.remainingReps,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get elapsedMs => $state.composableBuilder(
-      column: $state.table.elapsedMs,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get wordIndex => $state.composableBuilder(
-      column: $state.table.wordIndex,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get verseIndex => $state.composableBuilder(
-      column: $state.table.verseIndex,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get lastUpdate => $state.composableBuilder(
-      column: $state.table.lastUpdate,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$SessionsTableFilterComposer get sessionId {
-    final $$SessionsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.sessionId,
-        referencedTable: $state.db.sessions,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SessionsTableFilterComposer(ComposerState(
-                $state.db, $state.db.sessions, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$TasksTableFilterComposer get taskId {
-    final $$TasksTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.taskId,
-        referencedTable: $state.db.tasks,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$TasksTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.tasks, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$TaskProgressTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $TaskProgressTable> {
-  $$TaskProgressTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get remainingReps => $state.composableBuilder(
-      column: $state.table.remainingReps,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get elapsedMs => $state.composableBuilder(
-      column: $state.table.elapsedMs,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get wordIndex => $state.composableBuilder(
-      column: $state.table.wordIndex,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get verseIndex => $state.composableBuilder(
-      column: $state.table.verseIndex,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get lastUpdate => $state.composableBuilder(
-      column: $state.table.lastUpdate,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$SessionsTableOrderingComposer get sessionId {
-    final $$SessionsTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.sessionId,
-        referencedTable: $state.db.sessions,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SessionsTableOrderingComposer(ComposerState(
-                $state.db, $state.db.sessions, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$TasksTableOrderingComposer get taskId {
-    final $$TasksTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.taskId,
-        referencedTable: $state.db.tasks,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$TasksTableOrderingComposer(
-            ComposerState(
-                $state.db, $state.db.tasks, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$SnapshotsTableInsertCompanionBuilder = SnapshotsCompanion Function({
+    $$TaskProgressTableAnnotationComposer,
+    $$TaskProgressTableCreateCompanionBuilder,
+    $$TaskProgressTableUpdateCompanionBuilder,
+    (TaskProgressRow, $$TaskProgressTableReferences),
+    TaskProgressRow,
+    PrefetchHooks Function({bool sessionId, bool taskId})>;
+typedef $$SnapshotsTableCreateCompanionBuilder = SnapshotsCompanion Function({
   required String id,
   required String sessionId,
   required String payload,
@@ -3782,26 +4790,166 @@ typedef $$SnapshotsTableUpdateCompanionBuilder = SnapshotsCompanion Function({
   Value<int> rowid,
 });
 
+final class $$SnapshotsTableReferences
+    extends BaseReferences<_$AppDatabase, $SnapshotsTable, SnapshotRow> {
+  $$SnapshotsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $SessionsTable _sessionIdTable(_$AppDatabase db) =>
+      db.sessions.createAlias(
+          $_aliasNameGenerator(db.snapshots.sessionId, db.sessions.id));
+
+  $$SessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<String>('session_id')!;
+
+    final manager = $$SessionsTableTableManager($_db, $_db.sessions)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$SnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get payload => $composableBuilder(
+      column: $table.payload, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  $$SessionsTableFilterComposer get sessionId {
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableFilterComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+      column: $table.payload, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  $$SessionsTableOrderingComposer get sessionId {
+    final $$SessionsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableOrderingComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$SessionsTableAnnotationComposer get sessionId {
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.sessionId,
+        referencedTable: $db.sessions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SessionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.sessions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$SnapshotsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $SnapshotsTable,
     SnapshotRow,
     $$SnapshotsTableFilterComposer,
     $$SnapshotsTableOrderingComposer,
-    $$SnapshotsTableProcessedTableManager,
-    $$SnapshotsTableInsertCompanionBuilder,
-    $$SnapshotsTableUpdateCompanionBuilder> {
+    $$SnapshotsTableAnnotationComposer,
+    $$SnapshotsTableCreateCompanionBuilder,
+    $$SnapshotsTableUpdateCompanionBuilder,
+    (SnapshotRow, $$SnapshotsTableReferences),
+    SnapshotRow,
+    PrefetchHooks Function({bool sessionId})> {
   $$SnapshotsTableTableManager(_$AppDatabase db, $SnapshotsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SnapshotsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SnapshotsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$SnapshotsTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$SnapshotsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SnapshotsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SnapshotsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> sessionId = const Value.absent(),
             Value<String> payload = const Value.absent(),
@@ -3815,7 +4963,7 @@ class $$SnapshotsTableTableManager extends RootTableManager<
             createdAt: createdAt,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             required String sessionId,
             required String payload,
@@ -3829,84 +4977,63 @@ class $$SnapshotsTableTableManager extends RootTableManager<
             createdAt: createdAt,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$SnapshotsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (sessionId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.sessionId,
+                    referencedTable:
+                        $$SnapshotsTableReferences._sessionIdTable(db),
+                    referencedColumn:
+                        $$SnapshotsTableReferences._sessionIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$SnapshotsTableProcessedTableManager extends ProcessedTableManager<
+typedef $$SnapshotsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $SnapshotsTable,
     SnapshotRow,
     $$SnapshotsTableFilterComposer,
     $$SnapshotsTableOrderingComposer,
-    $$SnapshotsTableProcessedTableManager,
-    $$SnapshotsTableInsertCompanionBuilder,
-    $$SnapshotsTableUpdateCompanionBuilder> {
-  $$SnapshotsTableProcessedTableManager(super.$state);
-}
-
-class $$SnapshotsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $SnapshotsTable> {
-  $$SnapshotsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get payload => $state.composableBuilder(
-      column: $state.table.payload,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$SessionsTableFilterComposer get sessionId {
-    final $$SessionsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.sessionId,
-        referencedTable: $state.db.sessions,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SessionsTableFilterComposer(ComposerState(
-                $state.db, $state.db.sessions, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$SnapshotsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $SnapshotsTable> {
-  $$SnapshotsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get payload => $state.composableBuilder(
-      column: $state.table.payload,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$SessionsTableOrderingComposer get sessionId {
-    final $$SessionsTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.sessionId,
-        referencedTable: $state.db.sessions,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SessionsTableOrderingComposer(ComposerState(
-                $state.db, $state.db.sessions, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$UserSettingsTableInsertCompanionBuilder = UserSettingsCompanion
+    $$SnapshotsTableAnnotationComposer,
+    $$SnapshotsTableCreateCompanionBuilder,
+    $$SnapshotsTableUpdateCompanionBuilder,
+    (SnapshotRow, $$SnapshotsTableReferences),
+    SnapshotRow,
+    PrefetchHooks Function({bool sessionId})>;
+typedef $$UserSettingsTableCreateCompanionBuilder = UserSettingsCompanion
     Function({
   required String id,
   Value<String?> userId,
@@ -3933,26 +5060,144 @@ typedef $$UserSettingsTableUpdateCompanionBuilder = UserSettingsCompanion
   Value<int> rowid,
 });
 
+class $$UserSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get language => $composableBuilder(
+      column: $table.language, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get rtlPref => $composableBuilder(
+      column: $table.rtlPref, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fontPrefs => $composableBuilder(
+      column: $table.fontPrefs, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ttsVoice => $composableBuilder(
+      column: $table.ttsVoice, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get speed => $composableBuilder(
+      column: $table.speed, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get haptics => $composableBuilder(
+      column: $table.haptics, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get notifications => $composableBuilder(
+      column: $table.notifications, builder: (column) => ColumnFilters(column));
+}
+
+class $$UserSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get language => $composableBuilder(
+      column: $table.language, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get rtlPref => $composableBuilder(
+      column: $table.rtlPref, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fontPrefs => $composableBuilder(
+      column: $table.fontPrefs, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ttsVoice => $composableBuilder(
+      column: $table.ttsVoice, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get speed => $composableBuilder(
+      column: $table.speed, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get haptics => $composableBuilder(
+      column: $table.haptics, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get notifications => $composableBuilder(
+      column: $table.notifications,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get language =>
+      $composableBuilder(column: $table.language, builder: (column) => column);
+
+  GeneratedColumn<bool> get rtlPref =>
+      $composableBuilder(column: $table.rtlPref, builder: (column) => column);
+
+  GeneratedColumn<String> get fontPrefs =>
+      $composableBuilder(column: $table.fontPrefs, builder: (column) => column);
+
+  GeneratedColumn<String> get ttsVoice =>
+      $composableBuilder(column: $table.ttsVoice, builder: (column) => column);
+
+  GeneratedColumn<double> get speed =>
+      $composableBuilder(column: $table.speed, builder: (column) => column);
+
+  GeneratedColumn<bool> get haptics =>
+      $composableBuilder(column: $table.haptics, builder: (column) => column);
+
+  GeneratedColumn<bool> get notifications => $composableBuilder(
+      column: $table.notifications, builder: (column) => column);
+}
+
 class $$UserSettingsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $UserSettingsTable,
     UserSettingsRow,
     $$UserSettingsTableFilterComposer,
     $$UserSettingsTableOrderingComposer,
-    $$UserSettingsTableProcessedTableManager,
-    $$UserSettingsTableInsertCompanionBuilder,
-    $$UserSettingsTableUpdateCompanionBuilder> {
+    $$UserSettingsTableAnnotationComposer,
+    $$UserSettingsTableCreateCompanionBuilder,
+    $$UserSettingsTableUpdateCompanionBuilder,
+    (
+      UserSettingsRow,
+      BaseReferences<_$AppDatabase, $UserSettingsTable, UserSettingsRow>
+    ),
+    UserSettingsRow,
+    PrefetchHooks Function()> {
   $$UserSettingsTableTableManager(_$AppDatabase db, $UserSettingsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$UserSettingsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$UserSettingsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$UserSettingsTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$UserSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String?> userId = const Value.absent(),
             Value<String> language = const Value.absent(),
@@ -3976,7 +5221,7 @@ class $$UserSettingsTableTableManager extends RootTableManager<
             notifications: notifications,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String id,
             Value<String?> userId = const Value.absent(),
             Value<String> language = const Value.absent(),
@@ -4000,122 +5245,32 @@ class $$UserSettingsTableTableManager extends RootTableManager<
             notifications: notifications,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$UserSettingsTableProcessedTableManager extends ProcessedTableManager<
+typedef $$UserSettingsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $UserSettingsTable,
     UserSettingsRow,
     $$UserSettingsTableFilterComposer,
     $$UserSettingsTableOrderingComposer,
-    $$UserSettingsTableProcessedTableManager,
-    $$UserSettingsTableInsertCompanionBuilder,
-    $$UserSettingsTableUpdateCompanionBuilder> {
-  $$UserSettingsTableProcessedTableManager(super.$state);
-}
+    $$UserSettingsTableAnnotationComposer,
+    $$UserSettingsTableCreateCompanionBuilder,
+    $$UserSettingsTableUpdateCompanionBuilder,
+    (
+      UserSettingsRow,
+      BaseReferences<_$AppDatabase, $UserSettingsTable, UserSettingsRow>
+    ),
+    UserSettingsRow,
+    PrefetchHooks Function()>;
 
-class $$UserSettingsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $UserSettingsTable> {
-  $$UserSettingsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get language => $state.composableBuilder(
-      column: $state.table.language,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get rtlPref => $state.composableBuilder(
-      column: $state.table.rtlPref,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get fontPrefs => $state.composableBuilder(
-      column: $state.table.fontPrefs,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get ttsVoice => $state.composableBuilder(
-      column: $state.table.ttsVoice,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get speed => $state.composableBuilder(
-      column: $state.table.speed,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get haptics => $state.composableBuilder(
-      column: $state.table.haptics,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get notifications => $state.composableBuilder(
-      column: $state.table.notifications,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$UserSettingsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $UserSettingsTable> {
-  $$UserSettingsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get language => $state.composableBuilder(
-      column: $state.table.language,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get rtlPref => $state.composableBuilder(
-      column: $state.table.rtlPref,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get fontPrefs => $state.composableBuilder(
-      column: $state.table.fontPrefs,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get ttsVoice => $state.composableBuilder(
-      column: $state.table.ttsVoice,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get speed => $state.composableBuilder(
-      column: $state.table.speed,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get haptics => $state.composableBuilder(
-      column: $state.table.haptics,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get notifications => $state.composableBuilder(
-      column: $state.table.notifications,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-class _$AppDatabaseManager {
+class $AppDatabaseManager {
   final _$AppDatabase _db;
-  _$AppDatabaseManager(this._db);
+  $AppDatabaseManager(this._db);
   $$ThemesTableTableManager get themes =>
       $$ThemesTableTableManager(_db, _db.themes);
   $$RoutinesTableTableManager get routines =>

@@ -10,14 +10,14 @@ class ResumeNotification extends ConsumerStatefulWidget {
   final Widget child;
   final Function(ResumeState)? onResume;
   final VoidCallback? onDismiss;
-  
+
   const ResumeNotification({
     super.key,
     required this.child,
     this.onResume,
     this.onDismiss,
   });
-  
+
   @override
   ConsumerState<ResumeNotification> createState() => _ResumeNotificationState();
 }
@@ -27,20 +27,20 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
-  
+
   bool _isShowing = false;
   Timer? _countdownTimer;
   int _remainingSeconds = 30;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<double>(
       begin: -1.0,
       end: 0.0,
@@ -48,7 +48,7 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
       parent: _animationController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -56,74 +56,74 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
       parent: _animationController,
       curve: Curves.easeIn,
     ));
-    
+
     // Configurer les callbacks
     _setupCallbacks();
-    
+
     // Vérifier s'il y a une session à reprendre au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForResume();
     });
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     _countdownTimer?.cancel();
     super.dispose();
   }
-  
+
   void _setupCallbacks() {
     final service = ref.read(autoResumeServiceProvider);
-    
+
     service.onSessionNeedsResume = () {
       if (mounted) {
         _showNotification();
       }
     };
-    
+
     service.onSessionResumed = (state) {
       if (mounted) {
         _hideNotification();
         widget.onResume?.call(state);
       }
     };
-    
+
     service.onSessionExpired = () {
       if (mounted) {
         _hideNotification();
       }
     };
   }
-  
+
   void _checkForResume() {
     final hasResume = ref.read(hasResumeAvailableProvider);
     if (hasResume) {
       _showNotification();
     }
   }
-  
+
   void _showNotification() async {
     if (_isShowing) return;
-    
+
     setState(() {
       _isShowing = true;
       _remainingSeconds = 30;
     });
-    
+
     // Haptic feedback
     await ref.hapticNotification();
-    
+
     // Animation d'entrée
     _animationController.forward();
-    
+
     // Démarrer le compte à rebours
     _startCountdown();
   }
-  
+
   void _hideNotification() {
     if (!_isShowing) return;
-    
+
     _animationController.reverse().then((_) {
       if (mounted) {
         setState(() {
@@ -131,10 +131,10 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
         });
       }
     });
-    
+
     _countdownTimer?.cancel();
   }
-  
+
   void _startCountdown() {
     _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -142,21 +142,21 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
         timer.cancel();
         return;
       }
-      
+
       setState(() {
         _remainingSeconds--;
       });
-      
+
       if (_remainingSeconds <= 0) {
         timer.cancel();
         _handleDismiss();
       }
     });
   }
-  
+
   Future<void> _handleResume() async {
     final success = await ref.resumePendingSession();
-    
+
     if (success) {
       final resumeState = ref.read(pendingResumeProvider);
       if (resumeState != null) {
@@ -165,22 +165,21 @@ class _ResumeNotificationState extends ConsumerState<ResumeNotification>
       _hideNotification();
     }
   }
-  
+
   void _handleDismiss() async {
     await ref.abandonAutoResumeSession();
     widget.onDismiss?.call();
     _hideNotification();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final resumeState = ref.watch(pendingResumeProvider);
-    
+
     return Stack(
       children: [
         widget.child,
-        
         if (_isShowing && resumeState != null)
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
@@ -215,18 +214,18 @@ class _ResumeCard extends StatelessWidget {
   final int remainingSeconds;
   final VoidCallback onResume;
   final VoidCallback onDismiss;
-  
+
   const _ResumeCard({
     required this.resumeState,
     required this.remainingSeconds,
     required this.onResume,
     required this.onDismiss,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 8,
       color: theme.cardColor,
@@ -269,7 +268,8 @@ class _ResumeCard extends StatelessWidget {
                       Text(
                         'Reprendre là où vous vous êtes arrêté',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -277,9 +277,9 @@ class _ResumeCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Informations de la session
             Container(
               padding: const EdgeInsets.all(12),
@@ -296,7 +296,8 @@ class _ResumeCard extends StatelessWidget {
                       Text(
                         'Type',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withOpacity(0.7),
                         ),
                       ),
                       Text(
@@ -313,7 +314,8 @@ class _ResumeCard extends StatelessWidget {
                       Text(
                         'Progrès',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withOpacity(0.7),
                         ),
                       ),
                       Text(
@@ -331,7 +333,8 @@ class _ResumeCard extends StatelessWidget {
                       Text(
                         'Il y a',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withOpacity(0.7),
                         ),
                       ),
                       Text(
@@ -345,9 +348,9 @@ class _ResumeCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Barre de progression du compte à rebours
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -356,15 +359,13 @@ class _ResumeCard extends StatelessWidget {
                 minHeight: 4,
                 backgroundColor: theme.dividerColor.withOpacity(0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  remainingSeconds > 10 
-                      ? theme.primaryColor 
-                      : Colors.orange,
+                  remainingSeconds > 10 ? theme.primaryColor : Colors.orange,
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Actions
             Row(
               children: [
@@ -380,7 +381,8 @@ class _ResumeCard extends StatelessWidget {
                   child: Text(
                     'Ignorer',
                     style: TextStyle(
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      color:
+                          theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     ),
                   ),
                 ),
@@ -403,7 +405,7 @@ class _ResumeCard extends StatelessWidget {
       ),
     );
   }
-  
+
   String _getSessionTypeLabel(String type) {
     switch (type) {
       case 'prayer':
@@ -416,7 +418,7 @@ class _ResumeCard extends StatelessWidget {
         return 'Session';
     }
   }
-  
+
   String _formatAge(Duration age) {
     if (age.inMinutes < 1) {
       return 'quelques secondes';

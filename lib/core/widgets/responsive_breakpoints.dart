@@ -13,21 +13,17 @@ class Breakpoints {
 }
 
 /// Screen type classification for responsive layouts
-enum ScreenType { 
-  mobile, 
-  tablet, 
-  desktop 
-}
+enum ScreenType { mobile, tablet, desktop }
 
 /// Main responsive builder widget that adapts layout based on screen size
 class ResponsiveBuilder extends StatelessWidget {
   final Widget Function(BuildContext, BoxConstraints, ScreenType) builder;
-  
+
   const ResponsiveBuilder({
     super.key,
     required this.builder,
   });
-  
+
   /// Get the current screen type based on width
   static ScreenType getScreenType(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -35,7 +31,7 @@ class ResponsiveBuilder extends StatelessWidget {
     if (width < Breakpoints.lg) return ScreenType.tablet;
     return ScreenType.desktop;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -51,22 +47,22 @@ class ResponsiveBuilder extends StatelessWidget {
 extension ResponsiveContext on BuildContext {
   /// Get the current screen type
   ScreenType get screenType => ResponsiveBuilder.getScreenType(this);
-  
+
   /// Check if current screen is mobile
   bool get isMobile => screenType == ScreenType.mobile;
-  
+
   /// Check if current screen is tablet
   bool get isTablet => screenType == ScreenType.tablet;
-  
+
   /// Check if current screen is desktop
   bool get isDesktop => screenType == ScreenType.desktop;
-  
+
   /// Check if running on web platform
   bool get isWeb => kIsWeb;
-  
+
   /// Check if running on macOS platform
   bool get isMacOS => !kIsWeb && Platform.isMacOS;
-  
+
   /// Get responsive value based on screen type
   T responsive<T>({
     required T mobile,
@@ -82,7 +78,7 @@ extension ResponsiveContext on BuildContext {
         return desktop ?? tablet ?? mobile;
     }
   }
-  
+
   /// Get responsive padding based on screen type
   EdgeInsets get responsivePadding {
     return responsive(
@@ -91,7 +87,7 @@ extension ResponsiveContext on BuildContext {
       desktop: const EdgeInsets.all(24.0),
     );
   }
-  
+
   /// Get responsive grid columns based on screen type
   int get responsiveColumns {
     return responsive(
@@ -108,7 +104,7 @@ class ResponsiveVisibility extends StatelessWidget {
   final bool hiddenOnMobile;
   final bool hiddenOnTablet;
   final bool hiddenOnDesktop;
-  
+
   const ResponsiveVisibility({
     super.key,
     required this.child,
@@ -116,11 +112,11 @@ class ResponsiveVisibility extends StatelessWidget {
     this.hiddenOnTablet = false,
     this.hiddenOnDesktop = false,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final screenType = context.screenType;
-    
+
     bool shouldHide = false;
     switch (screenType) {
       case ScreenType.mobile:
@@ -133,7 +129,7 @@ class ResponsiveVisibility extends StatelessWidget {
         shouldHide = hiddenOnDesktop;
         break;
     }
-    
+
     return Visibility(
       visible: !shouldHide,
       child: child,
@@ -147,7 +143,7 @@ class ResponsiveContainer extends StatelessWidget {
   final double? maxWidth;
   final EdgeInsets? padding;
   final AlignmentGeometry alignment;
-  
+
   const ResponsiveContainer({
     super.key,
     required this.child,
@@ -155,16 +151,18 @@ class ResponsiveContainer extends StatelessWidget {
     this.padding,
     this.alignment = Alignment.topCenter,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final screenType = context.screenType;
-    
+
     // Default max widths based on screen type
-    final defaultMaxWidth = screenType == ScreenType.mobile ? double.infinity
-        : screenType == ScreenType.tablet ? 768.0
-        : 1200.0;
-    
+    final defaultMaxWidth = screenType == ScreenType.mobile
+        ? double.infinity
+        : screenType == ScreenType.tablet
+            ? 768.0
+            : 1200.0;
+
     return Align(
       alignment: alignment,
       child: Container(
@@ -186,7 +184,7 @@ class ResponsiveGrid extends StatelessWidget {
   final int? mobileColumns;
   final int? tabletColumns;
   final int? desktopColumns;
-  
+
   const ResponsiveGrid({
     super.key,
     required this.children,
@@ -196,7 +194,7 @@ class ResponsiveGrid extends StatelessWidget {
     this.tabletColumns,
     this.desktopColumns,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final columns = context.responsive(
@@ -204,7 +202,7 @@ class ResponsiveGrid extends StatelessWidget {
       tablet: tabletColumns ?? 2,
       desktop: desktopColumns ?? 3,
     );
-    
+
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

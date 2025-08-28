@@ -4,17 +4,17 @@ import '../../../core/services/analytics_service.dart';
 /// Card pour afficher le streak
 class StreakCard extends StatelessWidget {
   final StreakData streak;
-  
+
   const StreakCard({
     super.key,
     required this.streak,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasStreak = streak.currentStreak > 0;
-    
+
     return Card(
       elevation: 4,
       color: hasStreak ? Colors.orange.withOpacity(0.1) : null,
@@ -27,19 +27,21 @@ class StreakCard extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: hasStreak 
+                color: hasStreak
                     ? Colors.orange.withOpacity(0.2)
                     : Colors.grey.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                hasStreak ? Icons.local_fire_department : Icons.local_fire_department_outlined,
+                hasStreak
+                    ? Icons.local_fire_department
+                    : Icons.local_fire_department_outlined,
                 size: 32,
                 color: hasStreak ? Colors.orange : Colors.grey,
               ),
             ),
             const SizedBox(width: 16),
-            
+
             // Informations du streak
             Expanded(
               child: Column(
@@ -72,7 +74,8 @@ class StreakCard extends StatelessWidget {
                           Text(
                             'Record',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withOpacity(0.7),
                             ),
                           ),
                           Text(
@@ -85,7 +88,6 @@ class StreakCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
                   if (hasStreak) ...[
                     const SizedBox(height: 8),
                     // Barre de progression vers le prochain milestone
@@ -104,16 +106,16 @@ class StreakCard extends StatelessWidget {
 /// Barre de progression du streak
 class _StreakProgressBar extends StatelessWidget {
   final int currentStreak;
-  
+
   const _StreakProgressBar({required this.currentStreak});
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // Milestones de streak
     final milestones = [3, 7, 14, 30, 60, 90, 180, 365];
-    
+
     // Trouver le prochain milestone
     int? nextMilestone;
     for (final milestone in milestones) {
@@ -122,7 +124,7 @@ class _StreakProgressBar extends StatelessWidget {
         break;
       }
     }
-    
+
     if (nextMilestone == null) {
       // Streak déjà très élevé
       return Row(
@@ -143,10 +145,10 @@ class _StreakProgressBar extends StatelessWidget {
         ],
       );
     }
-    
+
     final progress = currentStreak / nextMilestone;
     final remaining = nextMilestone - currentStreak;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

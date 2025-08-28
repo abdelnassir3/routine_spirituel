@@ -4,7 +4,9 @@ import 'dart:io' as io; // ✅ pour File
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:spiritual_routines/core/persistence/isar_collections.dart';
+import 'package:spiritual_routines/core/persistence/isar_collections.dart'
+    if (dart.library.html) '../persistence/isar_web_stub.dart'
+    if (dart.library.io) '../persistence/isar_mobile_stub.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
 
 class CorpusImporter {

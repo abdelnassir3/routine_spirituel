@@ -2,13 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Clés de stockage
-const _kModeKey = 'diacritizer_mode';         // 'stub' | 'api'
+const _kModeKey = 'diacritizer_mode'; // 'stub' | 'api'
 const _kEndpointKey = 'diacritizer_endpoint'; // string URL
 // Cloud TTS
 const _kTtsCloudEnabled = 'tts_cloud_enabled'; // 'on' | 'off'
 const _kTtsCloudProvider = 'tts_cloud_provider'; // 'google' | 'azure' | 'polly'
 const _kTtsCloudApiKey = 'tts_cloud_api_key'; // secret
-const _kTtsCloudEndpoint = 'tts_cloud_endpoint'; // optional (azure region/endpoint)
+const _kTtsCloudEndpoint =
+    'tts_cloud_endpoint'; // optional (azure region/endpoint)
 // AWS Polly specific
 const _kTtsAwsAccessKey = 'tts_aws_access_key';
 const _kTtsAwsSecretKey = 'tts_aws_secret_key';
@@ -18,7 +19,8 @@ const _kTtsCloudVoiceFr = 'tts_cloud_voice_fr';
 const _kTtsCloudVoiceAr = 'tts_cloud_voice_ar';
 // Auto pre-cache
 const _kTtsAutoPrecache = 'tts_auto_precache';
-const _kTtsAutoPrecacheScope = 'tts_auto_precache_scope'; // 'fr' | 'ar' | 'both'
+const _kTtsAutoPrecacheScope =
+    'tts_auto_precache_scope'; // 'fr' | 'ar' | 'both'
 // UI theme
 const _kUiDarkMode = 'ui_dark_mode'; // 'on' | 'off'
 const _kUiPaletteId = 'ui_palette_id';
@@ -121,7 +123,8 @@ class UserSettingsService {
   }
 
   // -------- AWS Polly creds ----------
-  Future<String?> getAwsAccessKey() async => await _storage.read(key: _kTtsAwsAccessKey);
+  Future<String?> getAwsAccessKey() async =>
+      await _storage.read(key: _kTtsAwsAccessKey);
   Future<void> setAwsAccessKey(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsAwsAccessKey);
@@ -129,7 +132,9 @@ class UserSettingsService {
       await _storage.write(key: _kTtsAwsAccessKey, value: v);
     }
   }
-  Future<String?> getAwsSecretKey() async => await _storage.read(key: _kTtsAwsSecretKey);
+
+  Future<String?> getAwsSecretKey() async =>
+      await _storage.read(key: _kTtsAwsSecretKey);
   Future<void> setAwsSecretKey(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsAwsSecretKey);
@@ -137,7 +142,9 @@ class UserSettingsService {
       await _storage.write(key: _kTtsAwsSecretKey, value: v);
     }
   }
-  Future<String?> getAwsRegion() async => await _storage.read(key: _kTtsAwsRegion);
+
+  Future<String?> getAwsRegion() async =>
+      await _storage.read(key: _kTtsAwsRegion);
   Future<void> setAwsRegion(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsAwsRegion);
@@ -147,7 +154,8 @@ class UserSettingsService {
   }
 
   // -------- Cloud voice overrides ----------
-  Future<String?> getCloudVoiceFrName() async => await _storage.read(key: _kTtsCloudVoiceFr);
+  Future<String?> getCloudVoiceFrName() async =>
+      await _storage.read(key: _kTtsCloudVoiceFr);
   Future<void> setCloudVoiceFrName(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsCloudVoiceFr);
@@ -155,7 +163,9 @@ class UserSettingsService {
       await _storage.write(key: _kTtsCloudVoiceFr, value: v);
     }
   }
-  Future<String?> getCloudVoiceArName() async => await _storage.read(key: _kTtsCloudVoiceAr);
+
+  Future<String?> getCloudVoiceArName() async =>
+      await _storage.read(key: _kTtsCloudVoiceAr);
   Future<void> setCloudVoiceArName(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsCloudVoiceAr);
@@ -165,8 +175,10 @@ class UserSettingsService {
   }
 
   // -------- Auto pre-cache toggle ----------
-  Future<bool> getAutoPrecacheEnabled() async => (await _storage.read(key: _kTtsAutoPrecache)) == 'on';
-  Future<void> setAutoPrecacheEnabled(bool v) async => _storage.write(key: _kTtsAutoPrecache, value: v ? 'on' : 'off');
+  Future<bool> getAutoPrecacheEnabled() async =>
+      (await _storage.read(key: _kTtsAutoPrecache)) == 'on';
+  Future<void> setAutoPrecacheEnabled(bool v) async =>
+      _storage.write(key: _kTtsAutoPrecache, value: v ? 'on' : 'off');
 
   Future<String> getAutoPrecacheScope() async {
     return await _storage.read(key: _kTtsAutoPrecacheScope) ?? 'both';

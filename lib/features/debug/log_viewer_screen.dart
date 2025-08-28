@@ -6,7 +6,7 @@ import '../../core/services/secure_logging_service.dart';
 import '../../core/providers/logging_provider.dart';
 
 /// Écran de visualisation des logs (DEBUG ONLY)
-/// 
+///
 /// Permet de voir les logs en temps réel pendant le développement
 class LogViewerScreen extends ConsumerStatefulWidget {
   const LogViewerScreen({super.key});
@@ -20,33 +20,34 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
   String _searchQuery = '';
   final ScrollController _scrollController = ScrollController();
   bool _autoScroll = true;
-  
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   List<LogEntry> _getFilteredLogs() {
     var logs = ref.watch(recentLogsProvider);
-    
+
     // Filtrer par niveau
     if (_filterLevel != null) {
-      logs = logs.where((log) => log.level.index >= _filterLevel!.index).toList();
+      logs =
+          logs.where((log) => log.level.index >= _filterLevel!.index).toList();
     }
-    
+
     // Filtrer par recherche
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       logs = logs.where((log) {
         return log.message.toLowerCase().contains(query) ||
-               (log.data?.toString().toLowerCase().contains(query) ?? false);
+            (log.data?.toString().toLowerCase().contains(query) ?? false);
       }).toList();
     }
-    
+
     return logs;
   }
-  
+
   Color _getLogColor(LogLevel level) {
     switch (level) {
       case LogLevel.debug:
@@ -61,7 +62,7 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
         return Colors.red.shade900;
     }
   }
-  
+
   IconData _getLogIcon(LogLevel level) {
     switch (level) {
       case LogLevel.debug:
@@ -76,11 +77,11 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
         return Icons.dangerous;
     }
   }
-  
+
   void _copyLog(LogEntry log) {
     final json = const JsonEncoder.withIndent('  ').convert(log.toJson());
     Clipboard.setData(ClipboardData(text: json));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Log copié dans le presse-papiers'),
@@ -88,13 +89,14 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
       ),
     );
   }
-  
+
   void _clearLogs() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Effacer les logs ?'),
-        content: const Text('Cette action effacera tous les logs du buffer mémoire.'),
+        content: const Text(
+            'Cette action effacera tous les logs du buffer mémoire.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -113,11 +115,11 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
       ),
     );
   }
-  
+
   Future<void> _exportLogs() async {
     final logger = ref.read(loggingProvider);
     final file = await logger.exportLogs();
-    
+
     if (file != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -132,13 +134,13 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final logs = _getFilteredLogs();
     final analysis = ref.watch(logAnalysisProvider);
     final theme = Theme.of(context);
-    
+
     // Auto-scroll si activé
     if (_autoScroll && logs.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -151,7 +153,7 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
         }
       });
     }
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Logs (Debug)'),
@@ -163,7 +165,8 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                 _autoScroll = !_autoScroll;
               });
             },
-            tooltip: _autoScroll ? 'Auto-scroll activé' : 'Auto-scroll désactivé',
+            tooltip:
+                _autoScroll ? 'Auto-scroll activé' : 'Auto-scroll désactivé',
           ),
           IconButton(
             icon: const Icon(Icons.file_download),
@@ -191,15 +194,17 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                 const SizedBox(width: 8),
                 _buildStatChip('Info', analysis['info'] ?? 0, Colors.blue),
                 const SizedBox(width: 8),
-                _buildStatChip('Warning', analysis['warning'] ?? 0, Colors.orange),
+                _buildStatChip(
+                    'Warning', analysis['warning'] ?? 0, Colors.orange),
                 const SizedBox(width: 8),
                 _buildStatChip('Error', analysis['error'] ?? 0, Colors.red),
                 const SizedBox(width: 8),
-                _buildStatChip('Critical', analysis['critical'] ?? 0, Colors.red.shade900),
+                _buildStatChip(
+                    'Critical', analysis['critical'] ?? 0, Colors.red.shade900),
               ],
             ),
           ),
-          
+
           // Filtres
           Container(
             padding: const EdgeInsets.all(8),
@@ -212,15 +217,21 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                     decoration: const InputDecoration(
                       labelText: 'Niveau minimum',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     items: const [
                       DropdownMenuItem(value: null, child: Text('Tous')),
-                      DropdownMenuItem(value: LogLevel.debug, child: Text('Debug')),
-                      DropdownMenuItem(value: LogLevel.info, child: Text('Info')),
-                      DropdownMenuItem(value: LogLevel.warning, child: Text('Warning')),
-                      DropdownMenuItem(value: LogLevel.error, child: Text('Error')),
-                      DropdownMenuItem(value: LogLevel.critical, child: Text('Critical')),
+                      DropdownMenuItem(
+                          value: LogLevel.debug, child: Text('Debug')),
+                      DropdownMenuItem(
+                          value: LogLevel.info, child: Text('Info')),
+                      DropdownMenuItem(
+                          value: LogLevel.warning, child: Text('Warning')),
+                      DropdownMenuItem(
+                          value: LogLevel.error, child: Text('Error')),
+                      DropdownMenuItem(
+                          value: LogLevel.critical, child: Text('Critical')),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -229,9 +240,9 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                     },
                   ),
                 ),
-                
+
                 const SizedBox(width: 8),
-                
+
                 // Recherche
                 Expanded(
                   flex: 2,
@@ -240,7 +251,8 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                       labelText: 'Rechercher',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -252,9 +264,9 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
               ],
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Liste des logs
           Expanded(
             child: logs.isEmpty
@@ -267,12 +279,13 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                 : ListView.separated(
                     controller: _scrollController,
                     itemCount: logs.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final log = logs[index];
                       final color = _getLogColor(log.level);
                       final icon = _getLogIcon(log.level);
-                      
+
                       return ExpansionTile(
                         leading: Icon(icon, color: color, size: 20),
                         title: Text(
@@ -307,9 +320,10 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                                   log.message,
                                   style: const TextStyle(fontSize: 12),
                                 ),
-                                
+
                                 // Données
-                                if (log.data != null && log.data!.isNotEmpty) ...[
+                                if (log.data != null &&
+                                    log.data!.isNotEmpty) ...[
                                   const SizedBox(height: 8),
                                   const Text(
                                     'Data:',
@@ -335,7 +349,7 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                                     ),
                                   ),
                                 ],
-                                
+
                                 // Stack trace
                                 if (log.stackTrace != null) ...[
                                   const SizedBox(height: 8),
@@ -362,7 +376,7 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
                                     ),
                                   ),
                                 ],
-                                
+
                                 // Métadonnées
                                 const SizedBox(height: 8),
                                 Row(
@@ -401,7 +415,7 @@ class _LogViewerScreenState extends ConsumerState<LogViewerScreen> {
       ),
     );
   }
-  
+
   Widget _buildStatChip(String label, int count, Color color) {
     return Chip(
       label: Text(

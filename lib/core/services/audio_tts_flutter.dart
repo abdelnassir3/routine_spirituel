@@ -30,14 +30,15 @@ class FlutterTtsAudioService implements AudioTtsService {
     required String voice,
     double speed = 0.55,
     double pitch = 1.0,
-    bool allowFallback = false, // Paramètre ignoré car flutter_tts est déjà le fallback
+    bool allowFallback =
+        false, // Paramètre ignoré car flutter_tts est déjà le fallback
   }) async {
     try {
       // Détecter la langue pour les optimisations spécifiques
-      final isArabic = voice.toLowerCase().contains('ar-') || 
-                       voice.toLowerCase().contains('arabic');
-      final isFrench = voice.toLowerCase().contains('fr-') || 
-                       voice.toLowerCase().contains('french');
+      final isArabic = voice.toLowerCase().contains('ar-') ||
+          voice.toLowerCase().contains('arabic');
+      final isFrench = voice.toLowerCase().contains('fr-') ||
+          voice.toLowerCase().contains('french');
 
       // Prefer a concrete voice if available; otherwise fall back to language
       final selected = await _setBestVoiceOrLanguage(voice);
@@ -58,16 +59,20 @@ class FlutterTtsAudioService implements AudioTtsService {
       if (isArabic) {
         // Configuration optimisée pour l'arabe
         try {
-          await _tts.setPitch(pitch.clamp(0.9, 1.1)); // Pitch plus neutre pour l'arabe
+          await _tts.setPitch(
+              pitch.clamp(0.9, 1.1)); // Pitch plus neutre pour l'arabe
         } catch (_) {}
-        await _tts.setSpeechRate(speed.clamp(0.3, 0.7)); // Vitesse plus lente pour clarté
-        
+        await _tts.setSpeechRate(
+            speed.clamp(0.3, 0.7)); // Vitesse plus lente pour clarté
+
         // Tenter d'utiliser des moteurs TTS arabes spécialisés si disponibles
         try {
-          await _tts.setEngine('com.google.android.tts'); // Google TTS avec support arabe étendu
+          await _tts.setEngine(
+              'com.google.android.tts'); // Google TTS avec support arabe étendu
         } catch (_) {
           try {
-            await _tts.setEngine('com.samsung.android.tts'); // Samsung TTS (bon support arabe sur Galaxy)
+            await _tts.setEngine(
+                'com.samsung.android.tts'); // Samsung TTS (bon support arabe sur Galaxy)
           } catch (_) {}
         }
       } else if (isFrench) {
@@ -87,10 +92,11 @@ class FlutterTtsAudioService implements AudioTtsService {
       try {
         await _tts.setVolume(1.0);
       } catch (_) {}
-      
+
       // Logging pour debug
-      print('🔊 Flutter TTS: ${isArabic ? "Arabe" : isFrench ? "Français" : "Autre"} - Speed: $speed, Pitch: $pitch');
-      
+      print(
+          '🔊 Flutter TTS: ${isArabic ? "Arabe" : isFrench ? "Français" : "Autre"} - Speed: $speed, Pitch: $pitch');
+
       await _tts.speak(text);
       _startTicker();
     } catch (e) {

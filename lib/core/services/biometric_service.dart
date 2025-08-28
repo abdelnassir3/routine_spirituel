@@ -4,26 +4,26 @@ import 'package:local_auth/local_auth.dart';
 import 'secure_storage_service.dart';
 
 /// Service d'authentification biométrique
-/// 
+///
 /// Gère l'authentification par empreinte digitale, Face ID, et autres
 /// méthodes biométriques disponibles sur l'appareil
 class BiometricService {
   static BiometricService? _instance;
   final LocalAuthentication _localAuth = LocalAuthentication();
   final SecureStorageService _secureStorage = SecureStorageService.instance;
-  
+
   // Cache des capacités de l'appareil
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
-  
+
   // Singleton
   static BiometricService get instance {
     _instance ??= BiometricService._();
     return _instance!;
   }
-  
+
   BiometricService._();
-  
+
   /// Vérifier si l'appareil supporte la biométrie
   Future<bool> canCheckBiometrics() async {
     try {
@@ -36,7 +36,7 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Vérifier si l'appareil a des méthodes biométriques configurées
   Future<bool> isDeviceSupported() async {
     try {
@@ -48,7 +48,7 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Obtenir la liste des méthodes biométriques disponibles
   Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
@@ -61,28 +61,29 @@ class BiometricService {
       return [];
     }
   }
-  
+
   /// Vérifier si Face ID est disponible (iOS)
   Future<bool> hasFaceId() async {
     final biometrics = await getAvailableBiometrics();
     return biometrics.contains(BiometricType.face);
   }
-  
+
   /// Vérifier si Touch ID / Empreinte digitale est disponible
   Future<bool> hasFingerprint() async {
     final biometrics = await getAvailableBiometrics();
     return biometrics.contains(BiometricType.fingerprint);
   }
-  
+
   /// Vérifier si l'iris scan est disponible (certains Android)
   Future<bool> hasIris() async {
     final biometrics = await getAvailableBiometrics();
     return biometrics.contains(BiometricType.iris);
   }
-  
+
   /// Authentifier l'utilisateur avec la biométrie
   Future<BiometricAuthResult> authenticate({
-    String localizedReason = 'Veuillez vous authentifier pour accéder à l\'application',
+    String localizedReason =
+        'Veuillez vous authentifier pour accéder à l\'application',
     bool stickyAuth = true,
     bool biometricOnly = false,
   }) async {
@@ -96,7 +97,7 @@ class BiometricService {
           message: 'La biométrie n\'est pas disponible sur cet appareil',
         );
       }
-      
+
       // Vérifier si des méthodes sont configurées
       final biometrics = await getAvailableBiometrics();
       if (biometrics.isEmpty) {
@@ -106,7 +107,7 @@ class BiometricService {
           message: 'Aucune méthode biométrique configurée',
         );
       }
-      
+
       // Tenter l'authentification
       final isAuthenticated = await _localAuth.authenticate(
         localizedReason: localizedReason,
@@ -117,14 +118,14 @@ class BiometricService {
           sensitiveTransaction: true,
         ),
       );
-      
+
       if (isAuthenticated) {
         // Enregistrer le succès dans le stockage sécurisé
         await _secureStorage.write(
           key: 'last_biometric_auth',
           value: DateTime.now().toIso8601String(),
         );
-        
+
         return BiometricAuthResult(
           success: true,
           message: 'Authentification réussie',
@@ -140,11 +141,11 @@ class BiometricService {
       if (kDebugMode) {
         print('BiometricService: Authentication error: $e');
       }
-      
+
       // Analyser l'erreur pour donner un message approprié
       BiometricError errorType;
       String message;
-      
+
       switch (e.code) {
         case 'NotEnrolled':
           errorType = BiometricError.notEnrolled;
@@ -174,7 +175,7 @@ class BiometricService {
           errorType = BiometricError.unknown;
           message = 'Erreur d\'authentification: ${e.message}';
       }
-      
+
       return BiometricAuthResult(
         success: false,
         error: errorType,
@@ -182,7 +183,7 @@ class BiometricService {
       );
     }
   }
-  
+
   /// Arrêter l'authentification en cours
   Future<void> stopAuthentication() async {
     try {
@@ -193,24 +194,24 @@ class BiometricService {
       }
     }
   }
-  
+
   /// Activer la protection biométrique pour l'app
   Future<bool> enableBiometricProtection() async {
     try {
       // Vérifier que la biométrie est disponible
       final canUse = await canCheckBiometrics();
       if (!canUse) return false;
-      
+
       // Authentifier l'utilisateur d'abord
       final result = await authenticate(
         localizedReason: 'Confirmer l\'activation de la protection biométrique',
       );
-      
+
       if (result.success) {
         await _secureStorage.setBiometricEnabled(true);
         return true;
       }
-      
+
       return false;
     } catch (e) {
       if (kDebugMode) {
@@ -219,20 +220,21 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Désactiver la protection biométrique
   Future<bool> disableBiometricProtection() async {
     try {
       // Authentifier l'utilisateur d'abord
       final result = await authenticate(
-        localizedReason: 'Confirmer la désactivation de la protection biométrique',
+        localizedReason:
+            'Confirmer la désactivation de la protection biométrique',
       );
-      
+
       if (result.success) {
         await _secureStorage.setBiometricEnabled(false);
         return true;
       }
-      
+
       return false;
     } catch (e) {
       if (kDebugMode) {
@@ -241,16 +243,16 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Vérifier si la protection biométrique est activée
   Future<bool> isBiometricProtectionEnabled() async {
     return _secureStorage.isBiometricEnabled();
   }
-  
+
   /// Obtenir le type de biométrie principal disponible
   Future<String> getPrimaryBiometricType() async {
     final biometrics = await getAvailableBiometrics();
-    
+
     if (biometrics.contains(BiometricType.face)) {
       return 'Face ID';
     } else if (biometrics.contains(BiometricType.fingerprint)) {
@@ -262,10 +264,10 @@ class BiometricService {
     } else if (biometrics.contains(BiometricType.weak)) {
       return 'Biométrie faible';
     }
-    
+
     return 'Non disponible';
   }
-  
+
   /// Réinitialiser le cache
   void resetCache() {
     _canCheckBiometrics = null;
@@ -278,18 +280,19 @@ class BiometricAuthResult {
   final bool success;
   final BiometricError? error;
   final String message;
-  
+
   BiometricAuthResult({
     required this.success,
     this.error,
     required this.message,
   });
-  
+
   bool get isSuccess => success;
   bool get isFailure => !success;
   bool get isCanceled => error == BiometricError.userCanceled;
-  bool get isLocked => error == BiometricError.lockedOut || 
-                       error == BiometricError.permanentlyLockedOut;
+  bool get isLocked =>
+      error == BiometricError.lockedOut ||
+      error == BiometricError.permanentlyLockedOut;
 }
 
 /// Types d'erreurs biométriques

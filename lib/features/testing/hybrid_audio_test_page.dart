@@ -12,13 +12,14 @@ class HybridAudioTestPage extends ConsumerStatefulWidget {
   const HybridAudioTestPage({super.key});
 
   @override
-  ConsumerState<HybridAudioTestPage> createState() => _HybridAudioTestPageState();
+  ConsumerState<HybridAudioTestPage> createState() =>
+      _HybridAudioTestPageState();
 }
 
 class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
   String _logs = '';
   bool _isLoading = false;
-  
+
   final TextEditingController _textController = TextEditingController();
 
   @override
@@ -38,16 +39,16 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       _isLoading = true;
       _logs = '';
     });
-    
+
     _addLog('🧪 Test de connexion VPS Edge-TTS...');
-    
+
     try {
       final summary = await EdgeTtsVpsTest.runAllTestsAndGetSummary();
       _addLog(summary);
     } catch (e) {
       _addLog('❌ Erreur test VPS: $e');
     }
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -58,9 +59,9 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       _isLoading = true;
       _logs = '';
     });
-    
+
     _addLog('🧪 Test du système audio hybride...');
-    
+
     try {
       final ttsService = ref.read(smartTtsEnhancedProvider);
       await HybridAudioTest.runTests(ttsService);
@@ -68,7 +69,7 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
     } catch (e) {
       _addLog('❌ Erreur test hybride: $e');
     }
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -82,34 +83,34 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       _isLoading = true;
       _logs = '';
     });
-    
+
     _addLog('🎵 Test lecture: "$text"');
-    
+
     try {
       final ttsService = ref.read(smartTtsEnhancedProvider);
-      
+
       // Analyser le contenu
       final analysis = ttsService.analyzeContent(text);
       final preview = ttsService.previewContentType(text);
-      
+
       _addLog('📊 $preview');
       _addLog('🎯 Type: ${analysis.contentType}');
-      
+
       if (analysis.verses.isNotEmpty) {
         _addLog('📜 Versets: ${analysis.verses.length}');
       }
-      
-      _addLog('🌐 Langues: ${(analysis.languageRatio.arabic * 100).round()}% AR, ${(analysis.languageRatio.french * 100).round()}% FR');
-      
+
+      _addLog(
+          '🌐 Langues: ${(analysis.languageRatio.arabic * 100).round()}% AR, ${(analysis.languageRatio.french * 100).round()}% FR');
+
       // Tenter la lecture
       _addLog('▶️ Démarrage lecture...');
       await ttsService.playHighQuality(text);
       _addLog('✅ Lecture démarrée avec succès');
-      
     } catch (e) {
       _addLog('❌ Erreur lecture: $e');
     }
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -130,16 +131,16 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       _isLoading = true;
       _logs = '';
     });
-    
+
     _addLog('🔤 Test de diacritisation Farasa...');
-    
+
     try {
       await FarasaTest.runTests();
       _addLog('✅ Tests Farasa terminés');
     } catch (e) {
       _addLog('❌ Erreur test Farasa: $e');
     }
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -153,31 +154,33 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       _isLoading = true;
       _logs = '';
     });
-    
+
     _addLog('🔤 Test diacritisation: "$text"');
-    
+
     try {
       // Test de diacritisation
       final result = await FarasaDiacritizationService.diacritizeText(text);
       _addLog('📝 Original: $text');
       _addLog('✨ Diacritisé: $result');
-      
+
       // Vérifier si des harakat ont été ajoutés
-      final hasHarakat = RegExp(r'[\u064B-\u065F\u0670\u06D6-\u06ED]').hasMatch(result);
+      final hasHarakat =
+          RegExp(r'[\u064B-\u065F\u0670\u06D6-\u06ED]').hasMatch(result);
       if (hasHarakat) {
         _addLog('✅ Harakat détectés dans le résultat');
       } else {
-        _addLog('⚠️ Aucun harakat détecté (normal si texte déjà diacritisé ou API indisponible)');
+        _addLog(
+            '⚠️ Aucun harakat détecté (normal si texte déjà diacritisé ou API indisponible)');
       }
-      
+
       // Stats du cache
       final stats = FarasaDiacritizationService.getCacheStats();
-      _addLog('📊 Cache: ${stats['cacheSize']}/${stats['maxCacheSize']} (${stats['usagePercent']}%)');
-      
+      _addLog(
+          '📊 Cache: ${stats['cacheSize']}/${stats['maxCacheSize']} (${stats['usagePercent']}%)');
     } catch (e) {
       _addLog('❌ Erreur diacritisation: $e');
     }
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -217,7 +220,8 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Texte à tester',
-                        hintText: 'Entrez du texte français, arabe, ou avec marqueurs coraniques {{V:1:1}}',
+                        hintText:
+                            'Entrez du texte français, arabe, ou avec marqueurs coraniques {{V:1:1}}',
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -253,9 +257,9 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Boutons de test
             Row(
               children: [
@@ -293,9 +297,9 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Zone de logs
             Expanded(
               child: Card(

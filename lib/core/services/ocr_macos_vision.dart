@@ -27,9 +27,8 @@ class MacosVisionOcrService implements OcrService {
     final buffer = StringBuffer();
     for (int i = 1; i <= pageCount; i++) {
       final page = await doc.getPage(i);
-      final pageImage = await page.render(
-          width: page.width, 
-          height: page.height);
+      final pageImage =
+          await page.render(width: page.width, height: page.height);
       await page.close();
       if (pageImage == null) continue;
       final temp = await _writeTempPng(pageImage.bytes);

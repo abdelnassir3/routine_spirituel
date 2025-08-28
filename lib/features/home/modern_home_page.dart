@@ -357,7 +357,8 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                 if (screenType != ScreenType.mobile) {
                                   return GridView.count(
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     crossAxisCount: context.responsive(
                                       mobile: 2,
                                       tablet: 3,
@@ -402,7 +403,8 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                           title: 'Série',
                                           value: '7',
                                           subtitle: 'Jours',
-                                          icon: Icons.local_fire_department_rounded,
+                                          icon: Icons
+                                              .local_fire_department_rounded,
                                           color: ModernColors.categoryOrange,
                                           onTap: () {
                                             HapticFeedback.lightImpact();
@@ -921,7 +923,6 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
       },
     );
   }
-
 
   Future<void> _showRecoveryDialog(
       BuildContext context, WidgetRef ref, String sessionId) async {

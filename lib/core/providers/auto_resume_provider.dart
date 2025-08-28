@@ -4,15 +4,15 @@ import '../services/auto_resume_service.dart';
 /// Provider pour le service d'auto-resume
 final autoResumeServiceProvider = Provider<AutoResumeService>((ref) {
   final service = AutoResumeService.instance;
-  
+
   // Initialiser au démarrage
   service.initialize();
-  
+
   // Nettoyer à la destruction
   ref.onDispose(() {
     service.dispose();
   });
-  
+
   return service;
 });
 
@@ -41,9 +41,10 @@ final quickResumeEnabledProvider = FutureProvider<bool>((ref) async {
 });
 
 /// Notifier pour gérer les préférences d'auto-resume
-class AutoResumePreferencesNotifier extends StateNotifier<AutoResumePreferences> {
+class AutoResumePreferencesNotifier
+    extends StateNotifier<AutoResumePreferences> {
   final AutoResumeService _service;
-  
+
   AutoResumePreferencesNotifier(this._service)
       : super(AutoResumePreferences(
           enabled: true,
@@ -51,22 +52,22 @@ class AutoResumePreferencesNotifier extends StateNotifier<AutoResumePreferences>
         )) {
     _loadPreferences();
   }
-  
+
   Future<void> _loadPreferences() async {
     final enabled = await _service.isEnabled;
     final quickResumeEnabled = await _service.isQuickResumeEnabled;
-    
+
     state = AutoResumePreferences(
       enabled: enabled,
       quickResumeEnabled: quickResumeEnabled,
     );
   }
-  
+
   Future<void> setEnabled(bool enabled) async {
     await _service.setEnabled(enabled);
     state = state.copyWith(enabled: enabled);
   }
-  
+
   Future<void> setQuickResumeEnabled(bool enabled) async {
     await _service.setQuickResumeEnabled(enabled);
     state = state.copyWith(quickResumeEnabled: enabled);
@@ -77,12 +78,12 @@ class AutoResumePreferencesNotifier extends StateNotifier<AutoResumePreferences>
 class AutoResumePreferences {
   final bool enabled;
   final bool quickResumeEnabled;
-  
+
   const AutoResumePreferences({
     required this.enabled,
     required this.quickResumeEnabled,
   });
-  
+
   AutoResumePreferences copyWith({
     bool? enabled,
     bool? quickResumeEnabled,
@@ -95,8 +96,9 @@ class AutoResumePreferences {
 }
 
 /// Provider pour les préférences d'auto-resume
-final autoResumePreferencesProvider = 
-    StateNotifierProvider<AutoResumePreferencesNotifier, AutoResumePreferences>((ref) {
+final autoResumePreferencesProvider =
+    StateNotifierProvider<AutoResumePreferencesNotifier, AutoResumePreferences>(
+        (ref) {
   final service = ref.watch(autoResumeServiceProvider);
   return AutoResumePreferencesNotifier(service);
 });
@@ -104,9 +106,9 @@ final autoResumePreferencesProvider =
 /// Actions pour l'auto-resume
 class AutoResumeActions {
   final Ref _ref;
-  
+
   AutoResumeActions(this._ref);
-  
+
   /// Enregistrer une session pour auto-resume
   Future<void> registerSession({
     required String sessionId,
@@ -120,31 +122,31 @@ class AutoResumeActions {
       data: data,
     );
   }
-  
+
   /// Mettre à jour le progrès
   Future<void> updateProgress(int progress) async {
     final service = _ref.read(autoResumeServiceProvider);
     await service.updateProgress(progress);
   }
-  
+
   /// Reprendre une session
   Future<bool> resumeSession() async {
     final service = _ref.read(autoResumeServiceProvider);
     return await service.resumeSession();
   }
-  
+
   /// Terminer une session
   Future<void> completeSession() async {
     final service = _ref.read(autoResumeServiceProvider);
     await service.completeSession();
   }
-  
+
   /// Abandonner une session
   Future<void> abandonSession() async {
     final service = _ref.read(autoResumeServiceProvider);
     await service.abandonSession();
   }
-  
+
   /// Effacer l'état de reprise
   Future<void> clearResumeState() async {
     final service = _ref.read(autoResumeServiceProvider);
@@ -171,22 +173,22 @@ extension AutoResumeWidgetRef on WidgetRef {
       data: data,
     );
   }
-  
+
   /// Mettre à jour le progrès de la session
   Future<void> updateSessionProgress(int progress) async {
     await read(autoResumeActionsProvider).updateProgress(progress);
   }
-  
+
   /// Reprendre la session en attente
   Future<bool> resumePendingSession() async {
     return await read(autoResumeActionsProvider).resumeSession();
   }
-  
+
   /// Terminer la session active
   Future<void> completeAutoResumeSession() async {
     await read(autoResumeActionsProvider).completeSession();
   }
-  
+
   /// Abandonner la session
   Future<void> abandonAutoResumeSession() async {
     await read(autoResumeActionsProvider).abandonSession();

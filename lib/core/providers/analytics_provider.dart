@@ -4,16 +4,17 @@ import '../services/analytics_service.dart';
 /// Provider pour le service d'analytics
 final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
   final service = AnalyticsService.instance;
-  
+
   ref.onDispose(() {
     service.dispose();
   });
-  
+
   return service;
 });
 
 /// Provider pour les métriques quotidiennes
-final dailyMetricsProvider = FutureProvider.family<DailyMetrics, DateTime?>((ref, date) async {
+final dailyMetricsProvider =
+    FutureProvider.family<DailyMetrics, DateTime?>((ref, date) async {
   final service = ref.watch(analyticsServiceProvider);
   return await service.getDailyMetrics(date);
 });
@@ -59,7 +60,7 @@ final repetitionsChartProvider = FutureProvider<List<ChartData>>((ref) async {
   final service = ref.watch(analyticsServiceProvider);
   final endDate = DateTime.now();
   final startDate = endDate.subtract(const Duration(days: 6));
-  
+
   return await service.getRepetitionsChart(
     startDate: startDate,
     endDate: endDate,
@@ -71,7 +72,7 @@ final sessionsChartProvider = FutureProvider<List<ChartData>>((ref) async {
   final service = ref.watch(analyticsServiceProvider);
   final endDate = DateTime.now();
   final startDate = endDate.subtract(const Duration(days: 6));
-  
+
   return await service.getSessionsChart(
     startDate: startDate,
     endDate: endDate,
@@ -84,7 +85,7 @@ final monthlyChartProvider = FutureProvider<List<ChartData>>((ref) async {
   final now = DateTime.now();
   final startDate = DateTime(now.year, now.month, 1);
   final endDate = DateTime(now.year, now.month + 1, 0);
-  
+
   return await service.getRepetitionsChart(
     startDate: startDate,
     endDate: endDate,
@@ -92,7 +93,8 @@ final monthlyChartProvider = FutureProvider<List<ChartData>>((ref) async {
 });
 
 /// Provider pour la distribution des prières
-final prayerDistributionProvider = FutureProvider<Map<String, double>>((ref) async {
+final prayerDistributionProvider =
+    FutureProvider<Map<String, double>>((ref) async {
   final service = ref.watch(analyticsServiceProvider);
   return await service.getPrayerDistribution();
 });
@@ -100,9 +102,9 @@ final prayerDistributionProvider = FutureProvider<Map<String, double>>((ref) asy
 /// Actions pour l'analytics
 class AnalyticsActions {
   final Ref _ref;
-  
+
   AnalyticsActions(this._ref);
-  
+
   /// Tracker le début d'une session
   Future<void> trackSessionStart({
     required String sessionId,
@@ -118,7 +120,7 @@ class AnalyticsActions {
       metadata: metadata,
     );
   }
-  
+
   /// Tracker la fin d'une session
   Future<void> trackSessionComplete({
     required String sessionId,
@@ -133,14 +135,14 @@ class AnalyticsActions {
       repetitions: repetitions,
       completed: completed,
     );
-    
+
     // Invalider les providers affectés
     _ref.invalidate(todayMetricsProvider);
     _ref.invalidate(weeklyMetricsProvider);
     _ref.invalidate(monthlyMetricsProvider);
     _ref.invalidate(streakDataProvider);
   }
-  
+
   /// Tracker une répétition
   Future<void> trackRepetition({
     required String sessionId,
@@ -154,7 +156,7 @@ class AnalyticsActions {
       prayerName: prayerName,
     );
   }
-  
+
   /// Tracker un milestone
   Future<void> trackMilestone({
     required String type,
@@ -167,7 +169,7 @@ class AnalyticsActions {
       value: value,
       description: description,
     );
-    
+
     // Invalider les milestones
     _ref.invalidate(milestonesProvider);
   }
@@ -194,7 +196,7 @@ extension AnalyticsWidgetRef on WidgetRef {
       metadata: metadata,
     );
   }
-  
+
   /// Tracker la fin d'une session
   Future<void> trackSessionComplete({
     required String sessionId,
@@ -209,7 +211,7 @@ extension AnalyticsWidgetRef on WidgetRef {
       completed: completed,
     );
   }
-  
+
   /// Tracker une répétition
   Future<void> trackRepetition({
     required String sessionId,
@@ -222,7 +224,7 @@ extension AnalyticsWidgetRef on WidgetRef {
       prayerName: prayerName,
     );
   }
-  
+
   /// Tracker un milestone
   Future<void> trackMilestone({
     required String type,

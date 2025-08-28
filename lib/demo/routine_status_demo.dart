@@ -9,7 +9,7 @@ class RoutineStatusDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Démonstration des indicateurs de statut'),
@@ -29,7 +29,7 @@ class RoutineStatusDemo extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             Text(
               'Les indicateurs suivants montrent l\'état d\'accomplissement selon le calendrier défini:',
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -37,7 +37,7 @@ class RoutineStatusDemo extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Statut Completed (Accomplie)
             _buildStatusCard(
               context,
@@ -47,7 +47,7 @@ class RoutineStatusDemo extends StatelessWidget {
               'daily',
             ),
             const SizedBox(height: 16),
-            
+
             // Statut Pending (En attente)
             _buildStatusCard(
               context,
@@ -57,7 +57,7 @@ class RoutineStatusDemo extends StatelessWidget {
               'weekly',
             ),
             const SizedBox(height: 16),
-            
+
             // Statut Overdue (En retard)
             _buildStatusCard(
               context,
@@ -67,7 +67,7 @@ class RoutineStatusDemo extends StatelessWidget {
               'monthly',
             ),
             const SizedBox(height: 32),
-            
+
             // Légende
             Container(
               padding: const EdgeInsets.all(16),
@@ -90,11 +90,14 @@ class RoutineStatusDemo extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildLegendItem(context, Icons.check_circle_rounded, Colors.green, 'Accomplie selon la fréquence'),
+                  _buildLegendItem(context, Icons.check_circle_rounded,
+                      Colors.green, 'Accomplie selon la fréquence'),
                   const SizedBox(height: 8),
-                  _buildLegendItem(context, Icons.schedule_rounded, Colors.orange, 'En cours ou pas encore faite'),
+                  _buildLegendItem(context, Icons.schedule_rounded,
+                      Colors.orange, 'En cours ou pas encore faite'),
                   const SizedBox(height: 8),
-                  _buildLegendItem(context, Icons.warning_rounded, Colors.red, 'En retard selon la fréquence'),
+                  _buildLegendItem(context, Icons.warning_rounded, Colors.red,
+                      'En retard selon la fréquence'),
                 ],
               ),
             ),
@@ -103,7 +106,7 @@ class RoutineStatusDemo extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatusCard(
     BuildContext context,
     RoutineCompletionStatus status,
@@ -113,11 +116,11 @@ class RoutineStatusDemo extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     IconData iconData;
     Color backgroundColor;
     Color iconColor;
-    
+
     switch (status) {
       case RoutineCompletionStatus.completed:
         iconData = Icons.check_circle_rounded;
@@ -135,7 +138,7 @@ class RoutineStatusDemo extends StatelessWidget {
         iconColor = Colors.red;
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -192,9 +195,9 @@ class RoutineStatusDemo extends StatelessWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Informations de la routine
           Expanded(
             child: Column(
@@ -216,14 +219,18 @@ class RoutineStatusDemo extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: cs.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    frequency == 'daily' ? 'Quotidien' :
-                    frequency == 'weekly' ? 'Hebdomadaire' : 'Mensuel',
+                    frequency == 'daily'
+                        ? 'Quotidien'
+                        : frequency == 'weekly'
+                            ? 'Hebdomadaire'
+                            : 'Mensuel',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: cs.onPrimaryContainer,
                       fontWeight: FontWeight.w500,
@@ -237,11 +244,12 @@ class RoutineStatusDemo extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildLegendItem(BuildContext context, IconData icon, Color color, String description) {
+
+  Widget _buildLegendItem(
+      BuildContext context, IconData icon, Color color, String description) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     return Row(
       children: [
         Icon(

@@ -2,15 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 
-// Import conditionnel pour supporter le web
+// Import conditionnel pour supporter les différentes plateformes
 import 'package:spiritual_routines/core/persistence/isar_collections.dart'
-    if (dart.library.html) '../persistence/isar_web_stub.dart';
+    if (dart.library.html) '../persistence/isar_web_stub.dart'
+    if (dart.library.io) '../persistence/isar_mobile_stub.dart';
 import 'package:spiritual_routines/core/utils/refs.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
 
 // Import conditionnel d'Isar
 import 'package:isar/isar.dart'
-    if (dart.library.html) '../persistence/isar_web_stub.dart';
+    if (dart.library.html) '../persistence/isar_web_stub.dart'
+    if (dart.library.io) '../persistence/isar_mobile_stub.dart';
 
 final isarProvider = FutureProvider<Isar>((ref) async {
   final dir = await getApplicationSupportDirectory();

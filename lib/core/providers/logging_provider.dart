@@ -27,24 +27,26 @@ final logAnalysisProvider = Provider<Map<String, int>>((ref) {
 /// Classe d'extension pour faciliter le logging dans les widgets
 extension LoggingWidgetRef on WidgetRef {
   SecureLoggingService get logger => read(loggingProvider);
-  
+
   void logDebug(String message, [Map<String, dynamic>? data]) {
     logger.debug(message, data);
   }
-  
+
   void logInfo(String message, [Map<String, dynamic>? data]) {
     logger.info(message, data);
   }
-  
+
   void logWarning(String message, [Map<String, dynamic>? data]) {
     logger.warning(message, data);
   }
-  
-  void logError(String message, [Map<String, dynamic>? data, StackTrace? stackTrace]) {
+
+  void logError(String message,
+      [Map<String, dynamic>? data, StackTrace? stackTrace]) {
     logger.error(message, data, stackTrace);
   }
-  
-  void logCritical(String message, [Map<String, dynamic>? data, StackTrace? stackTrace]) {
+
+  void logCritical(String message,
+      [Map<String, dynamic>? data, StackTrace? stackTrace]) {
     logger.critical(message, data, stackTrace);
   }
 }

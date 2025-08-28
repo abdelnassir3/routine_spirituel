@@ -132,7 +132,8 @@ class UserSettingsService {
     final u = await _getOrCreate();
     final map = _parsePrefs(u.fontPrefs);
     final v = (map['ttsSpeed'] as num?)?.toDouble();
-    if (v == null) return 0.9; // Vitesse normale par défaut (90% = proche de la normale)
+    if (v == null)
+      return 0.9; // Vitesse normale par défaut (90% = proche de la normale)
     // Clamp to allowed range [0.5, 1.5]
     if (v < 0.5) return 0.5;
     if (v > 1.5) return 1.5;

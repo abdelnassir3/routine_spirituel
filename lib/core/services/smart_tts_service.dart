@@ -57,13 +57,15 @@ class SmartTtsService implements AudioTtsService {
   }) async {
     _totalRequests++;
     _playCallCount++;
-    
+
     // Nettoyer le texte en supprimant les marqueurs de versets
     final cleanedText = _cleanVerseMarkers(text);
-    
+
     TtsLogger.info('🔢 PlayText appelé', {
       'callCount': _playCallCount,
-      'text': cleanedText.substring(0, cleanedText.length > 50 ? 50 : cleanedText.length) + '...',
+      'text': cleanedText.substring(
+              0, cleanedText.length > 50 ? 50 : cleanedText.length) +
+          '...',
     });
 
     final timer = TtsPerformanceTimer('smart.playText', {
@@ -104,8 +106,9 @@ class SmartTtsService implements AudioTtsService {
           // Vider le cache pour forcer la synthèse du nouveau texte
           TtsLogger.info('🧹 Préparation de la synthèse vocale', {
             'textLength': cleanedText.length,
-            'textPreview':
-                cleanedText.substring(0, cleanedText.length > 50 ? 50 : cleanedText.length) + '...',
+            'textPreview': cleanedText.substring(
+                    0, cleanedText.length > 50 ? 50 : cleanedText.length) +
+                '...',
           });
 
           // Calculer un timeout dynamique basé sur la longueur du texte
@@ -207,29 +210,31 @@ class SmartTtsService implements AudioTtsService {
           _edgeTtsFallbackCount++;
 
           TtsLogger.metric('tts.smart.edgetts.error', 1);
-          
+
           // Détecter les erreurs de compatibilité MP3
-          final isCompatibilityError = e is AudioCompatibilityException || 
+          final isCompatibilityError = e is AudioCompatibilityException ||
               e.toString().contains('incompatible avec just_audio');
 
           // Fallback automatique si autorisé OU si erreur de compatibilité
           if (allowFallback || isCompatibilityError) {
             TtsLogger.warning('🔄 Fallback automatique vers flutter_tts', {
-              'reason': isCompatibilityError ? 'MP3 incompatible iOS' : 'Échec Edge-TTS',
+              'reason': isCompatibilityError
+                  ? 'MP3 incompatible iOS'
+                  : 'Échec Edge-TTS',
               'voice': voice,
               'isAutoFallback': isCompatibilityError,
             });
-            
+
             // Calculer vitesse optimale pour flutter_tts
             final adjustedSpeed = _calculateOptimalFlutterSpeed(speed, voice);
-            
+
             await _flutterTtsService.playText(
               cleanedText,
               voice: voice,
               speed: adjustedSpeed,
               pitch: pitch,
             );
-            
+
             TtsLogger.metric('tts.smart.fallback.success', 1);
             if (isCompatibilityError) {
               TtsLogger.metric('tts.smart.fallback.compatibility', 1);
@@ -500,18 +505,18 @@ class SmartTtsService implements AudioTtsService {
   /// Calcule la vitesse optimale pour flutter_tts selon la langue
   double _calculateOptimalFlutterSpeed(double baseSpeed, String voice) {
     // Détecter la langue
-    final isArabic = voice.toLowerCase().contains('ar-') || 
-                     voice.toLowerCase().contains('arabic');
-    final isFrench = voice.toLowerCase().contains('fr-') || 
-                     voice.toLowerCase().contains('french');
-    
+    final isArabic = voice.toLowerCase().contains('ar-') ||
+        voice.toLowerCase().contains('arabic');
+    final isFrench = voice.toLowerCase().contains('fr-') ||
+        voice.toLowerCase().contains('french');
+
     // Vitesses optimisées par langue pour flutter_tts
     if (isArabic) {
       // L'arabe nécessite une vitesse plus lente pour être clair
       // Mapping: Edge-TTS 1.0 → flutter_tts 0.4-0.6
       return (baseSpeed * 0.5).clamp(0.3, 0.7);
     } else if (isFrench) {
-      // Le français peut être plus rapide 
+      // Le français peut être plus rapide
       // Mapping: Edge-TTS 1.0 → flutter_tts 0.6-0.8
       return (baseSpeed * 0.7).clamp(0.4, 0.8);
     } else {
@@ -581,7 +586,8 @@ final smartTtsServiceProvider = Provider<AudioTtsService>((ref) {
           });
         }
       } else {
-        TtsLogger.warning('EdgeTtsAdapterService non créé - endpoint manquant', {
+        TtsLogger.warning(
+            'EdgeTtsAdapterService non créé - endpoint manquant', {
           'endpoint': config.coquiEndpoint,
         });
       }
@@ -628,7 +634,8 @@ final audioTtsServiceProvider = Provider<AudioTtsService>((ref) {
     return ref.watch(hybridAudioServiceProvider);
   } catch (e) {
     // Fallback vers SmartTTS si HybridAudioService n'est pas disponible
-    TtsLogger.warning('HybridAudioService non disponible, fallback vers SmartTTS', {
+    TtsLogger.warning(
+        'HybridAudioService non disponible, fallback vers SmartTTS', {
       'error': e.toString(),
     });
     return ref.watch(smartTtsServiceProvider);

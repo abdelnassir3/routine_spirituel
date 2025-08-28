@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'dart:io';
 import 'package:spiritual_routines/core/platform/platform_service.dart';
 
 /// Wrapper pour l'OCR qui fonctionne sur toutes les plateformes

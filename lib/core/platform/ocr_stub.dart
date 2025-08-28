@@ -8,11 +8,11 @@ class TextRecognitionScript {
 
 class TextRecognizer {
   TextRecognizer({TextRecognitionScript? script});
-  
+
   Future<RecognizedText> processImage(InputImage image) async {
     return RecognizedText(text: '');
   }
-  
+
   Future<void> close() async {}
 }
 

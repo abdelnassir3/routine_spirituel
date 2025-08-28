@@ -19,19 +19,19 @@ class ResponsiveLayout extends StatelessWidget {
   // Breakpoints adaptés pour Android et appareils pliables
   static bool isCompactPhone(BuildContext context) =>
       MediaQuery.of(context).size.width < 360;
-  
+
   static bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 600;
-  
+
   static bool isFoldable(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final aspectRatio = width / height;
-    
+
     // Détection des appareils pliables (aspect ratio inhabituel)
     // Fold ouvert: ~7:6, Flip ouvert: ~22:9
     return (width >= 585 && width < 800 && aspectRatio > 0.9) || // Fold
-           (aspectRatio > 2.0); // Flip ou écran ultra-wide
+        (aspectRatio > 2.0); // Flip ou écran ultra-wide
   }
 
   static bool isTablet(BuildContext context) =>
@@ -44,7 +44,7 @@ class ResponsiveLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    
+
     // Priorité aux appareils pliables
     if (isFoldable(context) && foldable != null) {
       return foldable!;
@@ -63,14 +63,14 @@ class ResponsiveLayout extends StatelessWidget {
 class ResponsiveUtils {
   static double getMaxWidth(BuildContext context, {double maxWidth = 800}) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     // Adapter la largeur max selon le type d'appareil
     if (ResponsiveLayout.isFoldable(context)) {
       return screenWidth * 0.9; // Utiliser plus d'espace sur les pliables
     }
     return screenWidth > maxWidth ? maxWidth : screenWidth;
   }
-  
+
   static EdgeInsets getPadding(BuildContext context) {
     if (ResponsiveLayout.isCompactPhone(context)) {
       return const EdgeInsets.all(12.0);
@@ -84,10 +84,10 @@ class ResponsiveUtils {
       return const EdgeInsets.all(16.0);
     }
   }
-  
+
   static int getCrossAxisCount(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    
+
     // Calcul dynamique basé sur la largeur
     if (width < 360) return 1; // Très petit écran
     if (width < 600) return 2; // Mobile standard
@@ -95,10 +95,10 @@ class ResponsiveUtils {
     if (width < 1200) return 4; // Grande tablette
     return 5; // Desktop/TV
   }
-  
+
   static double getFontSize(BuildContext context, double baseSize) {
     final width = MediaQuery.of(context).size.width;
-    
+
     // Adaptation progressive de la taille de police
     if (width < 360) {
       return baseSize * 0.9; // Réduire pour petits écrans
@@ -111,7 +111,7 @@ class ResponsiveUtils {
     }
     return baseSize;
   }
-  
+
   // Nouvelle méthode pour l'espacement adaptatif
   static double getSpacing(BuildContext context) {
     if (ResponsiveLayout.isCompactPhone(context)) return 8.0;
@@ -119,14 +119,14 @@ class ResponsiveUtils {
     if (ResponsiveLayout.isTablet(context)) return 16.0;
     return 20.0;
   }
-  
+
   // Ratio d'aspect pour les cartes
   static double getCardAspectRatio(BuildContext context) {
     if (ResponsiveLayout.isFoldable(context)) {
       final width = MediaQuery.of(context).size.width;
       final height = MediaQuery.of(context).size.height;
       final aspectRatio = width / height;
-      
+
       // Adapter selon l'orientation du pliable
       if (aspectRatio > 1.5) {
         return 2.0; // Mode paysage/Flip ouvert

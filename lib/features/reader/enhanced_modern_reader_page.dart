@@ -112,7 +112,6 @@ class _EnhancedModernReaderPageState
 
     // La synchronisation sera gérée dans build() avec ref.listen
   }
-  
 
   /// Démarrer le timer de synchronisation pour le mode mains libres
   void _startSessionSyncTimer(String sessionId) {
@@ -499,7 +498,6 @@ class _EnhancedModernReaderPageState
     final handsFreeMode = ref.watch(handsFreeControllerProvider);
     final theme = Theme.of(context);
 
-
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: Column(
@@ -564,25 +562,33 @@ class _EnhancedModernReaderPageState
                           // Charger les tâches de la session active
                           final sessionDao = ref.read(sessionDaoProvider);
                           final session = await sessionDao.getById(sessionId);
-                          
+
                           if (session != null && mounted) {
-                            final tasks = await ref.read(taskDaoProvider).watchByRoutine(session.routineId).first;
+                            final tasks = await ref
+                                .read(taskDaoProvider)
+                                .watchByRoutine(session.routineId)
+                                .first;
                             if (tasks.isNotEmpty && mounted) {
                               // Charger la première tâche de la routine de la session
                               final firstTask = tasks.first;
-                              ref.read(readerCurrentTaskProvider.notifier).state = firstTask;
-                              
+                              ref
+                                  .read(readerCurrentTaskProvider.notifier)
+                                  .state = firstTask;
+
                               // Initialiser le compteur
-                              ref.read(smartCounterProvider.notifier).setInitial(firstTask.defaultReps);
-                              
+                              ref
+                                  .read(smartCounterProvider.notifier)
+                                  .setInitial(firstTask.defaultReps);
+
                               // Initialiser le progress
-                              ref.read(readerProgressProvider.notifier).state = 0.0;
-                              
+                              ref.read(readerProgressProvider.notifier).state =
+                                  0.0;
+
                               return; // Session chargée avec succès
                             }
                           }
                         }
-                        
+
                         // Si pas de session active ou erreur, utiliser la logique existante
                         if (routines.isNotEmpty) {
                           for (final routine in routines) {
@@ -591,8 +597,9 @@ class _EnhancedModernReaderPageState
                                 .watchByRoutine(routine.id)
                                 .first;
                             if (tasks.isNotEmpty) {
-                              ref.read(readerCurrentTaskProvider.notifier).state =
-                                  tasks.first;
+                              ref
+                                  .read(readerCurrentTaskProvider.notifier)
+                                  .state = tasks.first;
                               break;
                             }
                           }
@@ -1874,12 +1881,12 @@ class _EnhancedModernReaderPageState
       // print('⚠️ Démarrage de session déjà en cours, ignoré');
       return;
     }
-    
+
     _isStartingSession = true;
     try {
       // IMPORTANT: Récupérer la routine à laquelle appartient la tâche sélectionnée
       String routineId = task.routineId;
-      
+
       // Vérifier que la routine existe
       final allRoutines = await ref.read(routineDaoProvider).watchAll().first;
       final routine = allRoutines.where((r) => r.id == routineId).firstOrNull;
@@ -1928,18 +1935,21 @@ class _EnhancedModernReaderPageState
             await ref.read(handsFreeControllerProvider.notifier).stop();
           }
           // Terminer l'ancienne session
-          await ref.read(sessionServiceProvider).completeSession(currentSessionId);
+          await ref
+              .read(sessionServiceProvider)
+              .completeSession(currentSessionId);
         } catch (e) {
           print('⚠️ Erreur lors de la terminaison de l\'ancienne session: $e');
         }
       }
-      
+
       // Démarrer la nouvelle session à la tâche spécifique
       // print('🚀 Démarrage de la routine: $routineId avec tâche: ${task.id}');
       // print('📋 Tâche sélectionnée: ${task.notesFr ?? task.notesAr ?? task.category}');
-      final sessionId =
-          await ref.read(sessionServiceProvider).startRoutine(routineId, startTaskId: task.id);
-      
+      final sessionId = await ref
+          .read(sessionServiceProvider)
+          .startRoutine(routineId, startTaskId: task.id);
+
       // IMPORTANT: Mettre à jour le provider de session courante
       ref.read(currentSessionIdProvider.notifier).state = sessionId;
       // print('✅ Nouvelle session créée: $sessionId pour tâche: ${task.id}');
@@ -2161,13 +2171,14 @@ class _EnhancedModernReaderPageState
 
       // Vérifier le provider choisi
       final securePrefs = ref.read(secure.userSettingsServiceProvider);
-      final provider = await securePrefs.readValue('tts_preferred_provider') ?? 'coqui';
-      
+      final provider =
+          await securePrefs.readValue('tts_preferred_provider') ?? 'coqui';
+
       // Afficher un indicateur de chargement pour Coqui
       if (provider == 'coqui' && mounted) {
         // Vérifier si le texte est en cache (simplification: texte court = probablement en cache)
         final isFirstTime = currentText.length > 50; // Heuristique simple
-        
+
         if (isFirstTime) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -2195,7 +2206,7 @@ class _EnhancedModernReaderPageState
           );
         }
       }
-      
+
       // Lancer la lecture TTS avec la langue détectée automatiquement
       final tts = ref.read(audioTtsServiceProvider);
       await tts.playText(
@@ -2208,18 +2219,18 @@ class _EnhancedModernReaderPageState
       if (mounted) {
         // Masquer le message de chargement si présent
         ScaffoldMessenger.of(context).clearSnackBars();
-        
+
         // Afficher le message de succès
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               provider == 'coqui'
-                ? (isActuallyArabic 
-                    ? 'Lecture Coqui en arabe...'
-                    : 'Lecture Coqui en français...')
-                : (isActuallyArabic
-                    ? 'Lecture système en arabe...'
-                    : 'Lecture système en français...'),
+                  ? (isActuallyArabic
+                      ? 'Lecture Coqui en arabe...'
+                      : 'Lecture Coqui en français...')
+                  : (isActuallyArabic
+                      ? 'Lecture système en arabe...'
+                      : 'Lecture système en français...'),
             ),
             backgroundColor: provider == 'coqui' ? Colors.green : null,
             duration: const Duration(seconds: 2),
@@ -2992,7 +3003,7 @@ class _EnhancedModernReaderPageState
   List<InlineSpan> _buildTextSpansWithLineBreaks(String text, TextStyle style) {
     final spans = <InlineSpan>[];
     final lines = text.split('\n');
-    
+
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].isNotEmpty) {
         spans.add(TextSpan(
@@ -3005,7 +3016,7 @@ class _EnhancedModernReaderPageState
         spans.add(const TextSpan(text: '\n'));
       }
     }
-    
+
     return spans;
   }
 

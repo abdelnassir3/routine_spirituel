@@ -863,10 +863,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredFr();
-                              await ref
-                                  .read(audioTtsServiceProvider)
-                                  .playText('Lecture de test en français',
-                                      voice: voice, speed: speed, pitch: pitch);
+                              await ref.read(audioTtsServiceProvider).playText(
+                                  'Lecture de test en français',
+                                  voice: voice,
+                                  speed: speed,
+                                  pitch: pitch);
                             },
                             child: const Text('Tester FR'),
                           ),
@@ -875,10 +876,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredAr();
-                              await ref
-                                  .read(audioTtsServiceProvider)
-                                  .playText('تجربة القراءة بالعربية',
-                                      voice: voice, speed: speed, pitch: pitch);
+                              await ref.read(audioTtsServiceProvider).playText(
+                                  'تجربة القراءة بالعربية',
+                                  voice: voice,
+                                  speed: speed,
+                                  pitch: pitch);
                             },
                             child: const Text('Tester AR'),
                           ),

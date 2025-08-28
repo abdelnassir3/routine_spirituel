@@ -29,4 +29,3 @@ List<VerseRange> parseRefs(String input) {
   }
   return ranges;
 }
-

@@ -477,7 +477,8 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
             FutureBuilder<String?>(
               future: localPrefs.readValue('tts_preferred_provider'),
               builder: (context, snapshot) {
-                final currentProvider = snapshot.data ?? 'coqui'; // Coqui par défaut
+                final currentProvider =
+                    snapshot.data ?? 'coqui'; // Coqui par défaut
                 return Column(
                   children: [
                     RadioListTile<String>(
@@ -487,23 +488,27 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                       groupValue: currentProvider,
                       onChanged: (value) async {
                         if (value != null) {
-                          await localPrefs.writeValue('tts_preferred_provider', value);
+                          await localPrefs.writeValue(
+                              'tts_preferred_provider', value);
                           if (context.mounted) setState(() {});
                         }
                       },
                     ),
                     RadioListTile<String>(
                       title: const Text('Coqui TTS (naturelle)'),
-                      subtitle: const Text('Voix humaine naturelle - 3-10s au premier chargement'),
+                      subtitle: const Text(
+                          'Voix humaine naturelle - 3-10s au premier chargement'),
                       value: 'coqui',
                       groupValue: currentProvider,
                       onChanged: (value) async {
                         if (value != null) {
-                          await localPrefs.writeValue('tts_preferred_provider', value);
+                          await localPrefs.writeValue(
+                              'tts_preferred_provider', value);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Coqui activé - La première synthèse prendra quelques secondes'),
+                                content: Text(
+                                    'Coqui activé - La première synthèse prendra quelques secondes'),
                                 backgroundColor: Colors.blue,
                                 duration: Duration(seconds: 3),
                               ),
@@ -521,11 +526,13 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                           decoration: BoxDecoration(
                             color: Colors.blue.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                            border:
+                                Border.all(color: Colors.blue.withOpacity(0.3)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.info_outline, color: Colors.blue),
+                              const Icon(Icons.info_outline,
+                                  color: Colors.blue),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -533,7 +540,8 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                                   children: const [
                                     Text(
                                       'Note importante',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 4),
                                     Text(
@@ -553,9 +561,9 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // TTS Device section
         _buildSectionCard(
           context,
@@ -602,14 +610,16 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                               setState(() {});
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Vitesse réinitialisée à normale'),
+                                  content:
+                                      Text('Vitesse réinitialisée à normale'),
                                   duration: Duration(seconds: 2),
                                 ),
                               );
                             }
                           },
                           icon: const Icon(Icons.restore),
-                          label: const Text('Réinitialiser à la vitesse normale'),
+                          label:
+                              const Text('Réinitialiser à la vitesse normale'),
                         ),
                       ),
                   ],
@@ -791,10 +801,11 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredFr();
-                              await ref
-                                  .read(audioTtsServiceProvider)
-                                  .playText('Lecture de test en français',
-                                      voice: voice, speed: speed, pitch: pitch);
+                              await ref.read(audioTtsServiceProvider).playText(
+                                  'Lecture de test en français',
+                                  voice: voice,
+                                  speed: speed,
+                                  pitch: pitch);
                             },
                           ),
                         ),
@@ -807,10 +818,11 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredAr();
-                              await ref
-                                  .read(audioTtsServiceProvider)
-                                  .playText('تجربة القراءة بالعربية',
-                                      voice: voice, speed: speed, pitch: pitch);
+                              await ref.read(audioTtsServiceProvider).playText(
+                                  'تجربة القراءة بالعربية',
+                                  voice: voice,
+                                  speed: speed,
+                                  pitch: pitch);
                             },
                           ),
                         ),

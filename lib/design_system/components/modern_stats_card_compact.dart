@@ -77,7 +77,8 @@ class ModernStatsCardCompact extends StatelessWidget {
                   ),
                   if (progress != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(6),
@@ -94,7 +95,7 @@ class ModernStatsCardCompact extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Content section
             Expanded(
               child: Column(
@@ -140,7 +141,7 @@ class ModernStatsCardCompact extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Progress bar at bottom
             if (progress != null) ...[
               const SizedBox(height: 6),

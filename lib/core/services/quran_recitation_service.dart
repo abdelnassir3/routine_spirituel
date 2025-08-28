@@ -25,12 +25,12 @@ class QuranRecitationService implements AudioTtsService {
   static const String _baseApiUrl = 'https://api.quran.com/api/v4';
   static const Map<String, int> _reciters = {
     'AbdulBaset': 1, // Abdul Basit Abd us-Samad
-    'Mishary': 2,    // Mishary Rashid Alafasy
-    'Sudais': 3,     // Abdul Rahman Al-Sudais (par défaut)
-    'Minshawi': 4,   // Mohamed Siddiq El-Minshawi
-    'Husary': 5,     // Mahmoud Khalil Al-Husary
+    'Mishary': 2, // Mishary Rashid Alafasy
+    'Sudais': 3, // Abdul Rahman Al-Sudais (par défaut)
+    'Minshawi': 4, // Mohamed Siddiq El-Minshawi
+    'Husary': 5, // Mahmoud Khalil Al-Husary
   };
-  
+
   // Récitateur par défaut : Abdul Rahman Al-Sudais
   static const String defaultReciter = 'Sudais';
 
@@ -46,7 +46,8 @@ class QuranRecitationService implements AudioTtsService {
     _dio.options = BaseOptions(
       baseUrl: _baseApiUrl,
       connectTimeout: Duration(seconds: 30),
-      receiveTimeout: Duration(seconds: 300), // 5 minutes pour télécharger audio
+      receiveTimeout:
+          Duration(seconds: 300), // 5 minutes pour télécharger audio
       sendTimeout: Duration(seconds: 10),
       responseType: ResponseType.json,
     );
@@ -81,14 +82,14 @@ class QuranRecitationService implements AudioTtsService {
     try {
       // Détecter si c'est bien du contenu coranique
       final detection = await QuranContentDetector.detectQuranContent(text);
-      
+
       if (!detection.isQuranic || detection.verse == null) {
         throw Exception('Texte non coranique détecté');
       }
 
       final verse = detection.verse!;
       final reciter = _selectReciterFromVoice(voice);
-      
+
       TtsLogger.info('🕌 Récitation coranique', {
         'surah': verse.surah,
         'ayah': verse.ayah,
@@ -102,8 +103,8 @@ class QuranRecitationService implements AudioTtsService {
 
       // Obtenir l'URL ou le chemin de l'audio
       final audioPath = await _getRecitationAudio(
-        verse.surah, 
-        verse.ayah, 
+        verse.surah,
+        verse.ayah,
         reciter,
       );
 
@@ -139,7 +140,6 @@ class QuranRecitationService implements AudioTtsService {
         'ayah': verse.ayah,
         'reciter': reciter,
       });
-
     } catch (e) {
       TtsLogger.error('Erreur récitation coranique', {
         'error': e.toString(),
@@ -154,11 +154,12 @@ class QuranRecitationService implements AudioTtsService {
   }
 
   /// Obtient l'audio de récitation pour un verset spécifique
-  Future<String?> _getRecitationAudio(int surah, int ayah, String reciter) async {
+  Future<String?> _getRecitationAudio(
+      int surah, int ayah, String reciter) async {
     try {
       // Générer une clé de cache
       final cacheKey = 'quran_${surah}_${ayah}_$reciter';
-      
+
       // Vérifier le cache en mémoire
       if (_audioCache.containsKey(cacheKey)) {
         final cachedPath = _audioCache[cacheKey]!;
@@ -181,21 +182,22 @@ class QuranRecitationService implements AudioTtsService {
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
         final audioRecitations = data['audio_files'] as List?;
-        
+
         if (audioRecitations != null && audioRecitations.isNotEmpty) {
           final audioUrlPath = audioRecitations.first['url'] as String?;
-          
+
           if (audioUrlPath != null) {
             // Construire l'URL complète
             final fullAudioUrl = 'https://verses.quran.com/$audioUrlPath';
-            
+
             // Télécharger et cacher localement
-            final localPath = await _downloadAndCacheAudio(fullAudioUrl, cacheKey);
+            final localPath =
+                await _downloadAndCacheAudio(fullAudioUrl, cacheKey);
             if (localPath != null) {
               _audioCache[cacheKey] = localPath;
               return localPath;
             }
-            
+
             // Si le téléchargement échoue, retourner l'URL directement
             return fullAudioUrl;
           }
@@ -204,7 +206,6 @@ class QuranRecitationService implements AudioTtsService {
 
       // Fallback : utiliser une API alternative
       return await _getFallbackRecitationUrl(surah, ayah, reciter);
-
     } catch (e) {
       TtsLogger.warning('Erreur obtention audio récitation', {
         'surah': surah,
@@ -212,29 +213,31 @@ class QuranRecitationService implements AudioTtsService {
         'reciter': reciter,
         'error': e.toString(),
       });
-      
+
       // Fallback
       return await _getFallbackRecitationUrl(surah, ayah, reciter);
     }
   }
 
   /// URL de fallback pour les récitations
-  Future<String?> _getFallbackRecitationUrl(int surah, int ayah, String reciter) async {
+  Future<String?> _getFallbackRecitationUrl(
+      int surah, int ayah, String reciter) async {
     try {
       // Utiliser une API alternative comme everyayah.com
       final reciterCode = _getEveryAyahReciterCode(reciter);
       final surahPadded = surah.toString().padLeft(3, '0');
       final ayahPadded = ayah.toString().padLeft(3, '0');
-      
-      final fallbackUrl = 'https://everyayah.com/data/$reciterCode/$surahPadded$ayahPadded.mp3';
-      
+
+      final fallbackUrl =
+          'https://everyayah.com/data/$reciterCode/$surahPadded$ayahPadded.mp3';
+
       TtsLogger.info('Utilisation URL fallback', {
         'url': fallbackUrl,
         'surah': surah,
         'ayah': ayah,
         'reciter': reciter,
       });
-      
+
       return fallbackUrl;
     } catch (e) {
       TtsLogger.error('Échec fallback récitation', {'error': e.toString()});
@@ -243,7 +246,8 @@ class QuranRecitationService implements AudioTtsService {
   }
 
   /// Télécharge et cache l'audio localement
-  Future<String?> _downloadAndCacheAudio(String audioUrl, String cacheKey) async {
+  Future<String?> _downloadAndCacheAudio(
+      String audioUrl, String cacheKey) async {
     try {
       final tempDir = await getTemporaryDirectory();
       final audioFile = File('${tempDir.path}/quran_$cacheKey.mp3');
@@ -287,12 +291,12 @@ class QuranRecitationService implements AudioTtsService {
   /// Sélectionne le récitateur basé sur la voix demandée
   String _selectReciterFromVoice(String voice) {
     final voiceLower = voice.toLowerCase();
-    
+
     if (voiceLower.contains('sudais')) return 'Sudais';
     if (voiceLower.contains('mishary')) return 'Mishary';
     if (voiceLower.contains('minshawi')) return 'Minshawi';
     if (voiceLower.contains('husary')) return 'Husary';
-    
+
     // Par défaut : Abdul Basit
     return 'AbdulBaset';
   }
@@ -306,7 +310,7 @@ class QuranRecitationService implements AudioTtsService {
       'Minshawi': 'Minshawi_Murattal_128kbps',
       'Husary': 'Husary_128kbps',
     };
-    
+
     return codes[reciter] ?? codes['AbdulBaset']!;
   }
 
@@ -333,23 +337,22 @@ class QuranRecitationService implements AudioTtsService {
     try {
       // Détecter si c'est du contenu coranique
       final detection = await QuranContentDetector.detectQuranContent(text);
-      
+
       if (!detection.isQuranic || detection.verse == null) {
         return; // Ne pas cacher si ce n'est pas du Coran
       }
 
       final verse = detection.verse!;
       final reciter = _selectReciterFromVoice(voice);
-      
+
       // Pré-charger en arrière-plan
       await _getRecitationAudio(verse.surah, verse.ayah, reciter);
-      
+
       TtsLogger.info('Pré-cache récitation réussi', {
         'surah': verse.surah,
         'ayah': verse.ayah,
         'reciter': reciter,
       });
-      
     } catch (e) {
       TtsLogger.debug('Échec pré-cache récitation', {'error': e.toString()});
     }
@@ -365,10 +368,10 @@ class QuranRecitationService implements AudioTtsService {
 /// Provider Riverpod pour QuranRecitationService
 final quranRecitationServiceProvider = Provider<QuranRecitationService>((ref) {
   final service = QuranRecitationService();
-  
+
   ref.onDispose(() {
     service.dispose();
   });
-  
+
   return service;
 });

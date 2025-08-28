@@ -28,14 +28,21 @@ class HomePage extends ConsumerWidget {
           builder: (ctx) => AlertDialog(
             icon: const Icon(Icons.restore_rounded, size: 48),
             title: const Text('Reprendre la session ?'),
-            content: const Text('Vous pouvez reprendre exactement où vous avez arrêté, ou réinitialiser la routine.'),
+            content: const Text(
+                'Vous pouvez reprendre exactement où vous avez arrêté, ou réinitialiser la routine.'),
             actions: [
               M3TextButton(
                 onPressed: () async {
-                  await ref.read(persistenceServiceProvider).handleRecovery(RecoveryChoice.reset);
+                  await ref
+                      .read(persistenceServiceProvider)
+                      .handleRecovery(RecoveryChoice.reset);
                   ref.read(currentSessionIdProvider.notifier).state = sessionId;
-                  ref.read(persistenceServiceProvider).setCurrentSession(sessionId);
-                  await ref.read(progressServiceProvider).initProgressForSession(sessionId);
+                  ref
+                      .read(persistenceServiceProvider)
+                      .setCurrentSession(sessionId);
+                  await ref
+                      .read(progressServiceProvider)
+                      .initProgressForSession(sessionId);
                   if (context.mounted) {
                     Navigator.of(ctx).pop();
                     context.go('/reader');
@@ -46,9 +53,13 @@ class HomePage extends ConsumerWidget {
               ),
               M3FilledButton(
                 onPressed: () async {
-                  await ref.read(persistenceServiceProvider).handleRecovery(RecoveryChoice.resume);
+                  await ref
+                      .read(persistenceServiceProvider)
+                      .handleRecovery(RecoveryChoice.resume);
                   ref.read(currentSessionIdProvider.notifier).state = sessionId;
-                  ref.read(persistenceServiceProvider).setCurrentSession(sessionId);
+                  ref
+                      .read(persistenceServiceProvider)
+                      .setCurrentSession(sessionId);
                   if (context.mounted) {
                     Navigator.of(ctx).pop();
                     context.go('/reader');
@@ -63,7 +74,7 @@ class HomePage extends ConsumerWidget {
       });
     });
     return Scaffold(
-      appBar: AppBar(title: const Text('Aujourd\'hui')), 
+      appBar: AppBar(title: const Text('Aujourd\'hui')),
       body: ListView(
         padding: const EdgeInsets.all(Spacing.pagePadding),
         children: [
@@ -92,8 +103,8 @@ class HomePage extends ConsumerWidget {
                 Text(
                   'Continuez là où vous vous êtes arrêté ou choisissez une routine à pratiquer.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ],
             ),
@@ -108,16 +119,23 @@ class HomePage extends ConsumerWidget {
                       subtitle: const Text('Reprise exacte au dernier point'),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () async {
-                        final opt = await ref.read(recoveryOptionsProvider.future);
-                        final sessionId = opt.snapshot?.payload['sessionId'] as String?;
-                        await ref.read(persistenceServiceProvider).handleRecovery(RecoveryChoice.resume);
+                        final opt =
+                            await ref.read(recoveryOptionsProvider.future);
+                        final sessionId =
+                            opt.snapshot?.payload['sessionId'] as String?;
+                        await ref
+                            .read(persistenceServiceProvider)
+                            .handleRecovery(RecoveryChoice.resume);
                         if (sessionId != null) {
-                          ref.read(currentSessionIdProvider.notifier).state = sessionId;
-                          ref.read(persistenceServiceProvider).setCurrentSession(sessionId);
+                          ref.read(currentSessionIdProvider.notifier).state =
+                              sessionId;
+                          ref
+                              .read(persistenceServiceProvider)
+                              .setCurrentSession(sessionId);
                         }
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Session reprise')), 
+                            const SnackBar(content: Text('Session reprise')),
                           );
                           context.go('/reader');
                         }

@@ -9,4 +9,3 @@ class StubDiacritizerService implements DiacritizerService {
     return arabicText;
   }
 }
-

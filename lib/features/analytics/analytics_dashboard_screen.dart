@@ -11,31 +11,33 @@ import 'widgets/milestones_card.dart';
 /// Dashboard principal des analytics
 class AnalyticsDashboardScreen extends ConsumerStatefulWidget {
   const AnalyticsDashboardScreen({super.key});
-  
+
   @override
-  ConsumerState<AnalyticsDashboardScreen> createState() => _AnalyticsDashboardScreenState();
+  ConsumerState<AnalyticsDashboardScreen> createState() =>
+      _AnalyticsDashboardScreenState();
 }
 
-class _AnalyticsDashboardScreenState extends ConsumerState<AnalyticsDashboardScreen>
+class _AnalyticsDashboardScreenState
+    extends ConsumerState<AnalyticsDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tableau de Bord'),
@@ -68,7 +70,7 @@ class _OverviewTab extends ConsumerWidget {
     final todayMetrics = ref.watch(todayMetricsProvider);
     final weeklyMetrics = ref.watch(weeklyMetricsProvider);
     final streakData = ref.watch(streakDataProvider);
-    
+
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(todayMetricsProvider);
@@ -84,9 +86,9 @@ class _OverviewTab extends ConsumerWidget {
             loading: () => const _LoadingCard(),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Métriques du jour
           Text(
             'Aujourd\'hui',
@@ -95,7 +97,7 @@ class _OverviewTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           todayMetrics.when(
             data: (metrics) => Row(
               children: [
@@ -129,9 +131,9 @@ class _OverviewTab extends ConsumerWidget {
             ),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           todayMetrics.when(
             data: (metrics) => Row(
               children: [
@@ -165,9 +167,9 @@ class _OverviewTab extends ConsumerWidget {
             ),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Métriques hebdomadaires
           Text(
             'Cette semaine',
@@ -176,7 +178,7 @@ class _OverviewTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           weeklyMetrics.when(
             data: (metrics) => Column(
               children: [
@@ -186,7 +188,8 @@ class _OverviewTab extends ConsumerWidget {
                       child: MetricsCard(
                         title: 'Sessions',
                         value: metrics.totalSessions.toString(),
-                        subtitle: '${metrics.averageSessionsPerDay.toStringAsFixed(1)}/jour',
+                        subtitle:
+                            '${metrics.averageSessionsPerDay.toStringAsFixed(1)}/jour',
                         icon: Icons.calendar_today,
                         color: Colors.indigo,
                       ),
@@ -207,7 +210,8 @@ class _OverviewTab extends ConsumerWidget {
                 MetricsCard(
                   title: 'Total de répétitions',
                   value: metrics.totalRepetitions.toString(),
-                  subtitle: 'Moyenne: ${metrics.averageRepetitionsPerDay.round()}/jour',
+                  subtitle:
+                      'Moyenne: ${metrics.averageRepetitionsPerDay.round()}/jour',
                   icon: Icons.assessment,
                   color: Colors.deepPurple,
                   isWide: true,
@@ -233,7 +237,7 @@ class _OverviewTab extends ConsumerWidget {
       ),
     );
   }
-  
+
   String _formatDuration(int seconds) {
     if (seconds < 60) {
       return '${seconds}s';
@@ -256,7 +260,7 @@ class _ProgressionTab extends ConsumerWidget {
     final sessionsChart = ref.watch(sessionsChartProvider);
     final monthlyChart = ref.watch(monthlyChartProvider);
     final prayerDistribution = ref.watch(prayerDistributionProvider);
-    
+
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(repetitionsChartProvider);
@@ -278,9 +282,9 @@ class _ProgressionTab extends ConsumerWidget {
             loading: () => const _LoadingCard(height: 200),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Graphique des sessions (7 jours)
           sessionsChart.when(
             data: (data) => ChartCard(
@@ -292,9 +296,9 @@ class _ProgressionTab extends ConsumerWidget {
             loading: () => const _LoadingCard(height: 200),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Graphique mensuel
           monthlyChart.when(
             data: (data) => ChartCard(
@@ -307,9 +311,9 @@ class _ProgressionTab extends ConsumerWidget {
             loading: () => const _LoadingCard(height: 200),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Distribution des prières
           prayerDistribution.when(
             data: (data) => _PrayerDistributionCard(distribution: data),
@@ -330,7 +334,7 @@ class _AchievementsTab extends ConsumerWidget {
     final milestones = ref.watch(milestonesProvider);
     final allTimeStats = ref.watch(allTimeStatsProvider);
     final monthlyMetrics = ref.watch(monthlyMetricsProvider);
-    
+
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(milestonesProvider);
@@ -346,18 +350,18 @@ class _AchievementsTab extends ConsumerWidget {
             loading: () => const _LoadingCard(height: 150),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Meilleur mois
           monthlyMetrics.when(
             data: (metrics) => _BestMonthCard(metrics: metrics),
             loading: () => const _LoadingCard(height: 120),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Milestones
           Text(
             'Milestones récents',
@@ -366,7 +370,7 @@ class _AchievementsTab extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           milestones.when(
             data: (list) => MilestonesCard(milestones: list),
             loading: () => const _LoadingCard(height: 200),
@@ -381,14 +385,14 @@ class _AchievementsTab extends ConsumerWidget {
 /// Card de distribution des prières
 class _PrayerDistributionCard extends StatelessWidget {
   final Map<String, double> distribution;
-  
+
   const _PrayerDistributionCard({required this.distribution});
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final total = distribution.values.fold(0.0, (sum, value) => sum + value);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -402,7 +406,6 @@ class _PrayerDistributionCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
             ...distribution.entries.map((entry) {
               final percentage = total > 0 ? entry.value / total : 0.0;
               return Padding(
@@ -443,7 +446,7 @@ class _PrayerDistributionCard extends StatelessWidget {
       ),
     );
   }
-  
+
   Color _getColorForPrayer(String prayer) {
     final colors = {
       'Fajr': Colors.indigo,
@@ -459,14 +462,15 @@ class _PrayerDistributionCard extends StatelessWidget {
 /// Card des statistiques globales
 class _AllTimeStatsCard extends StatelessWidget {
   final AllTimeStats stats;
-  
+
   const _AllTimeStatsCard({required this.stats});
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final daysSinceStart = DateTime.now().difference(stats.firstSessionDate).inDays;
-    
+    final daysSinceStart =
+        DateTime.now().difference(stats.firstSessionDate).inDays;
+
     return Card(
       color: theme.primaryColor.withOpacity(0.1),
       child: Padding(
@@ -491,7 +495,6 @@ class _AllTimeStatsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
             _StatRow(
               label: 'Total des répétitions',
               value: _formatNumber(stats.totalRepetitions),
@@ -513,7 +516,7 @@ class _AllTimeStatsCard extends StatelessWidget {
       ),
     );
   }
-  
+
   String _formatNumber(int number) {
     if (number < 1000) {
       return number.toString();
@@ -523,7 +526,7 @@ class _AllTimeStatsCard extends StatelessWidget {
       return '${(number / 1000000).toStringAsFixed(1)}M';
     }
   }
-  
+
   String _formatDuration(int seconds) {
     final hours = seconds ~/ 3600;
     if (hours < 24) {
@@ -538,13 +541,13 @@ class _AllTimeStatsCard extends StatelessWidget {
 /// Card du meilleur mois
 class _BestMonthCard extends StatelessWidget {
   final MonthlyMetrics metrics;
-  
+
   const _BestMonthCard({required this.metrics});
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -578,7 +581,6 @@ class _BestMonthCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -607,16 +609,16 @@ class _BestMonthCard extends StatelessWidget {
 class _MetricColumn extends StatelessWidget {
   final String label;
   final String value;
-  
+
   const _MetricColumn({
     required this.label,
     required this.value,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         Text(
@@ -641,16 +643,16 @@ class _MetricColumn extends StatelessWidget {
 class _StatRow extends StatelessWidget {
   final String label;
   final String value;
-  
+
   const _StatRow({
     required this.label,
     required this.value,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -677,9 +679,9 @@ class _StatRow extends StatelessWidget {
 /// Card de chargement
 class _LoadingCard extends StatelessWidget {
   final double height;
-  
+
   const _LoadingCard({this.height = 100});
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(

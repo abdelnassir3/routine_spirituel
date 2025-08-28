@@ -62,7 +62,8 @@ class TtsCacheService {
     required String text,
   }) async {
     final dir = await cacheDir();
-    final digest = sha1.convert(utf8.encode('$provider|$voice|$speed|$pitch|$text'));
+    final digest =
+        sha1.convert(utf8.encode('$provider|$voice|$speed|$pitch|$text'));
     final path = p.join(dir.path, '${digest.toString()}.mp3');
     return File(path).exists();
   }
@@ -97,7 +98,9 @@ class TtsCacheService {
     required double pitch,
     required String text,
   }) async {
-    return sha1.convert(utf8.encode('$provider|$voice|$speed|$pitch|$text')).toString();
+    return sha1
+        .convert(utf8.encode('$provider|$voice|$speed|$pitch|$text'))
+        .toString();
   }
 
   Future<void> recordEntry({
@@ -158,7 +161,7 @@ class TtsCacheService {
     await _saveManifest(manifest);
     return removed;
   }
-  
+
   Future<Map<String, dynamic>> getCacheStats() async {
     try {
       final dir = await cacheDir();
@@ -166,13 +169,14 @@ class TtsCacheService {
       int totalSize = 0;
       DateTime? oldestFile;
       DateTime? newestFile;
-      
-      await for (final entity in dir.list(recursive: true, followLinks: false)) {
+
+      await for (final entity
+          in dir.list(recursive: true, followLinks: false)) {
         if (entity is File && entity.path.endsWith('.mp3')) {
           fileCount++;
           final stat = await entity.stat();
           totalSize += await entity.length();
-          
+
           if (oldestFile == null || stat.modified.isBefore(oldestFile)) {
             oldestFile = stat.modified;
           }
@@ -181,7 +185,7 @@ class TtsCacheService {
           }
         }
       }
-      
+
       return {
         'fileCount': fileCount,
         'totalSizeBytes': totalSize,
@@ -200,4 +204,5 @@ class TtsCacheService {
   }
 }
 
-final ttsCacheServiceProvider = Provider<TtsCacheService>((ref) => TtsCacheService());
+final ttsCacheServiceProvider =
+    Provider<TtsCacheService>((ref) => TtsCacheService());

@@ -9,8 +9,9 @@ class CounterState {
   final bool handsFree;
   const CounterState({required this.remaining, this.handsFree = false});
 
-  CounterState copyWith({int? remaining, bool? handsFree}) =>
-      CounterState(remaining: remaining ?? this.remaining, handsFree: handsFree ?? this.handsFree);
+  CounterState copyWith({int? remaining, bool? handsFree}) => CounterState(
+      remaining: remaining ?? this.remaining,
+      handsFree: handsFree ?? this.handsFree);
 }
 
 class SmartCounter extends StateNotifier<CounterState> {
@@ -34,8 +35,9 @@ class SmartCounter extends StateNotifier<CounterState> {
     }
   }
 
-  void configureAutoAdvance({required bool enabled}) => state = state.copyWith(handsFree: enabled);
+  void configureAutoAdvance({required bool enabled}) =>
+      state = state.copyWith(handsFree: enabled);
 }
 
-final smartCounterProvider = StateNotifierProvider<SmartCounter, CounterState>((ref) => SmartCounter());
-
+final smartCounterProvider =
+    StateNotifierProvider<SmartCounter, CounterState>((ref) => SmartCounter());

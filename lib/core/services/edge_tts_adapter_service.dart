@@ -18,7 +18,7 @@ import 'audio/audio_api_config.dart';
 class AudioCompatibilityException implements Exception {
   final String message;
   AudioCompatibilityException(this.message);
-  
+
   @override
   String toString() => 'AudioCompatibilityException: $message';
 }
@@ -72,7 +72,7 @@ class EdgeTtsAdapterService implements AudioTtsService {
     try {
       final edgeTtsVoice = _mapToEdgeTtsVoice(voice);
       final language = _detectLanguage(voice);
-      
+
       TtsLogger.info('Synthèse TTS Edge-TTS', {
         'originalVoice': voice,
         'edgeTtsVoice': edgeTtsVoice.name,
@@ -86,9 +86,9 @@ class EdgeTtsAdapterService implements AudioTtsService {
 
       // 1. Vérifier le cache
       final cacheKey = _generateCacheKey(text, voice, speed, pitch);
-      
+
       Uint8List? audioData;
-      
+
       try {
         // Tenter de récupérer depuis le cache
         final cachedPath = await _cache.getPath(cacheKey);
@@ -106,7 +106,7 @@ class EdgeTtsAdapterService implements AudioTtsService {
       // 2. Si pas en cache, synthétiser avec Edge-TTS
       if (audioData == null) {
         TtsLogger.info('Synthèse Edge-TTS requise');
-        
+
         // Appeler Edge-TTS
         audioData = await EdgeTtsService.synthesizeText(
           text,
@@ -115,11 +115,11 @@ class EdgeTtsAdapterService implements AudioTtsService {
           rate: speed,
           pitch: pitch,
         );
-        
+
         if (audioData == null) {
           throw Exception('Échec de synthèse Edge-TTS');
         }
-        
+
         // 3. Mettre en cache
         if (_config.cacheEnabled) {
           try {
@@ -128,7 +128,7 @@ class EdgeTtsAdapterService implements AudioTtsService {
             final tempCacheFile = File(
                 '${tempDir.path}/cache_${DateTime.now().millisecondsSinceEpoch}.mp3');
             await tempCacheFile.writeAsBytes(audioData);
-            
+
             await _cache.store(
               key: cacheKey,
               filePath: tempCacheFile.path,
@@ -140,10 +140,10 @@ class EdgeTtsAdapterService implements AudioTtsService {
                 'provider': 'edge-tts',
               },
             );
-            
+
             // Nettoyer le fichier temporaire
             await tempCacheFile.delete();
-            
+
             TtsLogger.info('Audio mis en cache', {
               'size': audioData.length,
               'cacheKey': cacheKey.substring(0, 8) + '...'
@@ -156,27 +156,29 @@ class EdgeTtsAdapterService implements AudioTtsService {
 
       // 4. Jouer l'audio
       await _playAudioData(audioData);
-      
+
       // Réinitialiser le compteur d'échecs
       _consecutiveFailures = 0;
-      
+
       TtsLogger.metric('tts.edge.success', 1);
-      
     } catch (e) {
       _consecutiveFailures++;
-      TtsLogger.error('Erreur TTS Edge-TTS', {
-        'consecutiveFailures': _consecutiveFailures,
-        'error': e.toString(),
-      }, e);
+      TtsLogger.error(
+          'Erreur TTS Edge-TTS',
+          {
+            'consecutiveFailures': _consecutiveFailures,
+            'error': e.toString(),
+          },
+          e);
 
       TtsLogger.metric('tts.edge.error', 1);
-      
+
       if (_consecutiveFailures >= _maxConsecutiveFailures) {
         TtsLogger.error('Trop d\'échecs Edge-TTS consécutifs', {
           'count': _consecutiveFailures,
         });
       }
-      
+
       rethrow;
     } finally {
       timer.stop();
@@ -199,12 +201,12 @@ class EdgeTtsAdapterService implements AudioTtsService {
 
       // Validation du fichier MP3 avant lecture
       final isValid = await _validateAudioFile(tempFile.path, audioData);
-      
+
       if (!isValid) {
         // Nettoyage du fichier invalide
         await tempFile.delete();
         throw AudioCompatibilityException(
-          'Fichier MP3 Edge-TTS incompatible avec just_audio iOS');
+            'Fichier MP3 Edge-TTS incompatible avec just_audio iOS');
       }
 
       // Jouer avec just_audio si validation OK
@@ -221,7 +223,6 @@ class EdgeTtsAdapterService implements AudioTtsService {
           }
         } catch (_) {}
       });
-
     } catch (e) {
       TtsLogger.error('Erreur lecture audio Edge-TTS', {'error': e.toString()});
       rethrow;
@@ -252,7 +253,7 @@ class EdgeTtsAdapterService implements AudioTtsService {
     if (!_config.cacheEnabled) return;
 
     final cacheKey = _generateCacheKey(text, voice, speed, 1.0);
-    
+
     try {
       // Vérifier si déjà en cache
       final existing = await _cache.exists(cacheKey);
@@ -264,21 +265,21 @@ class EdgeTtsAdapterService implements AudioTtsService {
       // Synthétiser et mettre en cache
       final edgeTtsVoice = _mapToEdgeTtsVoice(voice);
       final language = _detectLanguage(voice);
-      
+
       final audioData = await EdgeTtsService.synthesizeText(
         text,
         language: language,
         voice: edgeTtsVoice,
         rate: speed,
       );
-      
+
       if (audioData != null) {
         // Créer un fichier temporaire pour le cache
         final tempDir = await getTemporaryDirectory();
         final tempCacheFile = File(
             '${tempDir.path}/precache_${DateTime.now().millisecondsSinceEpoch}.mp3');
         await tempCacheFile.writeAsBytes(audioData);
-        
+
         await _cache.store(
           key: cacheKey,
           filePath: tempCacheFile.path,
@@ -289,10 +290,10 @@ class EdgeTtsAdapterService implements AudioTtsService {
             'provider': 'edge-tts',
           },
         );
-        
+
         // Nettoyer le fichier temporaire
         await tempCacheFile.delete();
-        
+
         TtsLogger.info('Pré-cache Edge-TTS réussi', {
           'size': audioData.length,
         });
@@ -303,7 +304,8 @@ class EdgeTtsAdapterService implements AudioTtsService {
   }
 
   /// Génère une clé de cache unique
-  String _generateCacheKey(String text, String voice, double speed, double pitch) {
+  String _generateCacheKey(
+      String text, String voice, double speed, double pitch) {
     final content = '$text|$voice|$speed|$pitch|edge-tts';
     final bytes = utf8.encode(content);
     final digest = sha256.convert(bytes);
@@ -325,8 +327,8 @@ class EdgeTtsAdapterService implements AudioTtsService {
   /// Détecte le type de voix (masculin/féminin)
   String _detectVoiceType(String voice) {
     final voiceLower = voice.toLowerCase();
-    if (voiceLower.contains('male') || 
-        voiceLower.contains('henri') || 
+    if (voiceLower.contains('male') ||
+        voiceLower.contains('henri') ||
         voiceLower.contains('hamed') ||
         voiceLower.contains('guy')) {
       return 'male';
@@ -342,42 +344,43 @@ class EdgeTtsAdapterService implements AudioTtsService {
       'containsArabic': voice.contains('ar-') || voice.contains('Arabic'),
       'containsEnglish': voice.contains('en-') || voice.contains('English'),
     });
-    
+
     // Mapper les anciennes voix Coqui vers Edge-TTS
     if (voice.contains('fr-FR') || voice.contains('French')) {
-      final selectedVoice = (voice.contains('Henri') || voice.contains('male')) 
-          ? EdgeTtsVoice.frenchHenri 
+      final selectedVoice = (voice.contains('Henri') || voice.contains('male'))
+          ? EdgeTtsVoice.frenchHenri
           : EdgeTtsVoice.frenchDenise;
-      
+
       TtsLogger.info('✅ Voix française sélectionnée', {
         'selectedVoice': selectedVoice.name,
         'reason': 'French detected',
       });
       return selectedVoice;
-      
-    } else if (voice.contains('ar-') || voice.contains('Arabic') || voice == 'ar') {
-      final selectedVoice = (voice.contains('Zariyah') || voice.contains('female')) 
-          ? EdgeTtsVoice.arabicZariyah 
-          : EdgeTtsVoice.arabicHamed;
-      
+    } else if (voice.contains('ar-') ||
+        voice.contains('Arabic') ||
+        voice == 'ar') {
+      final selectedVoice =
+          (voice.contains('Zariyah') || voice.contains('female'))
+              ? EdgeTtsVoice.arabicZariyah
+              : EdgeTtsVoice.arabicHamed;
+
       TtsLogger.info('✅ Voix arabe sélectionnée', {
         'selectedVoice': selectedVoice.name,
         'reason': 'Arabic detected',
       });
       return selectedVoice;
-      
     } else if (voice.contains('en-') || voice.contains('English')) {
-      final selectedVoice = (voice.contains('Guy') || voice.contains('male')) 
-          ? EdgeTtsVoice.englishGuy 
+      final selectedVoice = (voice.contains('Guy') || voice.contains('male'))
+          ? EdgeTtsVoice.englishGuy
           : EdgeTtsVoice.englishAria;
-      
+
       TtsLogger.info('✅ Voix anglaise sélectionnée', {
         'selectedVoice': selectedVoice.name,
         'reason': 'English detected',
       });
       return selectedVoice;
     }
-    
+
     // PROBLÈME : Défaut vers français au lieu d'arabe pour langue inconnue
     TtsLogger.warning('⚠️ Langue non détectée, fallback vers arabe', {
       'inputVoice': voice,
@@ -393,34 +396,34 @@ class EdgeTtsAdapterService implements AudioTtsService {
         'path': filePath,
         'size': audioData.length,
       });
-      
+
       // 1. Validation basique du header MP3
       if (!_isValidMp3Header(audioData)) {
         TtsLogger.warning('❌ Header MP3 invalide détecté');
         return false;
       }
-      
+
       // 2. Test de décodage avec just_audio
       final testPlayer = AudioPlayer();
       try {
         await testPlayer.setFilePath(filePath);
-        
+
         // Attendre que le fichier soit complètement chargé
         await testPlayer.load();
-        
+
         // Vérifier la durée pour confirmer le décodage
         final duration = testPlayer.duration;
-        
+
         await testPlayer.dispose();
-        
+
         final isValid = duration != null && duration.inMilliseconds > 0;
-        
+
         TtsLogger.info('🎵 Validation Edge-TTS résultat', {
           'isValid': isValid,
           'duration': duration?.inMilliseconds,
           'hasValidDuration': duration != null,
         });
-        
+
         return isValid;
       } finally {
         await testPlayer.dispose();
@@ -432,14 +435,13 @@ class EdgeTtsAdapterService implements AudioTtsService {
       return false;
     }
   }
-  
+
   /// Vérifie si les données ont un header MP3 valide
   bool _isValidMp3Header(Uint8List bytes) {
     if (bytes.length < 4) return false;
-    
+
     // Header MP3: FF FB ou FF FA (MPEG Layer 3)
-    return bytes[0] == 0xFF && 
-           (bytes[1] & 0xE0) == 0xE0;
+    return bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0;
   }
 
   void dispose() {

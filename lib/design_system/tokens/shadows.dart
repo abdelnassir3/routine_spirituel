@@ -6,151 +6,158 @@ class AdvancedShadows {
   AdvancedShadows._();
 
   /// Material 3 Elevation System
-  static class Elevation {
-    static const double level0 = 0.0;
-    static const double level1 = 1.0;
-    static const double level2 = 3.0;
-    static const double level3 = 6.0;
-    static const double level4 = 8.0;
-    static const double level5 = 12.0;
-  }
+  static const double level0 = 0.0;
+  static const double level1 = 1.0;
+  static const double level2 = 3.0;
+  static const double level3 = 6.0;
+  static const double level4 = 8.0;
+  static const double level5 = 12.0;
+}
 
-  /// Premium Shadow Definitions
-  /// Based on modern design systems with subtle, realistic shadows
-  static class Shadows {
-    // Soft shadows for cards and containers
-    static const List<BoxShadow> soft = [
-      BoxShadow(
-        color: Color(0x0F000000), // 6% opacity
-        offset: Offset(0, 1),
-        blurRadius: 2,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: Color(0x0A000000), // 4% opacity
-        offset: Offset(0, 2),
-        blurRadius: 4,
-        spreadRadius: -1,
-      ),
-    ];
+/// Premium Shadow Definitions
+/// Based on modern design systems with subtle, realistic shadows
+class Shadows {
+  Shadows._();
 
-    // Medium shadows for elevated cards
-    static const List<BoxShadow> medium = [
-      BoxShadow(
-        color: Color(0x14000000), // 8% opacity
-        offset: Offset(0, 2),
-        blurRadius: 4,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: Color(0x0F000000), // 6% opacity
-        offset: Offset(0, 4),
-        blurRadius: 8,
-        spreadRadius: -2,
-      ),
-    ];
+  // Soft shadows for cards and containers
+  static const List<BoxShadow> soft = [
+    BoxShadow(
+      color: Color(0x0F000000), // 6% opacity
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: Color(0x0A000000), // 4% opacity
+      offset: Offset(0, 2),
+      blurRadius: 4,
+      spreadRadius: -1,
+    ),
+  ];
 
-    // Strong shadows for modals and overlays
-    static const List<BoxShadow> strong = [
-      BoxShadow(
-        color: Color(0x1F000000), // 12% opacity
-        offset: Offset(0, 4),
-        blurRadius: 8,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: Color(0x14000000), // 8% opacity
-        offset: Offset(0, 8),
-        blurRadius: 16,
-        spreadRadius: -4,
-      ),
-    ];
+  // Medium shadows for elevated cards
+  static const List<BoxShadow> medium = [
+    BoxShadow(
+      color: Color(0x14000000), // 8% opacity
+      offset: Offset(0, 2),
+      blurRadius: 4,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: Color(0x0F000000), // 6% opacity
+      offset: Offset(0, 4),
+      blurRadius: 8,
+      spreadRadius: -2,
+    ),
+  ];
 
-    // Premium shadows for FABs and buttons
-    static const List<BoxShadow> button = [
-      BoxShadow(
-        color: Color(0x14000000), // 8% opacity
-        offset: Offset(0, 1),
-        blurRadius: 2,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: Color(0x0A000000), // 4% opacity
-        offset: Offset(0, 2),
-        blurRadius: 4,
-        spreadRadius: -1,
-      ),
-    ];
+  // Strong shadows for modals and overlays
+  static const List<BoxShadow> strong = [
+    BoxShadow(
+      color: Color(0x1F000000), // 12% opacity
+      offset: Offset(0, 4),
+      blurRadius: 8,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: Color(0x14000000), // 8% opacity
+      offset: Offset(0, 8),
+      blurRadius: 16,
+      spreadRadius: -4,
+    ),
+  ];
 
-    // Pressed state shadows
-    static const List<BoxShadow> pressed = [
-      BoxShadow(
-        color: Color(0x1F000000), // 12% opacity
-        offset: Offset(0, 2),
-        blurRadius: 4,
-        spreadRadius: 0,
-      ),
-    ];
+  // Premium shadows for FABs and buttons
+  static const List<BoxShadow> button = [
+    BoxShadow(
+      color: Color(0x14000000), // 8% opacity
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: Color(0x0A000000), // 4% opacity
+      offset: Offset(0, 2),
+      blurRadius: 4,
+      spreadRadius: -1,
+    ),
+  ];
 
-    // Colored shadows for brand elements
-    static List<BoxShadow> colored(Color color, {double opacity = 0.3}) => [
-      BoxShadow(
-        color: color.withOpacity(opacity * 0.6),
-        offset: const Offset(0, 2),
-        blurRadius: 8,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: color.withOpacity(opacity * 0.4),
-        offset: const Offset(0, 4),
-        blurRadius: 16,
-        spreadRadius: -2,
-      ),
-    ];
+  // Pressed state shadows
+  static const List<BoxShadow> pressed = [
+    BoxShadow(
+      color: Color(0x1F000000), // 12% opacity
+      offset: Offset(0, 2),
+      blurRadius: 4,
+      spreadRadius: 0,
+    ),
+  ];
 
-    // Glow effects for focus states
-    static List<BoxShadow> glow(Color color, {double opacity = 0.5}) => [
-      BoxShadow(
-        color: color.withOpacity(opacity),
-        offset: Offset.zero,
-        blurRadius: 8,
-        spreadRadius: 0,
-      ),
-    ];
+  // Colored shadows for brand elements
+  static List<BoxShadow> colored(Color color, {double opacity = 0.3}) => [
+        BoxShadow(
+          color: color.withOpacity(opacity * 0.6),
+          offset: const Offset(0, 2),
+          blurRadius: 8,
+          spreadRadius: 0,
+        ),
+        BoxShadow(
+          color: color.withOpacity(opacity * 0.4),
+          offset: const Offset(0, 4),
+          blurRadius: 16,
+          spreadRadius: -2,
+        ),
+      ];
 
-    // Inner shadows (using inset property in custom widgets)
-    static const List<BoxShadow> inner = [
-      BoxShadow(
-        color: Color(0x0F000000), // 6% opacity
-        offset: Offset(0, 1),
-        blurRadius: 2,
-        spreadRadius: 0,
-      ),
-    ];
-  }
+  // Glow effects for focus states
+  static List<BoxShadow> glow(Color color, {double opacity = 0.5}) => [
+        BoxShadow(
+          color: color.withOpacity(opacity),
+          offset: Offset.zero,
+          blurRadius: 8,
+          spreadRadius: 0,
+        ),
+      ];
 
-  /// Semantic Shadow Assignments
-  static class Semantic {
-    // Component-specific shadows
-    static const List<BoxShadow> card = Shadows.soft;
-    static const List<BoxShadow> cardElevated = Shadows.medium;
-    static const List<BoxShadow> modal = Shadows.strong;
-    static const List<BoxShadow> fab = Shadows.button;
-    static const List<BoxShadow> button = Shadows.button;
-    static const List<BoxShadow> buttonPressed = Shadows.pressed;
-    static const List<BoxShadow> appBar = Shadows.soft;
-    static const List<BoxShadow> bottomSheet = Shadows.strong;
-    static const List<BoxShadow> dialog = Shadows.strong;
-    static const List<BoxShadow> snackBar = Shadows.medium;
-    
-    // Special effects
-    static List<BoxShadow> focus(Color primaryColor) => Shadows.glow(primaryColor, opacity: 0.3);
-    static List<BoxShadow> success = Shadows.colored(const Color(0xFF10B981));
-    static List<BoxShadow> warning = Shadows.colored(const Color(0xFFF59E0B));
-    static List<BoxShadow> error = Shadows.colored(const Color(0xFFEF4444));
-  }
+  // Inner shadows (using inset property in custom widgets)
+  static const List<BoxShadow> inner = [
+    BoxShadow(
+      color: Color(0x0F000000), // 6% opacity
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+    ),
+  ];
+}
 
-  /// Material 3 Elevation Mapping
+/// Semantic Shadow Assignments
+class SemanticShadows {
+  SemanticShadows._();
+
+  // Component-specific shadows
+  static const List<BoxShadow> card = Shadows.soft;
+  static const List<BoxShadow> cardElevated = Shadows.medium;
+  static const List<BoxShadow> modal = Shadows.strong;
+  static const List<BoxShadow> fab = Shadows.button;
+  static const List<BoxShadow> button = Shadows.button;
+  static const List<BoxShadow> buttonPressed = Shadows.pressed;
+  static const List<BoxShadow> appBar = Shadows.soft;
+  static const List<BoxShadow> bottomSheet = Shadows.strong;
+  static const List<BoxShadow> dialog = Shadows.strong;
+  static const List<BoxShadow> snackBar = Shadows.medium;
+
+  // Special effects
+  static List<BoxShadow> focus(Color primaryColor) =>
+      Shadows.glow(primaryColor, opacity: 0.3);
+  static List<BoxShadow> success = Shadows.colored(const Color(0xFF10B981));
+  static List<BoxShadow> warning = Shadows.colored(const Color(0xFFF59E0B));
+  static List<BoxShadow> error = Shadows.colored(const Color(0xFFEF4444));
+}
+
+/// Material 3 Elevation Mapping
+class ElevationShadows {
+  ElevationShadows._();
+
   static List<BoxShadow> fromElevation(double elevation) {
     switch (elevation) {
       case 0:
@@ -166,47 +173,49 @@ class AdvancedShadows {
         return Shadows.medium;
     }
   }
+}
 
-  /// Dark Mode Shadow Adjustments
-  static class DarkMode {
-    // Reduced shadows for dark themes
-    static const List<BoxShadow> soft = [
-      BoxShadow(
-        color: Color(0x14000000), // 8% opacity
-        offset: Offset(0, 1),
-        blurRadius: 3,
-        spreadRadius: 0,
-      ),
-    ];
+/// Dark Mode Shadow Adjustments
+class DarkModeShadows {
+  DarkModeShadows._();
 
-    static const List<BoxShadow> medium = [
-      BoxShadow(
-        color: Color(0x1F000000), // 12% opacity
-        offset: Offset(0, 2),
-        blurRadius: 6,
-        spreadRadius: 0,
-      ),
-    ];
+  // Reduced shadows for dark themes
+  static const List<BoxShadow> soft = [
+    BoxShadow(
+      color: Color(0x14000000), // 8% opacity
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+    ),
+  ];
 
-    static const List<BoxShadow> strong = [
-      BoxShadow(
-        color: Color(0x29000000), // 16% opacity
-        offset: Offset(0, 4),
-        blurRadius: 12,
-        spreadRadius: 0,
-      ),
-    ];
+  static const List<BoxShadow> medium = [
+    BoxShadow(
+      color: Color(0x1F000000), // 12% opacity
+      offset: Offset(0, 2),
+      blurRadius: 6,
+      spreadRadius: 0,
+    ),
+  ];
 
-    // Glowing effects for dark mode
-    static List<BoxShadow> glow(Color color, {double opacity = 0.4}) => [
-      BoxShadow(
-        color: color.withOpacity(opacity),
-        offset: Offset.zero,
-        blurRadius: 12,
-        spreadRadius: 0,
-      ),
-    ];
-  }
+  static const List<BoxShadow> strong = [
+    BoxShadow(
+      color: Color(0x29000000), // 16% opacity
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+    ),
+  ];
+
+  // Glowing effects for dark mode
+  static List<BoxShadow> glow(Color color, {double opacity = 0.4}) => [
+        BoxShadow(
+          color: color.withOpacity(opacity),
+          offset: Offset.zero,
+          blurRadius: 12,
+          spreadRadius: 0,
+        ),
+      ];
 }
 
 /// Shadow extensions for easy usage
@@ -214,11 +223,11 @@ extension BoxShadowExtensions on List<BoxShadow> {
   /// Convert shadows to dark mode variants
   List<BoxShadow> get darkMode {
     return map((shadow) => BoxShadow(
-      color: shadow.color.withOpacity(shadow.color.opacity * 0.7),
-      offset: shadow.offset,
-      blurRadius: shadow.blurRadius * 0.8,
-      spreadRadius: shadow.spreadRadius,
-    )).toList();
+          color: shadow.color.withOpacity(shadow.color.opacity * 0.7),
+          offset: shadow.offset,
+          blurRadius: shadow.blurRadius * 0.8,
+          spreadRadius: shadow.spreadRadius,
+        )).toList();
   }
 
   /// Add colored tint to shadows
@@ -237,6 +246,8 @@ extension BoxShadowExtensions on List<BoxShadow> {
 
 /// Shadow utilities
 class ShadowUtils {
+  ShadowUtils._();
+
   /// Create custom shadow with specific parameters
   static List<BoxShadow> custom({
     required Color color,

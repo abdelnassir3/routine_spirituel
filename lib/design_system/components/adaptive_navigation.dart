@@ -10,7 +10,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
   final List<NavigationDestination> destinations;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? appBar;
-  
+
   const AdaptiveNavigationScaffold({
     super.key,
     required this.body,
@@ -20,7 +20,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.appBar,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
@@ -38,24 +38,26 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
                   labelType: constraints.maxWidth > Breakpoints.xl
                       ? NavigationRailLabelType.none
                       : NavigationRailLabelType.all,
-                  destinations: destinations.map((d) => 
-                    NavigationRailDestination(
-                      icon: d.icon,
-                      selectedIcon: d.selectedIcon ?? d.icon,
-                      label: Text(d.label),
-                    ),
-                  ).toList(),
-                  trailing: floatingActionButton != null 
-                    ? Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: floatingActionButton,
-                          ),
+                  destinations: destinations
+                      .map(
+                        (d) => NavigationRailDestination(
+                          icon: d.icon,
+                          selectedIcon: d.selectedIcon ?? d.icon,
+                          label: Text(d.label),
                         ),
                       )
-                    : null,
+                      .toList(),
+                  trailing: floatingActionButton != null
+                      ? Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: floatingActionButton,
+                            ),
+                          ),
+                        )
+                      : null,
                 ),
                 const VerticalDivider(width: 1),
                 Expanded(child: body),
@@ -63,7 +65,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
             ),
           );
         }
-        
+
         // Tablet: NavigationRail compact
         if (screenType == ScreenType.tablet) {
           return Scaffold(
@@ -75,13 +77,15 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
                   selectedIndex: selectedIndex,
                   onDestinationSelected: onDestinationSelected,
                   labelType: NavigationRailLabelType.selected,
-                  destinations: destinations.map((d) => 
-                    NavigationRailDestination(
-                      icon: d.icon,
-                      selectedIcon: d.selectedIcon ?? d.icon,
-                      label: Text(d.label),
-                    ),
-                  ).toList(),
+                  destinations: destinations
+                      .map(
+                        (d) => NavigationRailDestination(
+                          icon: d.icon,
+                          selectedIcon: d.selectedIcon ?? d.icon,
+                          label: Text(d.label),
+                        ),
+                      )
+                      .toList(),
                 ),
                 const VerticalDivider(width: 1),
                 Expanded(child: body),
@@ -90,7 +94,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
             floatingActionButton: floatingActionButton,
           );
         }
-        
+
         // Mobile: BottomNavigationBar
         return Scaffold(
           appBar: appBar,
@@ -113,7 +117,7 @@ class AdaptiveMasterDetailLayout extends StatelessWidget {
   final Widget? detail;
   final double masterWidth;
   final bool showDivider;
-  
+
   const AdaptiveMasterDetailLayout({
     super.key,
     required this.master,
@@ -121,7 +125,7 @@ class AdaptiveMasterDetailLayout extends StatelessWidget {
     this.masterWidth = 320.0,
     this.showDivider = true,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
@@ -130,7 +134,7 @@ class AdaptiveMasterDetailLayout extends StatelessWidget {
         if (screenType == ScreenType.mobile) {
           return detail ?? master;
         }
-        
+
         // Tablet/Desktop: Show both master and detail side by side
         return Row(
           children: [
@@ -152,11 +156,11 @@ class AdaptiveMasterDetailLayout extends StatelessWidget {
 /// Empty state for detail view when nothing is selected
 class _EmptyDetailView extends StatelessWidget {
   const _EmptyDetailView();
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -185,7 +189,7 @@ class AdaptiveDialog extends StatelessWidget {
   final Widget content;
   final List<Widget>? actions;
   final double? maxWidth;
-  
+
   const AdaptiveDialog({
     super.key,
     this.title,
@@ -193,16 +197,19 @@ class AdaptiveDialog extends StatelessWidget {
     this.actions,
     this.maxWidth,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final screenType = context.screenType;
-    
+
     // Adaptive max width based on screen type
-    final adaptiveMaxWidth = maxWidth ?? (screenType == ScreenType.mobile ? double.infinity
-        : screenType == ScreenType.tablet ? 600.0
-        : 800.0);
-    
+    final adaptiveMaxWidth = maxWidth ??
+        (screenType == ScreenType.mobile
+            ? double.infinity
+            : screenType == ScreenType.tablet
+                ? 600.0
+                : 800.0);
+
     if (screenType == ScreenType.mobile) {
       // Full screen dialog on mobile
       return Dialog.fullscreen(
@@ -215,7 +222,7 @@ class AdaptiveDialog extends StatelessWidget {
         ),
       );
     }
-    
+
     // Regular dialog with constrained width on tablet/desktop
     return AlertDialog(
       title: title,
@@ -237,7 +244,7 @@ class AdaptiveAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final bool centerTitle;
   final double? elevation;
-  
+
   const AdaptiveAppBar({
     super.key,
     this.title,
@@ -246,16 +253,16 @@ class AdaptiveAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle = false,
     this.elevation,
   });
-  
+
   @override
   Size get preferredSize {
     return const Size.fromHeight(kToolbarHeight);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final screenType = context.screenType;
-    
+
     return AppBar(
       title: title,
       actions: actions,

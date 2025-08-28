@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:isar/isar.dart';
 
 part 'isar_collections.g.dart';
@@ -12,7 +13,8 @@ class ContentDoc {
   // Final text displayed (after validation/diacritization)
   String? body;
   // Source management
-  String? source; // manual|image_ocr|pdf_ocr|audio_transcription|verses|surah|mixed
+  String?
+      source; // manual|image_ocr|pdf_ocr|audio_transcription|verses|surah|mixed
   String? rawBody; // OCR/transcription raw result
   String? correctedBody; // corrected by user
   String? diacritizedBody; // Arabic diacritized
@@ -49,7 +51,7 @@ class TaskContent {
   String? category;
   int? defaultRepetitions;
   String? notes;
-  
+
   @Index()
   String get taskId => id;
 }

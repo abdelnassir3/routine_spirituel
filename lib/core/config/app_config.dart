@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// Secure application configuration using compile-time constants
-/// 
+///
 /// Usage:
 /// ```bash
 /// flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co \
@@ -12,10 +12,11 @@ class AppConfig {
   AppConfig._();
 
   // ===== Core Configuration =====
-  
+
   /// Application environment
   static Environment get environment {
-    const env = String.fromEnvironment('ENVIRONMENT', defaultValue: 'development');
+    const env =
+        String.fromEnvironment('ENVIRONMENT', defaultValue: 'development');
     return Environment.values.firstWhere(
       (e) => e.name == env,
       orElse: () => Environment.development,
@@ -35,7 +36,7 @@ class AppConfig {
   }
 
   // ===== Supabase Configuration =====
-  
+
   /// Supabase project URL
   static String get supabaseUrl {
     const url = String.fromEnvironment('SUPABASE_URL');
@@ -122,7 +123,8 @@ class AppConfig {
   /// Check if analytics is enabled
   static bool get isAnalyticsEnabled {
     if (!isProduction) return false;
-    const enabled = bool.fromEnvironment('ENABLE_ANALYTICS', defaultValue: false);
+    const enabled =
+        bool.fromEnvironment('ENABLE_ANALYTICS', defaultValue: false);
     return enabled && (mixpanelToken != null || amplitudeKey != null);
   }
 
@@ -239,7 +241,7 @@ enum Environment {
 /// Configuration exception
 class ConfigurationException implements Exception {
   final String message;
-  
+
   ConfigurationException(this.message);
 
   @override

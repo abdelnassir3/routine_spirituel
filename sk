@@ -1,0 +1,16 @@
+{
+  "name": "cipher-local",
+  "services": {
+    "llm": {
+      "provider": "openai",
+      "model": "gpt-4o-mini"
+    },
+    "embeddings": {
+      "provider": "openai", 
+      "model": "text-embedding-3-small"
+    }
+  },
+  "mcp": {
+    "enabled": true
+  }
+}

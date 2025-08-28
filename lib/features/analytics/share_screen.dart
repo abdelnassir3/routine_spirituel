@@ -8,25 +8,25 @@ import '../../core/widgets/haptic_wrapper.dart';
 /// Écran de partage social
 class ShareScreen extends ConsumerStatefulWidget {
   const ShareScreen({super.key});
-  
+
   @override
   ConsumerState<ShareScreen> createState() => _ShareScreenState();
 }
 
 class _ShareScreenState extends ConsumerState<ShareScreen> {
   final ShareService _shareService = ShareService.instance;
-  
+
   // État
   ShareCardType _selectedType = ShareCardType.streak;
   ShareCardStyle _selectedStyle = ShareCardStyle.modern;
   String _customMessage = '';
   bool _isGenerating = false;
   ShareCard? _generatedCard;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Partager'),
@@ -53,7 +53,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                   icon: Icons.local_fire_department,
                   color: Colors.orange,
                   isSelected: _selectedType == ShareCardType.streak,
-                  onTap: () => setState(() => _selectedType = ShareCardType.streak),
+                  onTap: () =>
+                      setState(() => _selectedType = ShareCardType.streak),
                 ),
                 _TypeOption(
                   type: ShareCardType.milestone,
@@ -62,7 +63,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                   icon: Icons.emoji_events,
                   color: Colors.amber,
                   isSelected: _selectedType == ShareCardType.milestone,
-                  onTap: () => setState(() => _selectedType = ShareCardType.milestone),
+                  onTap: () =>
+                      setState(() => _selectedType = ShareCardType.milestone),
                 ),
                 _TypeOption(
                   type: ShareCardType.monthlyStats,
@@ -71,7 +73,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                   icon: Icons.calendar_month,
                   color: Colors.purple,
                   isSelected: _selectedType == ShareCardType.monthlyStats,
-                  onTap: () => setState(() => _selectedType = ShareCardType.monthlyStats),
+                  onTap: () => setState(
+                      () => _selectedType = ShareCardType.monthlyStats),
                 ),
                 _TypeOption(
                   type: ShareCardType.story,
@@ -80,14 +83,15 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                   icon: Icons.amp_stories,
                   color: Colors.blue,
                   isSelected: _selectedType == ShareCardType.story,
-                  onTap: () => setState(() => _selectedType = ShareCardType.story),
+                  onTap: () =>
+                      setState(() => _selectedType = ShareCardType.story),
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Style visuel
           _SectionCard(
             title: 'Style visuel',
@@ -101,7 +105,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                       style: ShareCardStyle.modern,
                       label: 'Moderne',
                       isSelected: _selectedStyle == ShareCardStyle.modern,
-                      onTap: () => setState(() => _selectedStyle = ShareCardStyle.modern),
+                      onTap: () => setState(
+                          () => _selectedStyle = ShareCardStyle.modern),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -110,7 +115,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                       style: ShareCardStyle.classic,
                       label: 'Classique',
                       isSelected: _selectedStyle == ShareCardStyle.classic,
-                      onTap: () => setState(() => _selectedStyle = ShareCardStyle.classic),
+                      onTap: () => setState(
+                          () => _selectedStyle = ShareCardStyle.classic),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -119,16 +125,17 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                       style: ShareCardStyle.minimal,
                       label: 'Minimal',
                       isSelected: _selectedStyle == ShareCardStyle.minimal,
-                      onTap: () => setState(() => _selectedStyle = ShareCardStyle.minimal),
+                      onTap: () => setState(
+                          () => _selectedStyle = ShareCardStyle.minimal),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Message personnalisé
           _SectionCard(
             title: 'Message personnalisé (optionnel)',
@@ -147,7 +154,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                     onChanged: (value) => _customMessage = value,
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Templates de messages
                   Text(
                     'Ou utilisez un template :',
@@ -156,7 +163,8 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
-                    children: _shareService.getShareTemplates()
+                    children: _shareService
+                        .getShareTemplates()
                         .take(3)
                         .map((template) => ActionChip(
                               label: Text(template.title),
@@ -172,14 +180,14 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Aperçu des données
           _buildDataPreview(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Résultat généré
           if (_generatedCard != null)
             Card(
@@ -206,7 +214,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Aperçu miniature
                     Container(
                       height: 200,
@@ -232,9 +240,9 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Actions
                     Row(
                       children: [
@@ -263,11 +271,11 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
                 ),
               ),
             ),
-          
+
           const SizedBox(height: 80),
         ],
       ),
-      
+
       // Bouton de génération
       floatingActionButton: HapticWrapper(
         type: HapticType.impact,
@@ -289,7 +297,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
       ),
     );
   }
-  
+
   Widget _buildDataPreview() {
     return Consumer(
       builder: (context, ref, _) {
@@ -307,7 +315,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               loading: () => const _LoadingCard(),
               error: (_, __) => const SizedBox.shrink(),
             );
-            
+
           case ShareCardType.milestone:
             final milestonesAsync = ref.watch(milestonesProvider);
             return milestonesAsync.when(
@@ -330,7 +338,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               loading: () => const _LoadingCard(),
               error: (_, __) => const SizedBox.shrink(),
             );
-            
+
           case ShareCardType.monthlyStats:
             final monthlyAsync = ref.watch(monthlyMetricsProvider);
             return monthlyAsync.when(
@@ -350,7 +358,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               loading: () => const _LoadingCard(),
               error: (_, __) => const SizedBox.shrink(),
             );
-            
+
           case ShareCardType.story:
             final chartAsync = ref.watch(repetitionsChartProvider);
             return chartAsync.when(
@@ -364,23 +372,23 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               loading: () => const _LoadingCard(),
               error: (_, __) => const SizedBox.shrink(),
             );
-            
+
           default:
             return const SizedBox.shrink();
         }
       },
     );
   }
-  
+
   Future<void> _generateCard() async {
     setState(() {
       _isGenerating = true;
       _generatedCard = null;
     });
-    
+
     try {
       ShareCard? card;
-      
+
       switch (_selectedType) {
         case ShareCardType.streak:
           final streak = await ref.read(streakDataProvider.future);
@@ -390,7 +398,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
             customMessage: _customMessage.isNotEmpty ? _customMessage : null,
           );
           break;
-          
+
         case ShareCardType.milestone:
           final milestones = await ref.read(milestonesProvider.future);
           if (milestones.isNotEmpty) {
@@ -401,7 +409,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
             );
           }
           break;
-          
+
         case ShareCardType.monthlyStats:
           final metrics = await ref.read(monthlyMetricsProvider.future);
           card = await _shareService.createMonthlyStatsCard(
@@ -410,7 +418,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
             customMessage: _customMessage.isNotEmpty ? _customMessage : null,
           );
           break;
-          
+
         case ShareCardType.story:
           final data = await ref.read(repetitionsChartProvider.future);
           card = await _shareService.createProgressStory(
@@ -420,15 +428,15 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
             customMessage: _customMessage.isNotEmpty ? _customMessage : null,
           );
           break;
-          
+
         default:
           break;
       }
-      
+
       setState(() {
         _generatedCard = card;
       });
-      
+
       if (card != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -452,16 +460,16 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
       });
     }
   }
-  
+
   Future<void> _regenerateCard() async {
     await _generateCard();
   }
-  
+
   Future<void> _shareCard() async {
     if (_generatedCard == null) return;
-    
+
     final success = await _shareService.shareCard(_generatedCard!);
-    
+
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -470,7 +478,7 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
       );
     }
   }
-  
+
   void _showHelp() {
     showDialog(
       context: context,
@@ -512,17 +520,17 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-  
+
   const _SectionCard({
     required this.title,
     required this.icon,
     required this.child,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -558,7 +566,7 @@ class _TypeOption extends StatelessWidget {
   final Color color;
   final bool isSelected;
   final VoidCallback onTap;
-  
+
   const _TypeOption({
     required this.type,
     required this.title,
@@ -568,7 +576,7 @@ class _TypeOption extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -599,32 +607,31 @@ class _StyleChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-  
+
   const _StyleChip({
     required this.style,
     required this.label,
     required this.isSelected,
     required this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? theme.primaryColor.withOpacity(0.1)
               : Colors.grey.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected 
-                ? theme.primaryColor
-                : Colors.grey.withOpacity(0.3),
+            color:
+                isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -646,16 +653,16 @@ class _StyleChip extends StatelessWidget {
 class _DataPreviewCard extends StatelessWidget {
   final String title;
   final List<_DataItem> items;
-  
+
   const _DataPreviewCard({
     required this.title,
     required this.items,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       color: theme.primaryColor.withOpacity(0.05),
       child: Padding(
@@ -671,25 +678,26 @@ class _DataPreviewCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ...items.map((item) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    item.label,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
-                    ),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        item.label,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withOpacity(0.7),
+                        ),
+                      ),
+                      Text(
+                        item.value,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    item.value,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                )),
           ],
         ),
       ),
@@ -701,16 +709,16 @@ class _DataPreviewCard extends StatelessWidget {
 class _DataItem {
   final String label;
   final String value;
-  
+
   const _DataItem(this.label, this.value);
 }
 
 /// Card vide
 class _EmptyDataCard extends StatelessWidget {
   final String message;
-  
+
   const _EmptyDataCard({required this.message});
-  
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -743,7 +751,7 @@ class _EmptyDataCard extends StatelessWidget {
 /// Card de chargement
 class _LoadingCard extends StatelessWidget {
   const _LoadingCard();
-  
+
   @override
   Widget build(BuildContext context) {
     return const Card(

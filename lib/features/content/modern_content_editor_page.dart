@@ -1313,7 +1313,7 @@ class _ModernContentEditorPageState
             print('🔧 DEBUG EDITOR: versesText length: ${versesText.length}');
             print('🔧 DEBUG EDITOR: versesRefs: $versesRefs');
             print('🔧 DEBUG EDITOR: versesText COMPLET: "$versesText"');
-            
+
             final content = ref.read(contentServiceProvider);
 
             // Mettre à jour les contrôleurs de texte
@@ -1786,17 +1786,19 @@ class _ModernContentEditorPageState
   }) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    
+
     // Vérifier si le texte contient des marqueurs de versets
-    final hasVerseMarkers = controller.text.contains(RegExp(r'\{\{V:\d+(?::\d+)?\}\}'));
-    
+    final hasVerseMarkers =
+        controller.text.contains(RegExp(r'\{\{V:\d+(?::\d+)?\}\}'));
+
     print('🔧 DEBUG: _buildTextFieldWithVerseSupport appelé');
     print('🔧 DEBUG: controller.text.length = ${controller.text.length}');
     print('🔧 DEBUG: hasVerseMarkers = $hasVerseMarkers');
     if (controller.text.isNotEmpty) {
-      print('🔧 DEBUG: Premier 100 caractères: ${controller.text.substring(0, controller.text.length > 100 ? 100 : controller.text.length)}');
+      print(
+          '🔧 DEBUG: Premier 100 caractères: ${controller.text.substring(0, controller.text.length > 100 ? 100 : controller.text.length)}');
     }
-    
+
     if (hasVerseMarkers) {
       // Mode affichage avec marqueurs transformés en cercles
       return Container(
@@ -1815,11 +1817,12 @@ class _ModernContentEditorPageState
             _buildTextWithVerseNumbers(
               controller.text,
               theme.textTheme.bodyMedium?.copyWith(
-                fontFamily: isArabic ? 'NotoNaskhArabic' : 'Inter',
-                fontSize: 16,
-                height: 1.6,
-                color: cs.onSurface,
-              ) ?? const TextStyle(),
+                    fontFamily: isArabic ? 'NotoNaskhArabic' : 'Inter',
+                    fontSize: 16,
+                    height: 1.6,
+                    color: cs.onSurface,
+                  ) ??
+                  const TextStyle(),
               isArabic,
               false, // pas de justification
             ),
@@ -1882,9 +1885,10 @@ class _ModernContentEditorPageState
   }
 
   /// Dialog pour éditer le texte avec marqueurs
-  void _showEditDialog(TextEditingController controller, bool isArabic, ValueChanged<String> onChanged) {
+  void _showEditDialog(TextEditingController controller, bool isArabic,
+      ValueChanged<String> onChanged) {
     final editController = TextEditingController(text: controller.text);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1956,7 +1960,8 @@ class _ModernContentEditorPageState
   }
 
   /// Convertit le texte avec marqueurs en RichText avec cercles de verset (copié de reading_session_page.dart)
-  Widget _buildTextWithVerseNumbers(String text, TextStyle style, bool isArabic, bool justify) {
+  Widget _buildTextWithVerseNumbers(
+      String text, TextStyle style, bool isArabic, bool justify) {
     // Support pour les deux formats : {{V:verset}} et {{V:sourate:verset}}
     final versePattern = RegExp(r'\{\{V:(\d+)(?::(\d+))?\}\}');
     final matches = versePattern.allMatches(text);
@@ -2158,7 +2163,7 @@ class _ModernContentEditorPageState
   Future<String> _importFromImage(bool isArabic) async {
     // SOLUTION TEMPORAIRE POUR SIMULATEUR iOS
     // Le simulateur iOS a des problèmes avec l'accès natif aux photos
-    
+
     // Afficher d'abord un choix entre méthodes de sélection
     final String? method = await showDialog<String>(
       context: context,
@@ -2206,7 +2211,7 @@ class _ModernContentEditorPageState
 
     try {
       String? imagePath;
-      
+
       switch (method) {
         case 'file_picker':
           // Utiliser FilePicker comme fallback
@@ -2219,7 +2224,7 @@ class _ModernContentEditorPageState
             _lastImportedTitle = p.basename(imagePath);
           }
           break;
-          
+
         case 'manual_path':
           // Permettre la saisie manuelle du chemin
           final controller = TextEditingController();
@@ -2247,7 +2252,8 @@ class _ModernContentEditorPageState
                   child: const Text('Annuler'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context, controller.text.trim()),
+                  onPressed: () =>
+                      Navigator.pop(context, controller.text.trim()),
                   child: const Text('OK'),
                 ),
               ],
@@ -2258,7 +2264,7 @@ class _ModernContentEditorPageState
             _lastImportedTitle = p.basename(imagePath);
           }
           break;
-          
+
         case 'test_image':
           // Utiliser l'image de test créée précédemment
           final testImages = [
@@ -2266,7 +2272,7 @@ class _ModernContentEditorPageState
             '/Users/mac/Documents/Projet_sprit/assets/test_images/test_arabic_ocr.png',
             '/Users/mac/Documents/Projet_sprit/assets/test_images/simple_arabic_ocr.png',
           ];
-          
+
           final selectedImage = await showDialog<String>(
             context: context,
             builder: (context) => AlertDialog(
@@ -2287,7 +2293,8 @@ class _ModernContentEditorPageState
                     onTap: () => Navigator.pop(context, testImages[1]),
                   ),
                   ListTile(
-                    leading: const Text('عر', style: TextStyle(fontSize: 18, color: Colors.green)),
+                    leading: const Text('عر',
+                        style: TextStyle(fontSize: 18, color: Colors.green)),
                     title: const Text('Texte arabe (simple)'),
                     subtitle: const Text('Invocations - texte simple et clair'),
                     onTap: () => Navigator.pop(context, testImages[2]),
@@ -2302,7 +2309,7 @@ class _ModernContentEditorPageState
               ],
             ),
           );
-          
+
           if (selectedImage != null) {
             imagePath = selectedImage;
             _lastImportedTitle = p.basename(imagePath);
@@ -2313,7 +2320,7 @@ class _ModernContentEditorPageState
       if (imagePath != null) {
         return await _recognizeImageAuto(imagePath, isArabic: isArabic);
       }
-      
+
       return '';
     } catch (e) {
       if (mounted) {
@@ -2350,59 +2357,56 @@ class _ModernContentEditorPageState
     // Prefer engine based on platform and selected language for best results
     try {
       final engine = _ocrEngine;
-      
+
       // Debug information
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '🔍 OCR Debug: ${isArabic ? "Arabe" : "Français"} - ${kIsWeb ? "Web" : Platform.operatingSystem} - Engine: $engine'
-            ),
+                '🔍 OCR Debug: ${isArabic ? "Arabe" : "Français"} - ${kIsWeb ? "Web" : Platform.operatingSystem} - Engine: $engine'),
             duration: const Duration(seconds: 3),
           ),
         );
       }
-      
+
       // Note: Tesseract logic removed. OCR provider handles service selection automatically.
       // iOS uses MacosVisionOcrService with improved Arabic support
       // Android can use MlkitOcrService or TesseractOcrService based on user preference
-      
+
       // Otherwise, use provider-selected engine
       final ocr = await ref.read(ocrProvider.future);
-      
+
       // Debug OCR service info
       if (mounted) {
         final serviceName = ocr.runtimeType.toString();
         final platformInfo = kIsWeb ? "Web" : Platform.operatingSystem;
         final languageInfo = isArabic ? "Arabe" : "Français";
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '🔧 $serviceName sur $platformInfo - $languageInfo - ${p.basename(imagePath)}'
-            ),
+                '🔧 $serviceName sur $platformInfo - $languageInfo - ${p.basename(imagePath)}'),
             duration: const Duration(seconds: 3),
             backgroundColor: Colors.blueGrey,
           ),
         );
       }
-      
+
       final text =
           await ocr.recognizeImage(imagePath, language: isArabic ? 'ar' : 'fr');
-          
+
       // Debug result
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '📊 OCR Résultat: ${text.isEmpty ? "VIDE" : "${text.length} caractères"}'
-            ),
+                '📊 OCR Résultat: ${text.isEmpty ? "VIDE" : "${text.length} caractères"}'),
             backgroundColor: text.isEmpty ? Colors.red : Colors.green,
             duration: const Duration(seconds: 4),
           ),
         );
       }
-      
+
       if (mounted && ocr is StubOcrService) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -2410,7 +2414,7 @@ class _ModernContentEditorPageState
                   'OCR (stub) utilisé: résultat indicatif. Activez Vision/Tesseract dans Réglages.')),
         );
       }
-      
+
       return text;
     } catch (e) {
       if (mounted) {
@@ -2434,9 +2438,8 @@ class _ModernContentEditorPageState
       final buffer = StringBuffer();
       for (int i = 1; i <= pageCount && i <= maxPages; i++) {
         final page = await doc.getPage(i);
-        final pageImage = await page.render(
-            width: page.width, 
-            height: page.height);
+        final pageImage =
+            await page.render(width: page.width, height: page.height);
         await page.close();
         if (pageImage == null) continue;
         final temp = await _writeTempPng(pageImage.bytes);
@@ -2469,22 +2472,24 @@ class _ModernContentEditorPageState
 
     // Show choice between file picker and manual path
     final bool useFilePicker = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Importer un fichier'),
-        content: const Text('Voulez-vous parcourir vos fichiers ou saisir un chemin manuellement ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Chemin manuel'),
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Importer un fichier'),
+            content: const Text(
+                'Voulez-vous parcourir vos fichiers ou saisir un chemin manuellement ?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Chemin manuel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Parcourir'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Parcourir'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
 
     String? path;
 
@@ -2499,8 +2504,10 @@ class _ModernContentEditorPageState
           }
         } catch (e) {
           // Fallback to FilePicker if MediaPickerWrapper fails
-          final result = await FilePicker.platform.pickFiles(type: FileType.image);
-          if (result?.files.isNotEmpty == true && result!.files.single.path != null) {
+          final result =
+              await FilePicker.platform.pickFiles(type: FileType.image);
+          if (result?.files.isNotEmpty == true &&
+              result!.files.single.path != null) {
             path = result.files.single.path!;
           }
         }
@@ -2510,7 +2517,8 @@ class _ModernContentEditorPageState
           type: _source == 'pdf_ocr' ? FileType.custom : FileType.any,
           allowedExtensions: _source == 'pdf_ocr' ? ['pdf'] : null,
         );
-        if (result?.files.isNotEmpty == true && result!.files.single.path != null) {
+        if (result?.files.isNotEmpty == true &&
+            result!.files.single.path != null) {
           path = result.files.single.path!;
         }
       }

@@ -15,7 +15,7 @@ class DesktopInteractiveWidget extends StatefulWidget {
   final bool enableHoverEffect;
   final Color? hoverColor;
   final Duration animationDuration;
-  
+
   const DesktopInteractiveWidget({
     super.key,
     required this.child,
@@ -29,20 +29,21 @@ class DesktopInteractiveWidget extends StatefulWidget {
     this.hoverColor,
     this.animationDuration = const Duration(milliseconds: 200),
   });
-  
+
   @override
-  State<DesktopInteractiveWidget> createState() => _DesktopInteractiveWidgetState();
+  State<DesktopInteractiveWidget> createState() =>
+      _DesktopInteractiveWidgetState();
 }
 
 class _DesktopInteractiveWidgetState extends State<DesktopInteractiveWidget> {
   bool _hovering = false;
   bool _focused = false;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final effectiveHoverColor = widget.hoverColor ?? theme.hoverColor;
-    
+
     Widget result = MouseRegion(
       cursor: widget.onTap != null ? widget.cursor : SystemMouseCursors.basic,
       onEnter: (_) {
@@ -59,9 +60,9 @@ class _DesktopInteractiveWidgetState extends State<DesktopInteractiveWidget> {
         onTap: widget.onTap,
         onDoubleTap: widget.onDoubleTap,
         onSecondaryTap: widget.onRightClick,
-        onTertiaryTapDown: widget.onMiddleClick != null 
-          ? (_) => widget.onMiddleClick!() 
-          : null,
+        onTertiaryTapDown: widget.onMiddleClick != null
+            ? (_) => widget.onMiddleClick!()
+            : null,
         child: Focus(
           onFocusChange: (focused) => setState(() => _focused = focused),
           child: AnimatedContainer(
@@ -83,14 +84,14 @@ class _DesktopInteractiveWidgetState extends State<DesktopInteractiveWidget> {
         ),
       ),
     );
-    
+
     if (widget.tooltip != null) {
       result = Tooltip(
         message: widget.tooltip!,
         child: result,
       );
     }
-    
+
     return result;
   }
 }
@@ -100,19 +101,19 @@ class KeyboardShortcuts extends StatelessWidget {
   final Widget child;
   final Map<ShortcutActivator, VoidCallback> shortcuts;
   final bool autofocus;
-  
+
   const KeyboardShortcuts({
     super.key,
     required this.child,
     required this.shortcuts,
     this.autofocus = true,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Shortcuts(
-      shortcuts: shortcuts.map((key, value) => 
-        MapEntry(key, VoidCallbackIntent(value))),
+      shortcuts: shortcuts
+          .map((key, value) => MapEntry(key, VoidCallbackIntent(value))),
       child: Actions(
         actions: {
           VoidCallbackIntent: VoidCallbackAction(),
@@ -145,56 +146,66 @@ class VoidCallbackAction extends Action<VoidCallbackIntent> {
 class SpiritualKeyboardShortcuts {
   // Navigation shortcuts
   static const home = SingleActivator(LogicalKeyboardKey.keyH, control: true);
-  static const routines = SingleActivator(LogicalKeyboardKey.keyR, control: true);
+  static const routines =
+      SingleActivator(LogicalKeyboardKey.keyR, control: true);
   static const reader = SingleActivator(LogicalKeyboardKey.keyL, control: true);
-  static const settings = SingleActivator(LogicalKeyboardKey.keyS, control: true);
-  
+  static const settings =
+      SingleActivator(LogicalKeyboardKey.keyS, control: true);
+
   // Action shortcuts
-  static const newRoutine = SingleActivator(LogicalKeyboardKey.keyN, control: true);
+  static const newRoutine =
+      SingleActivator(LogicalKeyboardKey.keyN, control: true);
   static const search = SingleActivator(LogicalKeyboardKey.keyF, control: true);
   static const refresh = SingleActivator(LogicalKeyboardKey.f5);
   static const escape = SingleActivator(LogicalKeyboardKey.escape);
-  
+
   // Counter shortcuts
   static const increment = SingleActivator(LogicalKeyboardKey.space);
   static const decrement = SingleActivator(LogicalKeyboardKey.backspace);
-  static const decrementTen = SingleActivator(LogicalKeyboardKey.backspace, shift: true);
-  static const reset = SingleActivator(LogicalKeyboardKey.keyR, control: true, shift: true);
-  
+  static const decrementTen =
+      SingleActivator(LogicalKeyboardKey.backspace, shift: true);
+  static const reset =
+      SingleActivator(LogicalKeyboardKey.keyR, control: true, shift: true);
+
   // Text navigation
   static const nextPage = SingleActivator(LogicalKeyboardKey.pageDown);
   static const previousPage = SingleActivator(LogicalKeyboardKey.pageUp);
-  static const increaseFontSize = SingleActivator(LogicalKeyboardKey.equal, control: true);
-  static const decreaseFontSize = SingleActivator(LogicalKeyboardKey.minus, control: true);
-  
+  static const increaseFontSize =
+      SingleActivator(LogicalKeyboardKey.equal, control: true);
+  static const decreaseFontSize =
+      SingleActivator(LogicalKeyboardKey.minus, control: true);
+
   // Media controls
-  static const playPause = SingleActivator(LogicalKeyboardKey.space, control: true);
-  static const volumeUp = SingleActivator(LogicalKeyboardKey.arrowUp, control: true);
-  static const volumeDown = SingleActivator(LogicalKeyboardKey.arrowDown, control: true);
+  static const playPause =
+      SingleActivator(LogicalKeyboardKey.space, control: true);
+  static const volumeUp =
+      SingleActivator(LogicalKeyboardKey.arrowUp, control: true);
+  static const volumeDown =
+      SingleActivator(LogicalKeyboardKey.arrowDown, control: true);
 }
 
 /// Mixin to add keyboard navigation to any widget
 mixin KeyboardNavigationMixin<T extends StatefulWidget> on State<T> {
   late FocusNode _focusNode;
-  
+
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
   }
-  
+
   @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();
   }
-  
+
   /// Handle arrow key navigation
   KeyEventResult handleArrowKeys(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }
-    
+
     switch (event.logicalKey) {
       case LogicalKeyboardKey.arrowUp:
         onArrowUp();
@@ -215,7 +226,7 @@ mixin KeyboardNavigationMixin<T extends StatefulWidget> on State<T> {
         return KeyEventResult.ignored;
     }
   }
-  
+
   // Override these methods in your widget
   void onArrowUp() {}
   void onArrowDown() {}
@@ -230,7 +241,7 @@ class DesktopScrollbar extends StatelessWidget {
   final ScrollController? controller;
   final bool isAlwaysShown;
   final double thickness;
-  
+
   const DesktopScrollbar({
     super.key,
     required this.child,
@@ -238,11 +249,11 @@ class DesktopScrollbar extends StatelessWidget {
     this.isAlwaysShown = true,
     this.thickness = 12.0,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Theme(
       data: theme.copyWith(
         scrollbarTheme: ScrollbarThemeData(
@@ -270,13 +281,13 @@ class DesktopScrollbar extends StatelessWidget {
 class DesktopContextMenu extends StatelessWidget {
   final Widget child;
   final List<ContextMenuItem> items;
-  
+
   const DesktopContextMenu({
     super.key,
     required this.child,
     required this.items,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -286,37 +297,43 @@ class DesktopContextMenu extends StatelessWidget {
       child: child,
     );
   }
-  
+
   void _showContextMenu(BuildContext context, Offset position) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
     showMenu(
       context: context,
       position: RelativeRect.fromRect(
         position & const Size(40, 40),
         Offset.zero & overlay.size,
       ),
-      items: items.map((item) => PopupMenuItem(
-        enabled: item.enabled,
-        child: Row(
-          children: [
-            if (item.icon != null) ...[
-              Icon(item.icon, size: 20),
-              const SizedBox(width: 12),
-            ],
-            Text(item.label),
-            const Spacer(),
-            if (item.shortcut != null)
-              Text(
-                item.shortcut!,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+      items: items
+          .map((item) => PopupMenuItem(
+                enabled: item.enabled,
+                child: Row(
+                  children: [
+                    if (item.icon != null) ...[
+                      Icon(item.icon, size: 20),
+                      const SizedBox(width: 12),
+                    ],
+                    Text(item.label),
+                    const Spacer(),
+                    if (item.shortcut != null)
+                      Text(
+                        item.shortcut!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5),
+                            ),
+                      ),
+                  ],
                 ),
-              ),
-          ],
-        ),
-        onTap: item.onTap,
-      )).toList(),
+                onTap: item.onTap,
+              ))
+          .toList(),
     );
   }
 }
@@ -328,7 +345,7 @@ class ContextMenuItem {
   final VoidCallback? onTap;
   final String? shortcut;
   final bool enabled;
-  
+
   const ContextMenuItem({
     required this.label,
     this.icon,
@@ -361,7 +378,8 @@ class DesktopSelectionControls extends MaterialTextSelectionControls {
       handleCut: canCut(delegate) ? () => handleCut(delegate) : null,
       handleCopy: canCopy(delegate) ? () => handleCopy(delegate) : null,
       handlePaste: canPaste(delegate) ? () => handlePaste(delegate) : null,
-      handleSelectAll: canSelectAll(delegate) ? () => handleSelectAll(delegate) : null,
+      handleSelectAll:
+          canSelectAll(delegate) ? () => handleSelectAll(delegate) : null,
     );
   }
 }
@@ -377,7 +395,7 @@ class _DesktopTextSelectionToolbar extends StatelessWidget {
   final VoidCallback? handleCopy;
   final VoidCallback? handlePaste;
   final VoidCallback? handleSelectAll;
-  
+
   const _DesktopTextSelectionToolbar({
     required this.globalEditableRegion,
     required this.textLineHeight,
@@ -390,11 +408,11 @@ class _DesktopTextSelectionToolbar extends StatelessWidget {
     this.handlePaste,
     this.handleSelectAll,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -445,13 +463,13 @@ class _ToolbarButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onPressed;
-  
+
   const _ToolbarButton({
     required this.icon,
     required this.tooltip,
     required this.onPressed,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Tooltip(

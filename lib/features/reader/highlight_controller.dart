@@ -45,5 +45,6 @@ class HighlightController extends StateNotifier<HighlightState> {
   }
 }
 
-final highlightControllerProvider = StateNotifierProvider<HighlightController, HighlightState>((ref) => HighlightController());
-
+final highlightControllerProvider =
+    StateNotifierProvider<HighlightController, HighlightState>(
+        (ref) => HighlightController());

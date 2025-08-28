@@ -11,7 +11,7 @@ import 'audio_api_config.dart';
 class EdgeTtsService {
   static final Dio _dio = Dio();
   static const String _cacheFolder = 'edge_tts_cache';
-  
+
   /// Synthétise l'audio à partir du texte avec Edge-TTS
   static Future<Uint8List?> synthesizeText(
     String text, {
@@ -23,7 +23,7 @@ class EdgeTtsService {
     try {
       // 1. Sélectionner la voix appropriée
       final selectedVoice = voice ?? _getDefaultVoice(language);
-      
+
       // 2. Vérifier le cache
       final cacheKey = _generateCacheKey(text, selectedVoice, rate, pitch);
       final cachedAudio = await _getCachedAudio(cacheKey);
@@ -31,24 +31,25 @@ class EdgeTtsService {
         debugPrint('✅ Audio Edge-TTS trouvé en cache');
         return cachedAudio;
       }
-      
+
       // 3. Appeler l'API Edge-TTS
-      final audioBytes = await _callEdgeTtsApi(text, selectedVoice, rate, pitch);
-      
+      final audioBytes =
+          await _callEdgeTtsApi(text, selectedVoice, rate, pitch);
+
       if (audioBytes != null) {
         // 4. Sauvegarder en cache
         await _cacheAudio(cacheKey, audioBytes);
         debugPrint('✅ Audio Edge-TTS généré: ${audioBytes.length} bytes');
         return audioBytes;
       }
-      
+
       return null;
     } catch (e) {
       debugPrint('❌ Erreur Edge-TTS: $e');
       return null;
     }
   }
-  
+
   /// Appelle l'API Edge-TTS (via serveur proxy ou bibliothèque locale)
   static Future<Uint8List?> _callEdgeTtsApi(
     String text,
@@ -61,16 +62,15 @@ class EdgeTtsService {
       if (kIsWeb || Platform.isIOS) {
         return await _callEdgeTtsProxy(text, voice, rate, pitch);
       }
-      
+
       // Option 2: Via package edge_tts (Android/Desktop)
       return await _callEdgeTtsNative(text, voice, rate, pitch);
-      
     } catch (e) {
       debugPrint('❌ Erreur appel Edge-TTS API: $e');
       return null;
     }
   }
-  
+
   /// Appel via serveur proxy Edge-TTS
   static Future<Uint8List?> _callEdgeTtsProxy(
     String text,
@@ -83,66 +83,75 @@ class EdgeTtsService {
       debugPrint('❌ Configuration Edge-TTS invalide');
       return null;
     }
-    
-    debugPrint('🌐 Appel Edge-TTS VPS: ${AudioApiConfig.edgeTtsSynthesizeEndpoint}');
+
+    debugPrint(
+        '🌐 Appel Edge-TTS VPS: ${AudioApiConfig.edgeTtsSynthesizeEndpoint}');
     debugPrint('🎙️ Voix: ${voice.name} (${voice.fullName})');
     debugPrint('📝 Texte: ${text.length} caractères');
-    
+
     try {
       final requestData = {
         'text': text,
         'voice': voice.shortName, // Use shortName instead of name for API
       };
-      
+
       // Ajouter rate seulement si différent de 1.0
       if (rate != 1.0) {
         final ratePercent = (rate * 100).round().clamp(50, 150);
         final rateAdjustment = ratePercent - 100;
-        requestData['rate'] = '${rateAdjustment >= 0 ? '+' : ''}${rateAdjustment}%';
+        requestData['rate'] =
+            '${rateAdjustment >= 0 ? '+' : ''}${rateAdjustment}%';
       }
-      
-      // Ajouter pitch seulement si différent de 1.0  
+
+      // Ajouter pitch seulement si différent de 1.0
       if (pitch != 1.0) {
         final pitchPercent = (pitch * 100).round().clamp(50, 150);
         final pitchAdjustment = pitchPercent - 100;
-        requestData['pitch'] = '${pitchAdjustment >= 0 ? '+' : ''}${pitchAdjustment}%';
+        requestData['pitch'] =
+            '${pitchAdjustment >= 0 ? '+' : ''}${pitchAdjustment}%';
       }
-      
+
       debugPrint('📝 Requête: $requestData');
-      
-      final response = await _dio.post(
-        AudioApiConfig.edgeTtsSynthesizeEndpoint,
-        data: requestData,
-        options: Options(
-          responseType: ResponseType.json,  // Changed from bytes to json
-          headers: {
-            ...AudioApiConfig.edgeTtsHeaders,
-            'Content-Type': 'application/json; charset=utf-8',  // Explicit UTF-8
-          },
-        ),
-      ).timeout(AudioApiConfig.edgeTtsTimeout);
-      
+
+      final response = await _dio
+          .post(
+            AudioApiConfig.edgeTtsSynthesizeEndpoint,
+            data: requestData,
+            options: Options(
+              responseType: ResponseType.json, // Changed from bytes to json
+              headers: {
+                ...AudioApiConfig.edgeTtsHeaders,
+                'Content-Type':
+                    'application/json; charset=utf-8', // Explicit UTF-8
+              },
+            ),
+          )
+          .timeout(AudioApiConfig.edgeTtsTimeout);
+
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
-        
+
         // Vérifier si la réponse contient le succès
-        if (responseData['success'] == true && responseData.containsKey('audio')) {
+        if (responseData['success'] == true &&
+            responseData.containsKey('audio')) {
           try {
             // Décoder l'audio base64
             final audioBase64 = responseData['audio'] as String;
             final audioBytes = base64Decode(audioBase64);
-            
+
             debugPrint('✅ Edge-TTS réussi: ${audioBytes.length} bytes');
             debugPrint('🔊 Format: ${responseData['format'] ?? 'unknown'}');
-            debugPrint('🎙️ Voix utilisée: ${responseData['voice'] ?? 'unknown'}');
-            
+            debugPrint(
+                '🎙️ Voix utilisée: ${responseData['voice'] ?? 'unknown'}');
+
             return Uint8List.fromList(audioBytes);
           } catch (e) {
             debugPrint('❌ Erreur décodage base64: $e');
             return null;
           }
         } else {
-          debugPrint('❌ Edge-TTS erreur réponse: ${responseData['error'] ?? 'Unknown error'}');
+          debugPrint(
+              '❌ Edge-TTS erreur réponse: ${responseData['error'] ?? 'Unknown error'}');
           return null;
         }
       } else {
@@ -152,13 +161,12 @@ class EdgeTtsService {
         }
         return null;
       }
-      
     } catch (e) {
       debugPrint('❌ Exception Edge-TTS VPS: $e');
       return null;
     }
   }
-  
+
   /// Appel natif Edge-TTS (à implémenter avec package approprié)
   static Future<Uint8List?> _callEdgeTtsNative(
     String text,
@@ -177,7 +185,7 @@ class EdgeTtsService {
     */
     return null;
   }
-  
+
   /// Obtient la voix par défaut selon la langue
   static EdgeTtsVoice _getDefaultVoice(String language) {
     switch (language.toLowerCase()) {
@@ -194,7 +202,7 @@ class EdgeTtsService {
         return EdgeTtsVoice.frenchDenise;
     }
   }
-  
+
   /// Génère une clé de cache unique
   static String _generateCacheKey(
     String text,
@@ -205,7 +213,7 @@ class EdgeTtsService {
     final content = '$text|${voice.name}|$rate|$pitch';
     return content.hashCode.toString();
   }
-  
+
   /// Cache et récupération
   static Future<Uint8List?> _getCachedAudio(String cacheKey) async {
     try {
@@ -218,7 +226,7 @@ class EdgeTtsService {
     }
     return null;
   }
-  
+
   static Future<void> _cacheAudio(String cacheKey, Uint8List audioBytes) async {
     try {
       final cacheFile = await _getCacheFile(cacheKey);
@@ -228,22 +236,22 @@ class EdgeTtsService {
       debugPrint('⚠️ Erreur cache Edge-TTS: $e');
     }
   }
-  
+
   static Future<File> _getCacheFile(String cacheKey) async {
     final appDir = await getApplicationDocumentsDirectory();
     final cacheDir = Directory('${appDir.path}/$_cacheFolder');
     return File('${cacheDir.path}/$cacheKey.mp3');
   }
-  
+
   /// Nettoie le cache ancien
   static Future<void> cleanOldCache() async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       final cacheDir = Directory('${appDir.path}/$_cacheFolder');
-      
+
       if (await cacheDir.exists()) {
         final cutoffDate = DateTime.now().subtract(const Duration(days: 7));
-        
+
         await for (final file in cacheDir.list()) {
           if (file is File) {
             final stat = await file.stat();
@@ -264,21 +272,21 @@ enum EdgeTtsVoice {
   // Français
   frenchDenise('fr-FR-DeniseNeural'),
   frenchHenri('fr-FR-HenriNeural'),
-  
+
   // Arabe
   arabicHamed('ar-SA-HamedNeural'),
   arabicZariyah('ar-SA-ZariyahNeural'),
-  
+
   // Anglais
   englishAria('en-US-AriaNeural'),
   englishGuy('en-US-GuyNeural');
-  
+
   const EdgeTtsVoice(this.name);
   final String name;
-  
+
   /// Obtient le nom court pour l'API
   String get shortName => name;
-  
+
   /// Obtient le nom complet de la voix
   String get fullName {
     switch (this) {

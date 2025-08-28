@@ -8,7 +8,8 @@ class ProgressService {
   ProgressService(this._ref);
   final Ref _ref;
 
-  Future<void> initProgressForSession(String sessionId, {String? startTaskId}) async {
+  Future<void> initProgressForSession(String sessionId,
+      {String? startTaskId}) async {
     final sessionDao = _ref.read(sessionDaoProvider);
     final taskDao = _ref.read(taskDaoProvider);
     final progressDao = _ref.read(progressDaoProvider);
@@ -38,8 +39,9 @@ class ProgressService {
     // print('🧹 Anciennes progressions supprimées');
 
     // Créer de nouvelles progressions
-    bool foundStartTask = startTaskId == null; // Si pas de tâche de départ spécifiée, commencer dès la première
-    
+    bool foundStartTask = startTaskId ==
+        null; // Si pas de tâche de départ spécifiée, commencer dès la première
+
     for (final t in tasks) {
       int reps;
       if (startTaskId != null) {
@@ -54,9 +56,10 @@ class ProgressService {
           reps = t.defaultReps; // Tâches suivantes : répétitions normales
         }
       } else {
-        reps = t.defaultReps; // Comportement normal : toutes les tâches avec répétitions
+        reps = t
+            .defaultReps; // Comportement normal : toutes les tâches avec répétitions
       }
-      
+
       await progressDao.upsertProgress(TaskProgressCompanion.insert(
         id: _genId(),
         sessionId: sessionId,
@@ -65,11 +68,11 @@ class ProgressService {
       ));
       // print('✅ Progression créée pour tâche ${t.id} avec $reps répétitions');
     }
-    
+
     if (startTaskId != null && !foundStartTask) {
       // print('⚠️ Tâche de départ $startTaskId non trouvée dans la routine');
     }
-    
+
     // print('✅ Toutes les progressions initialisées pour session: $sessionId');
   }
 
@@ -103,11 +106,12 @@ class ProgressService {
     for (final t in tasks) {
       final p = progressMap[t.id];
       if (p != null && p.remainingReps > 0) {
-        print('✅ Tâche active trouvée: ${t.id} avec ${p.remainingReps} répétitions restantes');
+        print(
+            '✅ Tâche active trouvée: ${t.id} avec ${p.remainingReps} répétitions restantes');
         return p;
       }
     }
-    
+
     print('⚠️ Toutes les tâches sont terminées pour la session');
     // All tasks completed -> no current progress
     return null;

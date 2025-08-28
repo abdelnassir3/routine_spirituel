@@ -6,51 +6,50 @@ class FoldableAwareWidget extends StatefulWidget {
   final Widget Function(BuildContext, bool isFolded) builder;
   final Widget? foldedChild;
   final Widget? unfoldedChild;
-  
+
   const FoldableAwareWidget({
     super.key,
     required this.builder,
     this.foldedChild,
     this.unfoldedChild,
   });
-  
+
   @override
   State<FoldableAwareWidget> createState() => _FoldableAwareWidgetState();
 }
 
-class _FoldableAwareWidgetState extends State<FoldableAwareWidget> 
+class _FoldableAwareWidgetState extends State<FoldableAwareWidget>
     with WidgetsBindingObserver {
-  
   bool _isFolded = false;
-  
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkFoldState();
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-  
+
   @override
   void didChangeMetrics() {
     _checkFoldState();
   }
-  
+
   void _checkFoldState() {
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
-    
+
     // Heuristique pour détecter l'état plié/déplié
     // Fold fermé: ~21:9 (aspect ratio ~2.33)
     // Fold ouvert: ~6:5 (aspect ratio ~1.2)
     // Flip fermé: normal phone
     // Flip ouvert: ~22:9 (aspect ratio ~2.44)
-    
+
     setState(() {
       if (aspectRatio > 2.2) {
         // Probablement un Flip ouvert ou écran ultra-wide
@@ -67,7 +66,7 @@ class _FoldableAwareWidgetState extends State<FoldableAwareWidget>
       }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (widget.foldedChild != null && widget.unfoldedChild != null) {
@@ -76,7 +75,7 @@ class _FoldableAwareWidgetState extends State<FoldableAwareWidget>
         child: _isFolded ? widget.foldedChild! : widget.unfoldedChild!,
       );
     }
-    
+
     return widget.builder(context, _isFolded);
   }
 }
@@ -89,21 +88,21 @@ extension FoldableContext on BuildContext {
     final aspectRatio = size.width / size.height;
     return aspectRatio > 1.6 && aspectRatio < 2.2;
   }
-  
+
   /// Vérifie si c'est un appareil pliable (basé sur l'aspect ratio)
   bool get isFoldableDevice {
     final size = MediaQuery.of(this).size;
     final aspectRatio = size.width / size.height;
     // Ratios inhabituels suggérant un pliable
     return (aspectRatio > 2.2) || // Flip ouvert
-           (aspectRatio > 0.9 && aspectRatio < 1.4); // Fold ouvert
+        (aspectRatio > 0.9 && aspectRatio < 1.4); // Fold ouvert
   }
-  
+
   /// Retourne le type de pliable détecté
   FoldableType get foldableType {
     final size = MediaQuery.of(this).size;
     final aspectRatio = size.width / size.height;
-    
+
     if (aspectRatio > 2.2) {
       return FoldableType.flip;
     } else if (aspectRatio > 0.9 && aspectRatio < 1.4) {

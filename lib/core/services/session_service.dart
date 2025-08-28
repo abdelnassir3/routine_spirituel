@@ -11,7 +11,7 @@ import 'package:spiritual_routines/features/session/session_state.dart';
 class SessionService {
   SessionService(this._ref);
   final Ref _ref;
-  
+
   // Verrou pour empêcher les appels concurrents à startRoutine
   static bool _isStartingRoutine = false;
   static final Map<String, DateTime> _lastStartTime = {};
@@ -29,7 +29,7 @@ class SessionService {
       }
     }
     _lastStartTime[routineId] = now;
-    
+
     // Verrou pour empêcher les appels concurrents
     if (_isStartingRoutine) {
       // print('⚠️ Une création de session est déjà en cours, attente...');
@@ -45,20 +45,23 @@ class SessionService {
         return activeSession.id;
       }
     }
-    
+
     _isStartingRoutine = true;
     try {
       // Vérifier d'abord s'il y a déjà UNE session active
       final existingActive = await _getActiveSession(routineId);
       if (existingActive != null) {
         // print('ℹ️ Session active existante réutilisée: ${existingActive.id}');
-        _ref.read(persistenceServiceProvider).setCurrentSession(existingActive.id);
+        _ref
+            .read(persistenceServiceProvider)
+            .setCurrentSession(existingActive.id);
         _ref.read(currentSessionIdProvider.notifier).state = existingActive.id;
         return existingActive.id;
       }
-      
+
       // Nettoyer TOUTES les sessions de cette routine (active, stopped, etc.) sauf completed
-      final allSessions = await _ref.read(sessionDaoProvider).getAllByRoutine(routineId);
+      final allSessions =
+          await _ref.read(sessionDaoProvider).getAllByRoutine(routineId);
       int cleanedCount = 0;
       for (final session in allSessions) {
         if (session.state != 'completed') {
@@ -71,10 +74,10 @@ class SessionService {
       if (cleanedCount > 0) {
         // print('🧹 Total sessions nettoyées: $cleanedCount');
       }
-      
+
       final sessionId = newId();
       // print('📋 Création de la nouvelle session: $sessionId pour routine: $routineId');
-      
+
       await _ref.read(sessionDaoProvider).upsertSession(
             SessionsCompanion.insert(
               id: sessionId,
@@ -85,12 +88,14 @@ class SessionService {
       _ref.read(persistenceServiceProvider).setCurrentSession(sessionId);
       // IMPORTANT: Mettre à jour le provider global de session courante
       _ref.read(currentSessionIdProvider.notifier).state = sessionId;
-      
+
       // Attendre un peu pour s'assurer que les anciennes progressions sont bien supprimées
       await Future.delayed(const Duration(milliseconds: 100));
-      
-      await _ref.read(progressServiceProvider).initProgressForSession(sessionId, startTaskId: startTaskId);
-      
+
+      await _ref
+          .read(progressServiceProvider)
+          .initProgressForSession(sessionId, startTaskId: startTaskId);
+
       if (startTaskId != null) {
         // print('✅ Session et progressions initialisées pour: $sessionId (démarrage à la tâche: $startTaskId)');
       } else {
@@ -101,10 +106,11 @@ class SessionService {
       _isStartingRoutine = false;
     }
   }
-  
+
   /// Obtenir la session active pour une routine (s'il y en a une)
   Future<SessionRow?> _getActiveSession(String routineId) async {
-    final sessions = await _ref.read(sessionDaoProvider).getAllByRoutine(routineId);
+    final sessions =
+        await _ref.read(sessionDaoProvider).getAllByRoutine(routineId);
     for (final session in sessions) {
       if (session.state == 'active') {
         return session;
@@ -112,7 +118,7 @@ class SessionService {
     }
     return null;
   }
-  
+
   /// Supprimer complètement une session et ses progressions
   Future<void> _deleteSession(String sessionId) async {
     // Supprimer les progressions

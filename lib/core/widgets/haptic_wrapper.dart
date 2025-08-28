@@ -11,7 +11,7 @@ class HapticWrapper extends ConsumerWidget {
   final VoidCallback? onLongPress;
   final VoidCallback? onDoubleTap;
   final bool enabled;
-  
+
   const HapticWrapper({
     super.key,
     required this.child,
@@ -21,14 +21,14 @@ class HapticWrapper extends ConsumerWidget {
     this.onDoubleTap,
     this.enabled = true,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hapticService = ref.watch(hapticServiceProvider);
-    
+
     Future<void> handleHaptic(HapticType type) async {
       if (!enabled || !hapticService.isEnabled) return;
-      
+
       switch (type) {
         case HapticType.light:
           await hapticService.lightTap();
@@ -50,7 +50,7 @@ class HapticWrapper extends ConsumerWidget {
           break;
       }
     }
-    
+
     return GestureDetector(
       onTap: onTap != null
           ? () async {
@@ -126,7 +126,7 @@ class HapticFloatingActionButton extends ConsumerWidget {
   final Object? heroTag;
   final bool mini;
   final HapticType hapticType;
-  
+
   const HapticFloatingActionButton({
     super.key,
     required this.onPressed,
@@ -138,7 +138,7 @@ class HapticFloatingActionButton extends ConsumerWidget {
     this.mini = false,
     this.hapticType = HapticType.impact,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FloatingActionButton(
@@ -168,7 +168,7 @@ class HapticCard extends ConsumerWidget {
   final EdgeInsetsGeometry? margin;
   final bool enabled;
   final HapticType hapticType;
-  
+
   const HapticCard({
     super.key,
     required this.child,
@@ -180,7 +180,7 @@ class HapticCard extends ConsumerWidget {
     this.enabled = true,
     this.hapticType = HapticType.selection,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
@@ -221,7 +221,7 @@ class HapticListTile extends ConsumerWidget {
   final bool selected;
   final bool enabled;
   final HapticType hapticType;
-  
+
   const HapticListTile({
     super.key,
     this.leading,
@@ -234,7 +234,7 @@ class HapticListTile extends ConsumerWidget {
     this.enabled = true,
     this.hapticType = HapticType.selection,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
@@ -268,7 +268,7 @@ class HapticSwitch extends ConsumerWidget {
   final Color? activeTrackColor;
   final Color? inactiveThumbColor;
   final Color? inactiveTrackColor;
-  
+
   const HapticSwitch({
     super.key,
     required this.value,
@@ -278,7 +278,7 @@ class HapticSwitch extends ConsumerWidget {
     this.inactiveThumbColor,
     this.inactiveTrackColor,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Switch(
@@ -308,7 +308,7 @@ class HapticSlider extends ConsumerStatefulWidget {
   final String? label;
   final Color? activeColor;
   final Color? inactiveColor;
-  
+
   const HapticSlider({
     super.key,
     required this.value,
@@ -321,14 +321,14 @@ class HapticSlider extends ConsumerStatefulWidget {
     this.activeColor,
     this.inactiveColor,
   });
-  
+
   @override
   ConsumerState<HapticSlider> createState() => _HapticSliderState();
 }
 
 class _HapticSliderState extends ConsumerState<HapticSlider> {
   double? _lastHapticValue;
-  
+
   @override
   Widget build(BuildContext context) {
     return Slider(
@@ -342,13 +342,13 @@ class _HapticSliderState extends ConsumerState<HapticSlider> {
                 final lastStep = _lastHapticValue != null
                     ? ((_lastHapticValue! - widget.min) / step).round()
                     : -1;
-                
+
                 if (currentStep != lastStep) {
                   await ref.hapticLightTap();
                   _lastHapticValue = newValue;
                 }
               }
-              
+
               widget.onChanged!(newValue);
             }
           : null,

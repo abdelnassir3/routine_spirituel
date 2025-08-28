@@ -50,7 +50,7 @@ class _FadeInAnimationState extends State<FadeInAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -136,7 +136,7 @@ class _ScaleAnimationState extends State<ScaleAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -248,7 +248,7 @@ class _BounceAnimationState extends State<BounceAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -327,7 +327,7 @@ class _ShimmerAnimationState extends State<ShimmerAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -366,7 +366,8 @@ class _ShimmerAnimationState extends State<ShimmerAnimation>
               stops: const [0.0, 0.5, 1.0],
               begin: _getGradientBegin(),
               end: _getGradientEnd(),
-              transform: GradientRotation(_shimmerAnimation.value * 2 * 3.14159),
+              transform:
+                  GradientRotation(_shimmerAnimation.value * 2 * 3.14159),
             ).createShader(bounds);
           },
           child: widget.child,
@@ -431,7 +432,7 @@ class _PulseAnimationState extends State<PulseAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -503,7 +504,7 @@ class _TypewriterAnimationState extends State<TypewriterAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _typeController = AnimationController(
       duration: widget.speed * widget.text.length,
       vsync: this,
@@ -680,7 +681,8 @@ class NotificationBadgeAnimation extends StatefulWidget {
   final double size;
 
   @override
-  State<NotificationBadgeAnimation> createState() => _NotificationBadgeAnimationState();
+  State<NotificationBadgeAnimation> createState() =>
+      _NotificationBadgeAnimationState();
 }
 
 class _NotificationBadgeAnimationState extends State<NotificationBadgeAnimation>
@@ -693,7 +695,7 @@ class _NotificationBadgeAnimationState extends State<NotificationBadgeAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
@@ -814,7 +816,7 @@ class _CTAButtonAnimationState extends State<CTAButtonAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _pressController = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
@@ -880,7 +882,8 @@ class _CTAButtonAnimationState extends State<CTAButtonAnimation>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.color.withOpacity(widget.shadowIntensity * _glowAnimation.value),
+                    color: widget.color.withOpacity(
+                        widget.shadowIntensity * _glowAnimation.value),
                     blurRadius: 12 * _glowAnimation.value,
                     offset: const Offset(0, 4),
                     spreadRadius: 2 * _glowAnimation.value,
@@ -923,7 +926,7 @@ class _TimeDisplayAnimationState extends State<TimeDisplayAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -1009,7 +1012,8 @@ class MicroInteractionAnimation extends StatefulWidget {
   final double scaleFactor;
 
   @override
-  State<MicroInteractionAnimation> createState() => _MicroInteractionAnimationState();
+  State<MicroInteractionAnimation> createState() =>
+      _MicroInteractionAnimationState();
 }
 
 class _MicroInteractionAnimationState extends State<MicroInteractionAnimation>
@@ -1020,7 +1024,7 @@ class _MicroInteractionAnimationState extends State<MicroInteractionAnimation>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
@@ -1045,11 +1049,11 @@ class _MicroInteractionAnimationState extends State<MicroInteractionAnimation>
     _controller.forward().then((_) {
       _controller.reverse();
     });
-    
+
     if (widget.hapticFeedback) {
       HapticFeedback.lightImpact();
     }
-    
+
     widget.onTap?.call();
   }
 
@@ -1081,7 +1085,8 @@ extension AnimationExtensions on Animation<double> {
   }
 
   /// Convert to slide animation
-  Animation<Offset> slide({Offset begin = const Offset(0, 1), Offset end = Offset.zero}) {
+  Animation<Offset> slide(
+      {Offset begin = const Offset(0, 1), Offset end = Offset.zero}) {
     return Tween<Offset>(begin: begin, end: end).animate(this);
   }
 }

@@ -7,22 +7,24 @@ import '../../core/widgets/haptic_wrapper.dart';
 /// Écran de configuration de l'auto-resume
 class AutoResumeSettingsScreen extends ConsumerStatefulWidget {
   const AutoResumeSettingsScreen({super.key});
-  
+
   @override
-  ConsumerState<AutoResumeSettingsScreen> createState() => _AutoResumeSettingsScreenState();
+  ConsumerState<AutoResumeSettingsScreen> createState() =>
+      _AutoResumeSettingsScreenState();
 }
 
-class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScreen> {
+class _AutoResumeSettingsScreenState
+    extends ConsumerState<AutoResumeSettingsScreen> {
   // Session de test
   bool _hasTestSession = false;
   int _testProgress = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final prefs = ref.watch(autoResumePreferencesProvider);
     final pendingResume = ref.watch(pendingResumeProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reprise Automatique'),
@@ -102,7 +104,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                 ],
               ),
             ),
-          
+
           // Configuration principale
           SwitchListTile(
             title: const Text('Activer la reprise automatique'),
@@ -111,13 +113,14 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
             ),
             value: prefs.enabled,
             onChanged: (value) async {
-              await ref.read(autoResumePreferencesProvider.notifier)
+              await ref
+                  .read(autoResumePreferencesProvider.notifier)
                   .setEnabled(value);
             },
           ),
-          
+
           const Divider(),
-          
+
           // Options avancées
           Padding(
             padding: const EdgeInsets.all(16),
@@ -129,7 +132,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Quick Resume
                 SwitchListTile(
                   title: const Text('Reprise rapide'),
@@ -139,14 +142,15 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                   value: prefs.quickResumeEnabled,
                   onChanged: prefs.enabled
                       ? (value) async {
-                          await ref.read(autoResumePreferencesProvider.notifier)
+                          await ref
+                              .read(autoResumePreferencesProvider.notifier)
                               .setQuickResumeEnabled(value);
                         }
                       : null,
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Informations
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -191,9 +195,9 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Comportement
           Padding(
             padding: const EdgeInsets.all(16),
@@ -205,7 +209,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Délai d'expiration
                 ListTile(
                   leading: const Icon(Icons.timer_outlined),
@@ -216,7 +220,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                     backgroundColor: theme.dividerColor.withOpacity(0.3),
                   ),
                 ),
-                
+
                 // Fréquence de sauvegarde
                 ListTile(
                   leading: const Icon(Icons.save_outlined),
@@ -227,7 +231,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                     backgroundColor: theme.primaryColor.withOpacity(0.2),
                   ),
                 ),
-                
+
                 // Notification de reprise
                 ListTile(
                   leading: const Icon(Icons.notifications_outlined),
@@ -241,9 +245,9 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Zone de test
           Padding(
             padding: const EdgeInsets.all(16),
@@ -262,7 +266,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Boutons de test
                 if (!_hasTestSession) ...[
                   SizedBox(
@@ -272,20 +276,22 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                       onTap: () async {
                         // Créer une session de test
                         await ref.registerForAutoResume(
-                          sessionId: 'test_${DateTime.now().millisecondsSinceEpoch}',
+                          sessionId:
+                              'test_${DateTime.now().millisecondsSinceEpoch}',
                           type: 'prayer',
                           data: {'test': true},
                         );
-                        
+
                         setState(() {
                           _hasTestSession = true;
                           _testProgress = 0;
                         });
-                        
+
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Session de test créée. Fermez l\'app pour tester la reprise.'),
+                              content: Text(
+                                  'Session de test créée. Fermez l\'app pour tester la reprise.'),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -330,7 +336,7 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                           ],
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Simuler le progrès
                         Row(
                           children: [
@@ -340,7 +346,8 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                                   setState(() {
                                     _testProgress += 10;
                                   });
-                                  await ref.updateSessionProgress(_testProgress);
+                                  await ref
+                                      .updateSessionProgress(_testProgress);
                                 },
                                 child: const Text('+10'),
                               ),
@@ -360,23 +367,24 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 8),
-                        
+
                         Text(
                           'Fermez l\'app maintenant pour tester la reprise',
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontStyle: FontStyle.italic,
-                            color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                            color: theme.textTheme.bodySmall?.color
+                                ?.withOpacity(0.7),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ],
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Instructions de test
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -419,13 +427,13 @@ class _AutoResumeSettingsScreenState extends ConsumerState<AutoResumeSettingsScr
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
         ],
       ),
     );
   }
-  
+
   String _getSessionTypeLabel(String type) {
     switch (type) {
       case 'prayer':

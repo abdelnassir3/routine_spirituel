@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spiritual_routines/features/splash/animated_splash_screen.dart';
@@ -9,7 +8,6 @@ import 'package:spiritual_routines/features/reader/enhanced_modern_reader_page.d
 import 'package:spiritual_routines/features/settings/modern_settings_page.dart';
 import 'package:spiritual_routines/features/settings/cache_management_page.dart';
 import 'package:spiritual_routines/features/content/modern_content_editor_page.dart';
-import 'package:spiritual_routines/app/performance_config.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(

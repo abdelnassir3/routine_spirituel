@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Gère les API keys et endpoints de manière sécurisée
 class TtsConfigService {
   static const _storage = FlutterSecureStorage();
-  
+
   // Clés de stockage sécurisé
   static const _keyCoquiEndpoint = 'tts_coqui_endpoint';
   static const _keyCoquiApiKey = 'tts_coqui_api_key';
@@ -15,12 +15,12 @@ class TtsConfigService {
   static const _keyCacheEnabled = 'tts_cache_enabled';
   static const _keyCacheTTLDays = 'tts_cache_ttl_days';
   static const _keyPreferredProvider = 'tts_preferred_provider';
-  
+
   // Valeurs par défaut sécurisées
   static const _defaultTimeout = 3000; // 3 secondes
   static const _defaultMaxRetries = 3;
   static const _defaultCacheTTLDays = 7;
-  
+
   final String coquiEndpoint;
   final String coquiApiKey;
   final int timeout;
@@ -28,7 +28,7 @@ class TtsConfigService {
   final bool cacheEnabled;
   final int cacheTTLDays;
   final String preferredProvider;
-  
+
   TtsConfigService({
     required this.coquiEndpoint,
     required this.coquiApiKey,
@@ -38,33 +38,36 @@ class TtsConfigService {
     this.cacheTTLDays = _defaultCacheTTLDays,
     this.preferredProvider = 'coqui',
   });
-  
+
   /// Charge la configuration depuis le stockage sécurisé
   static Future<TtsConfigService> load() async {
     try {
       // Charger les valeurs ou utiliser les défauts
-      final endpoint = await _storage.read(key: _keyCoquiEndpoint) ?? 
-                      'http://168.231.112.71:8001';
-      
+      final endpoint = await _storage.read(key: _keyCoquiEndpoint) ??
+          'http://168.231.112.71:8001';
+
       final apiKey = await _storage.read(key: _keyCoquiApiKey) ?? '';
-      
+
       final timeout = int.tryParse(
-        await _storage.read(key: _keyTimeout) ?? '$_defaultTimeout'
-      ) ?? _defaultTimeout;
-      
+              await _storage.read(key: _keyTimeout) ?? '$_defaultTimeout') ??
+          _defaultTimeout;
+
       final maxRetries = int.tryParse(
-        await _storage.read(key: _keyMaxRetries) ?? '$_defaultMaxRetries'
-      ) ?? _defaultMaxRetries;
-      
-      final cacheEnabled = 
-        (await _storage.read(key: _keyCacheEnabled) ?? 'true') == 'true';
-      
+              await _storage.read(key: _keyMaxRetries) ??
+                  '$_defaultMaxRetries') ??
+          _defaultMaxRetries;
+
+      final cacheEnabled =
+          (await _storage.read(key: _keyCacheEnabled) ?? 'true') == 'true';
+
       final cacheTTLDays = int.tryParse(
-        await _storage.read(key: _keyCacheTTLDays) ?? '$_defaultCacheTTLDays'
-      ) ?? _defaultCacheTTLDays;
-      
-      final provider = await _storage.read(key: _keyPreferredProvider) ?? 'coqui';
-      
+              await _storage.read(key: _keyCacheTTLDays) ??
+                  '$_defaultCacheTTLDays') ??
+          _defaultCacheTTLDays;
+
+      final provider =
+          await _storage.read(key: _keyPreferredProvider) ?? 'coqui';
+
       return TtsConfigService(
         coquiEndpoint: endpoint,
         coquiApiKey: apiKey,
@@ -87,7 +90,7 @@ class TtsConfigService {
       );
     }
   }
-  
+
   /// Sauvegarde la configuration dans le stockage sécurisé
   Future<void> save() async {
     await _storage.write(key: _keyCoquiEndpoint, value: coquiEndpoint);
@@ -98,19 +101,19 @@ class TtsConfigService {
     await _storage.write(key: _keyCacheTTLDays, value: cacheTTLDays.toString());
     await _storage.write(key: _keyPreferredProvider, value: preferredProvider);
   }
-  
+
   /// Configure l'API key Coqui de manière sécurisée (une seule fois)
   static Future<void> setupCoquiApiKey(String apiKey) async {
     if (apiKey.isEmpty) return;
-    
+
     // Valider le format de l'API key
     if (apiKey.length < 32) {
       throw ArgumentError('API key invalide');
     }
-    
+
     await _storage.write(key: _keyCoquiApiKey, value: apiKey);
   }
-  
+
   /// Efface toute la configuration (pour logout/reset)
   static Future<void> clear() async {
     await _storage.delete(key: _keyCoquiEndpoint);
@@ -121,23 +124,23 @@ class TtsConfigService {
     await _storage.delete(key: _keyCacheTTLDays);
     await _storage.delete(key: _keyPreferredProvider);
   }
-  
+
   /// Masque l'API key pour les logs (affiche seulement les 8 premiers caractères)
   String get maskedApiKey {
     if (coquiApiKey.isEmpty) return '<NON_CONFIGURÉ>';
     if (coquiApiKey.length <= 8) return '****';
     return '${coquiApiKey.substring(0, 8)}...';
   }
-  
+
   Map<String, dynamic> toJson() => {
-    'endpoint': coquiEndpoint,
-    'apiKey': maskedApiKey, // Jamais l'API key complète
-    'timeout': timeout,
-    'maxRetries': maxRetries,
-    'cacheEnabled': cacheEnabled,
-    'cacheTTLDays': cacheTTLDays,
-    'preferredProvider': preferredProvider,
-  };
+        'endpoint': coquiEndpoint,
+        'apiKey': maskedApiKey, // Jamais l'API key complète
+        'timeout': timeout,
+        'maxRetries': maxRetries,
+        'cacheEnabled': cacheEnabled,
+        'cacheTTLDays': cacheTTLDays,
+        'preferredProvider': preferredProvider,
+      };
 }
 
 // Provider Riverpod pour la configuration

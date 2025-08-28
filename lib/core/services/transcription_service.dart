@@ -4,8 +4,8 @@ abstract class TranscriptionService {
 
 class StubTranscriptionService implements TranscriptionService {
   @override
-  Future<String> transcribeAudio(String audioPath, {String language = 'auto'}) async {
+  Future<String> transcribeAudio(String audioPath,
+      {String language = 'auto'}) async {
     return 'Transcription audio ($language)';
   }
 }
-

@@ -5,14 +5,14 @@ import 'dart:io' show Platform;
 /// Service de gestion des différences entre plateformes
 class PlatformService {
   static PlatformService? _instance;
-  
+
   PlatformService._();
-  
+
   static PlatformService get instance {
     _instance ??= PlatformService._();
     return _instance!;
   }
-  
+
   // Détection de la plateforme courante
   bool get isIOS => !kIsWeb && Platform.isIOS;
   bool get isMacOS => !kIsWeb && Platform.isMacOS;
@@ -20,12 +20,12 @@ class PlatformService {
   bool get isWindows => !kIsWeb && Platform.isWindows;
   bool get isLinux => !kIsWeb && Platform.isLinux;
   bool get isWeb => kIsWeb;
-  
+
   // Détection des catégories de plateforme
   bool get isMobile => isIOS || isAndroid;
   bool get isDesktop => isMacOS || isWindows || isLinux;
   bool get isApple => isIOS || isMacOS;
-  
+
   // Capacités de la plateforme
   bool get supportsCamera => isMobile || (isMacOS && !kReleaseMode);
   bool get supportsMicrophone => true; // Toutes les plateformes
@@ -34,14 +34,17 @@ class PlatformService {
   bool get supportsNotifications => isMobile || isMacOS;
   bool get supportsBackgroundAudio => isMobile; // audio_service est mobile only
   bool get supportsBiometrics => isMobile || (isMacOS && !kIsWeb);
-  
+
   // Configuration des permissions
   bool get needsExplicitPermissions => isMobile || isMacOS;
   bool get needsCameraPermission => supportsCamera && needsExplicitPermissions;
-  bool get needsMicrophonePermission => supportsMicrophone && needsExplicitPermissions;
-  bool get needsStoragePermission => isAndroid; // iOS/macOS utilisent le sandbox
-  bool get needsNotificationPermission => supportsNotifications && needsExplicitPermissions;
-  
+  bool get needsMicrophonePermission =>
+      supportsMicrophone && needsExplicitPermissions;
+  bool get needsStoragePermission =>
+      isAndroid; // iOS/macOS utilisent le sandbox
+  bool get needsNotificationPermission =>
+      supportsNotifications && needsExplicitPermissions;
+
   // Chemins spécifiques à la plateforme
   String get documentsPath {
     if (isIOS || isMacOS) {
@@ -54,29 +57,30 @@ class PlatformService {
       return 'Documents'; // Linux: dans home
     }
   }
-  
+
   // Comportements UI spécifiques
   bool get useCupertinoDesign => isApple;
   bool get useCompactLayout => isMobile;
   bool get supportsDragAndDrop => isDesktop;
   bool get supportsHoverEffects => isDesktop || isWeb;
   bool get supportsKeyboardShortcuts => isDesktop || isWeb;
-  bool get supportsMultiWindow => isDesktop && !isMacOS; // macOS a des restrictions
-  
+  bool get supportsMultiWindow =>
+      isDesktop && !isMacOS; // macOS a des restrictions
+
   // Tailles et contraintes
   double get minWindowWidth => isDesktop ? 800 : 0;
   double get minWindowHeight => isDesktop ? 600 : 0;
   double get defaultFontSize => isMobile ? 14 : 15;
   double get defaultIconSize => isMobile ? 24 : 20;
   double get defaultPadding => isMobile ? 16 : 20;
-  
+
   // Audio/TTS spécifique
   bool get needsAudioFocus => isMobile;
   bool get supportsBackgroundTTS => isMobile;
   double get defaultTTSRate => isIOS ? 0.5 : 0.55;
   String get defaultTTSLanguageAR => 'ar-SA';
   String get defaultTTSLanguageFR => isApple ? 'fr-FR' : 'fr-fr';
-  
+
   // Gestion des erreurs spécifiques
   String getPermissionErrorMessage(String permission) {
     if (isMacOS) {
@@ -89,7 +93,7 @@ class PlatformService {
       return 'Veuillez autoriser $permission dans les paramètres système';
     }
   }
-  
+
   // Méthode pour obtenir la configuration adaptée
   Map<String, dynamic> getPlatformConfig() {
     return {

@@ -25,29 +25,29 @@ final leftHandedModeProvider = StateProvider<bool>((ref) {
 /// Notifier pour gérer les préférences de gestes
 class GesturePreferencesNotifier extends StateNotifier<GesturePreferences> {
   final GestureService _gestureService;
-  
+
   GesturePreferencesNotifier(this._gestureService)
       : super(GesturePreferences(
           enabled: _gestureService.isEnabled,
           sensitivity: _gestureService.sensitivity,
           leftHandedMode: _gestureService.leftHandedMode,
         ));
-  
+
   Future<void> setEnabled(bool enabled) async {
     await _gestureService.setEnabled(enabled);
     state = state.copyWith(enabled: enabled);
   }
-  
+
   Future<void> setSensitivity(GestureSensitivity sensitivity) async {
     await _gestureService.setSensitivity(sensitivity);
     state = state.copyWith(sensitivity: sensitivity);
   }
-  
+
   Future<void> setLeftHandedMode(bool leftHanded) async {
     await _gestureService.setLeftHandedMode(leftHanded);
     state = state.copyWith(leftHandedMode: leftHanded);
   }
-  
+
   void registerPattern(GesturePattern pattern, void Function() callback) {
     _gestureService.registerPatternCallback(pattern, callback);
   }
@@ -58,13 +58,13 @@ class GesturePreferences {
   final bool enabled;
   final GestureSensitivity sensitivity;
   final bool leftHandedMode;
-  
+
   const GesturePreferences({
     required this.enabled,
     required this.sensitivity,
     required this.leftHandedMode,
   });
-  
+
   GesturePreferences copyWith({
     bool? enabled,
     GestureSensitivity? sensitivity,
@@ -79,8 +79,9 @@ class GesturePreferences {
 }
 
 /// Provider pour les préférences de gestes
-final gesturePreferencesProvider = 
-    StateNotifierProvider<GesturePreferencesNotifier, GesturePreferences>((ref) {
+final gesturePreferencesProvider =
+    StateNotifierProvider<GesturePreferencesNotifier, GesturePreferences>(
+        (ref) {
   final gestureService = ref.watch(gestureServiceProvider);
   return GesturePreferencesNotifier(gestureService);
 });
@@ -93,14 +94,14 @@ final counterGestureProvider = Provider<CounterGestureHandler>((ref) {
 /// Gestionnaire de gestes pour le compteur
 class CounterGestureHandler {
   final GestureService _gestureService;
-  
+
   CounterGestureHandler(this._gestureService);
-  
+
   Future<void> increment() => _gestureService.handleCounterIncrement();
   Future<void> decrement() => _gestureService.handleCounterDecrement();
   Future<void> reset() => _gestureService.handleCounterReset();
   Future<void> pauseResume() => _gestureService.handlePauseResume();
-  
+
   SwipeDirection? analyzeSwipe({
     required Offset start,
     required Offset end,
@@ -112,11 +113,11 @@ class CounterGestureHandler {
       duration: duration,
     );
   }
-  
+
   bool detectCircle(List<Offset> points) {
     return _gestureService.detectCircleGesture(points);
   }
-  
+
   bool detectZigzag(List<Offset> points) {
     return _gestureService.detectZigzagGesture(points);
   }

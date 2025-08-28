@@ -7,13 +7,13 @@ import '../../core/widgets/haptic_wrapper.dart';
 /// Écran de configuration du feedback haptique
 class HapticSettingsScreen extends ConsumerWidget {
   const HapticSettingsScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final hapticPrefs = ref.watch(hapticPreferencesProvider);
     final canVibrate = ref.watch(canVibrateProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Retour Haptique'),
@@ -43,7 +43,7 @@ class HapticSettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-          
+
           // Activation du feedback haptique
           HapticSwitchListTile(
             title: const Text('Activer le retour haptique'),
@@ -51,14 +51,15 @@ class HapticSettingsScreen extends ConsumerWidget {
             value: hapticPrefs.enabled,
             onChanged: canVibrate
                 ? (value) async {
-                    await ref.read(hapticPreferencesProvider.notifier)
+                    await ref
+                        .read(hapticPreferencesProvider.notifier)
                         .setEnabled(value);
                   }
                 : null,
           ),
-          
+
           const Divider(),
-          
+
           // Intensité
           Padding(
             padding: const EdgeInsets.all(16),
@@ -77,7 +78,7 @@ class HapticSettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Options d'intensité
                 ...HapticIntensity.values.map((intensity) {
                   return RadioListTile<HapticIntensity>(
@@ -88,7 +89,8 @@ class HapticSettingsScreen extends ConsumerWidget {
                     onChanged: hapticPrefs.enabled && canVibrate
                         ? (value) async {
                             if (value != null) {
-                              await ref.read(hapticPreferencesProvider.notifier)
+                              await ref
+                                  .read(hapticPreferencesProvider.notifier)
                                   .setIntensity(value);
                             }
                           }
@@ -98,9 +100,9 @@ class HapticSettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Tester le feedback
           Padding(
             padding: const EdgeInsets.all(16),
@@ -119,7 +121,7 @@ class HapticSettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Boutons de test
                 Wrap(
                   spacing: 8,
@@ -166,9 +168,9 @@ class HapticSettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Patterns de prière
           Padding(
             padding: const EdgeInsets.all(16),
@@ -187,7 +189,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
                 ListTile(
                   leading: const Icon(Icons.play_arrow),
                   title: const Text('Début de prière'),
@@ -198,7 +199,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.timer),
                   title: const Text('Compteur'),
@@ -210,7 +210,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.flag),
                   title: const Text('Milestone (33)'),
@@ -222,7 +221,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.flag),
                   title: const Text('Milestone (66)'),
@@ -234,7 +232,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.flag),
                   title: const Text('Milestone (99)'),
@@ -246,7 +243,6 @@ class HapticSettingsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
-                
                 ListTile(
                   leading: const Icon(Icons.check_circle),
                   title: const Text('Fin de prière'),
@@ -260,13 +256,13 @@ class HapticSettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
         ],
       ),
     );
   }
-  
+
   String _getIntensityLabel(HapticIntensity intensity) {
     switch (intensity) {
       case HapticIntensity.light:
@@ -277,7 +273,7 @@ class HapticSettingsScreen extends ConsumerWidget {
         return 'Fort';
     }
   }
-  
+
   String _getIntensityDescription(HapticIntensity intensity) {
     switch (intensity) {
       case HapticIntensity.light:
@@ -294,12 +290,12 @@ class HapticSettingsScreen extends ConsumerWidget {
 class _TestButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
-  
+
   const _TestButton({
     required this.label,
     required this.onPressed,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -318,7 +314,7 @@ class HapticSwitchListTile extends ConsumerWidget {
   final Widget? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
-  
+
   const HapticSwitchListTile({
     super.key,
     required this.title,
@@ -326,7 +322,7 @@ class HapticSwitchListTile extends ConsumerWidget {
     required this.value,
     required this.onChanged,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SwitchListTile(

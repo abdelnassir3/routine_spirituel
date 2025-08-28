@@ -22,7 +22,7 @@ void main() async {
     // Désactiver les logs en production
     debugPrint = (String? message, {int? wrapWidth}) {};
   }
-  
+
   // Initialiser l'API key Coqui TTS automatiquement
   await ApiKeyInitializer.initialize();
 

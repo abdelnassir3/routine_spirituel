@@ -1,6 +1,6 @@
 # Configuration Serveurs - Projet Spiritual Routines
 
-**Dernière mise à jour: 2025-08-27 02:10**
+**Dernière mise à jour: 2025-08-27 14:30**
 
 ## Serveur Edge-TTS (Principal)
 - **URL**: http://168.231.112.71:8010/api/tts
@@ -96,6 +96,13 @@ COQUI_URL=https://xtts.spiritual-app.com/api/xtts
 ```
 
 ## Scripts utilitaires
-- `scripts/cc-save.sh`: Savepoint Git atomique
-- `scripts/cc-guard.sh`: Exécution protégée avec rollback
-- `scripts/cc-restore.sh`: Restauration depuis savepoint
+- `scripts/lint.sh`: Analyse complète flutter analyze + dart format
+- `scripts/test.sh`: Tests complets avec coverage
+- `scripts/build.sh`: Build production (TODO - à créer)
+- `scripts/cc-save.sh`: Savepoint Git atomique (legacy)
+- `scripts/cc-guard.sh`: Exécution protégée avec rollback (legacy)
+- `scripts/cc-restore.sh`: Restauration depuis savepoint (legacy)
+
+## État Infrastructure (Août 2025)
+- ✅ Scripts qualité déployés et testés
+- ✅ GitHub Actions configuré avec étapes lint → test → build → deploy

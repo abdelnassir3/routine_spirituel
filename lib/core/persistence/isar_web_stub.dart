@@ -5,38 +5,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Classes stub pour éviter les erreurs de compilation
 class ContentDoc {
-  String? id;
-  String? taskId;
-  String? locale;
-  String? kind;
+  int id = 0; // Match Isar's Id type
+  late String taskId;
+  late String locale;
+  late String kind;
   String? title;
   String? body;
   String? source;
   String? rawBody;
   String? correctedBody;
   String? diacritizedBody;
-  bool? validated;
-  
+  bool validated = false;
+
+  String get taskLocale => taskId; // Match the getter from Isar version
+
   ContentDoc();
 }
 
 class VerseDoc {
-  final String id;
-  final int surah;
-  final int ayah;
-  final String? textAr;
-  final String? textFr;
-  
-  VerseDoc({
-    required this.id,
-    required this.surah,
-    required this.ayah,
-    this.textAr,
-    this.textFr,
-  });
+  int id = 0; // Match Isar's Id type
+  late int surah;
+  late int ayah;
+  String? textAr;
+  String? textFr;
+
+  int get surahAyah => surah; // Match the getter from Isar version
+
+  VerseDoc();
 }
 
 class TaskContent {
+  int isarId = 0; // Match the Isar version's Id field
   String id = '';
   String type = 'text';
   String? nameFr;
@@ -49,27 +48,33 @@ class TaskContent {
   String? category;
   int? defaultRepetitions;
   String? notes;
-  
+
+  String get taskId => id; // Match the getter from Isar version
+
   TaskContent();
 }
 
 // Schemas stub
 class ContentDocSchema {}
+
 class VerseDocSchema {}
+
 class TaskContentSchema {}
 
 // Isar class stub
 class Isar {
   static const autoIncrement = 0;
-  
+
   static Future<Isar> open(List<dynamic> schemas, {String? directory}) async {
     throw UnsupportedError('Isar is not supported on web. Use Drift instead.');
   }
-  
+
   void close() {}
-  
+
   dynamic get contentDocs => _IsarCollectionStub();
-  
+  dynamic get taskContents => _IsarCollectionStub();
+  dynamic get verseDocs => _IsarCollectionStub();
+
   Future<void> writeTxn(Function() fn) async {
     throw UnsupportedError('Isar is not supported on web. Use Drift instead.');
   }
@@ -77,6 +82,8 @@ class Isar {
 
 class _IsarCollectionStub {
   _IsarFilterStub filter() => _IsarFilterStub();
+  Future<void> put(dynamic doc) async {}
+  Future<void> putAll(List<dynamic> docs) async {}
 }
 
 class _IsarFilterStub {
@@ -84,7 +91,6 @@ class _IsarFilterStub {
   _IsarFilterStub and() => this;
   _IsarFilterStub localeEqualTo(String value) => this;
   Future<ContentDoc?> findFirst() async => null;
-  Future<void> put(ContentDoc doc) async {}
 }
 
 // Provider stub

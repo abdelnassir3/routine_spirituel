@@ -10,11 +10,12 @@ import 'package:crypto/crypto.dart';
 class FarasaDiacritizationService {
   static final Dio _dio = Dio();
   static const String _cachePrefix = 'farasa_diac_';
-  
+
   // Configuration API Farasa
   static const String farasaApiUrl = 'https://farasa-api.qcri.org/diacritize';
-  static const String farasaBackupUrl = 'https://qcri.org/farasa/api/diacritize';
-  
+  static const String farasaBackupUrl =
+      'https://qcri.org/farasa/api/diacritize';
+
   // Cache local simple (en mémoire)
   static final Map<String, String> _memoryCache = {};
   static const int maxCacheSize = 1000;
@@ -40,7 +41,7 @@ class FarasaDiacritizationService {
 
       // 3. Appeler l'API Farasa
       String? diacritizedText = await _callFarasaApi(cleanText);
-      
+
       // 4. Fallback vers API de secours si échec
       if (diacritizedText == null) {
         debugPrint('⚠️ API principale échouée, essai API de secours...');
@@ -57,7 +58,6 @@ class FarasaDiacritizationService {
       // 6. En cas d'échec total, retourner le texte original
       debugPrint('❌ Farasa: Échec diacritisation, retour texte original');
       return text;
-
     } catch (e) {
       debugPrint('❌ Erreur Farasa: $e');
       return text; // Fallback vers texte original
@@ -69,11 +69,7 @@ class FarasaDiacritizationService {
     try {
       final response = await _dio.post(
         farasaApiUrl,
-        data: {
-          'text': text,
-          'lang': 'ar',
-          'format': 'json'
-        },
+        data: {'text': text, 'lang': 'ar', 'format': 'json'},
         options: Options(
           receiveTimeout: const Duration(seconds: 15),
           headers: {
@@ -92,7 +88,7 @@ class FarasaDiacritizationService {
           return data;
         }
       }
-      
+
       return null;
     } catch (e) {
       debugPrint('❌ Erreur API Farasa principale: $e');
@@ -115,7 +111,7 @@ class FarasaDiacritizationService {
       if (response.statusCode == 200) {
         return response.data.toString();
       }
-      
+
       return null;
     } catch (e) {
       debugPrint('❌ Erreur API Farasa secours: $e');
@@ -128,7 +124,8 @@ class FarasaDiacritizationService {
     // Supprimer les marqueurs de versets et caractères non-arabes
     return text
         .replaceAll(RegExp(r'\{\{V:\d+:\d+\}\}'), '') // Marqueurs versets
-        .replaceAll(RegExp(r'[^\u0600-\u06FF\u0750-\u077F\s]'), '') // Garder seulement arabe
+        .replaceAll(RegExp(r'[^\u0600-\u06FF\u0750-\u077F\s]'),
+            '') // Garder seulement arabe
         .replaceAll(RegExp(r'\s+'), ' ') // Normaliser espaces
         .trim();
   }
@@ -139,20 +136,22 @@ class FarasaDiacritizationService {
   }
 
   /// Restaure le format original en préservant les marqueurs
-  static String _restoreOriginalFormat(String originalText, String cleanText, String diacritizedText) {
+  static String _restoreOriginalFormat(
+      String originalText, String cleanText, String diacritizedText) {
     // Si le texte original avait des marqueurs de versets, les préserver
     if (originalText.contains('{{V:')) {
-      final verseMarkers = RegExp(r'\{\{V:\d+:\d+\}\}').allMatches(originalText);
+      final verseMarkers =
+          RegExp(r'\{\{V:\d+:\d+\}\}').allMatches(originalText);
       String result = diacritizedText;
-      
+
       // Réinsérer les marqueurs à leurs positions approximatives
       for (final match in verseMarkers) {
         result = '${match.group(0)} $result';
       }
-      
+
       return result.trim();
     }
-    
+
     return diacritizedText;
   }
 
@@ -167,18 +166,22 @@ class FarasaDiacritizationService {
   static void _addToCache(String key, String value) {
     // Nettoyer le cache si trop grand
     if (_memoryCache.length >= maxCacheSize) {
-      final keysToRemove = _memoryCache.keys.take(_memoryCache.length - maxCacheSize + 100).toList();
+      final keysToRemove = _memoryCache.keys
+          .take(_memoryCache.length - maxCacheSize + 100)
+          .toList();
       for (final keyToRemove in keysToRemove) {
         _memoryCache.remove(keyToRemove);
       }
     }
-    
+
     _memoryCache[key] = value;
-    debugPrint('💾 Farasa: Mis en cache (${_memoryCache.length}/$maxCacheSize)');
+    debugPrint(
+        '💾 Farasa: Mis en cache (${_memoryCache.length}/$maxCacheSize)');
   }
 
   /// Diacritise plusieurs segments de texte en parallèle
-  static Future<List<String>> diacritizeMultipleTexts(List<String> texts) async {
+  static Future<List<String>> diacritizeMultipleTexts(
+      List<String> texts) async {
     final futures = texts.map((text) => diacritizeText(text));
     return await Future.wait(futures);
   }
@@ -196,13 +199,14 @@ class FarasaDiacritizationService {
   static bool _alreadyDiacritized(String text) {
     // Chercher les signes diacritiques arabes courants
     final diacriticsRegex = RegExp(r'[\u064B-\u065F\u0670\u06D6-\u06ED]');
-    final arabicChars = text.replaceAll(RegExp(r'[^\u0600-\u06FF\u0750-\u077F]'), '');
-    
+    final arabicChars =
+        text.replaceAll(RegExp(r'[^\u0600-\u06FF\u0750-\u077F]'), '');
+
     if (arabicChars.isEmpty) return true;
-    
+
     final diacriticsCount = diacriticsRegex.allMatches(text).length;
     final arabicCharCount = arabicChars.length;
-    
+
     // Si plus de 10% des caractères arabes ont des diacritiques, considérer comme diacritisé
     return (diacriticsCount / arabicCharCount) > 0.1;
   }
@@ -228,10 +232,11 @@ class FarasaDiacritizationService {
       debugPrint('🧪 Test connexion Farasa...');
       final testText = 'السلام عليكم';
       final result = await diacritizeText(testText);
-      
+
       final isWorking = result != testText && _containsArabic(result);
-      debugPrint(isWorking ? '✅ Farasa fonctionne' : '❌ Farasa ne fonctionne pas');
-      
+      debugPrint(
+          isWorking ? '✅ Farasa fonctionne' : '❌ Farasa ne fonctionne pas');
+
       return isWorking;
     } catch (e) {
       debugPrint('❌ Test Farasa échoué: $e');

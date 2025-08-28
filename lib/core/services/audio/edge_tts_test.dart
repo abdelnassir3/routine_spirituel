@@ -5,37 +5,36 @@ import 'vps_connection_test.dart';
 
 /// Test spécifique pour Edge-TTS avec votre VPS
 class EdgeTtsVpsTest {
-  
   /// Teste une synthèse simple avec votre VPS
   static Future<void> testSimpleSynthesis() async {
     debugPrint('🧪 === Test Edge-TTS VPS ===');
     AudioApiConfig.logConfiguration();
-    
+
     // Test 1: Connexion VPS
     debugPrint('\n📡 Test 1: Connexion au VPS...');
     final connectionResult = await VpsConnectionTest.testConnection();
     debugPrint(connectionResult.summary);
-    
+
     if (connectionResult.overallStatus == VpsTestStatus.failed) {
       debugPrint('❌ VPS inaccessible, arrêt des tests');
       return;
     }
-    
+
     // Test 2: Synthèse française simple
     debugPrint('\n🇫🇷 Test 2: Synthèse française...');
     await _testFrenchSynthesis();
-    
+
     // Test 3: Synthèse arabe simple
     debugPrint('\n🇸🇦 Test 3: Synthèse arabe...');
     await _testArabicSynthesis();
-    
+
     // Test 4: Test avec différentes voix
     debugPrint('\n🎭 Test 4: Test voix multiples...');
     await _testMultipleVoices();
-    
+
     debugPrint('\n✅ Tests Edge-TTS terminés');
   }
-  
+
   static Future<void> _testFrenchSynthesis() async {
     try {
       final audioBytes = await EdgeTtsService.synthesizeText(
@@ -43,7 +42,7 @@ class EdgeTtsVpsTest {
         language: 'fr-FR',
         voice: EdgeTtsVoice.frenchDenise,
       );
-      
+
       if (audioBytes != null) {
         debugPrint('✅ Synthèse française réussie: ${audioBytes.length} bytes');
       } else {
@@ -53,7 +52,7 @@ class EdgeTtsVpsTest {
       debugPrint('❌ Erreur synthèse française: $e');
     }
   }
-  
+
   static Future<void> _testArabicSynthesis() async {
     try {
       final audioBytes = await EdgeTtsService.synthesizeText(
@@ -61,7 +60,7 @@ class EdgeTtsVpsTest {
         language: 'ar-SA',
         voice: EdgeTtsVoice.arabicHamed,
       );
-      
+
       if (audioBytes != null) {
         debugPrint('✅ Synthèse arabe réussie: ${audioBytes.length} bytes');
       } else {
@@ -71,7 +70,7 @@ class EdgeTtsVpsTest {
       debugPrint('❌ Erreur synthèse arabe: $e');
     }
   }
-  
+
   static Future<void> _testMultipleVoices() async {
     final testCases = [
       {
@@ -95,7 +94,7 @@ class EdgeTtsVpsTest {
         'lang': 'ar-SA'
       },
     ];
-    
+
     for (final testCase in testCases) {
       try {
         final audioBytes = await EdgeTtsService.synthesizeText(
@@ -103,7 +102,7 @@ class EdgeTtsVpsTest {
           language: testCase['lang'] as String,
           voice: testCase['voice'] as EdgeTtsVoice,
         );
-        
+
         if (audioBytes != null) {
           debugPrint('✅ ${testCase['voice']}: ${audioBytes.length} bytes');
         } else {
@@ -112,59 +111,60 @@ class EdgeTtsVpsTest {
       } catch (e) {
         debugPrint('❌ ${testCase['voice']}: erreur $e');
       }
-      
+
       // Petite pause entre les tests
       await Future.delayed(Duration(milliseconds: 500));
     }
   }
-  
+
   /// Test de performance avec texte long
   static Future<void> testLongTextPerformance() async {
     debugPrint('\n📊 Test performance texte long...');
-    
+
     const longText = '''
     Ceci est un test de performance avec un texte relativement long pour évaluer 
     la vitesse de synthèse du serveur Edge-TTS. Le texte contient plusieurs phrases 
     et devrait permettre de mesurer la latence et la qualité de l'audio généré.
     ''';
-    
+
     final stopwatch = Stopwatch()..start();
-    
+
     try {
       final audioBytes = await EdgeTtsService.synthesizeText(
         longText,
         language: 'fr-FR',
         voice: EdgeTtsVoice.frenchDenise,
       );
-      
+
       stopwatch.stop();
-      
+
       if (audioBytes != null) {
         final duration = stopwatch.elapsedMilliseconds;
         final efficiency = (audioBytes.length / duration * 1000).round();
-        
+
         debugPrint('✅ Texte long réussi:');
         debugPrint('   📝 Caractères: ${longText.length}');
         debugPrint('   🔊 Audio: ${audioBytes.length} bytes');
         debugPrint('   ⏱️ Durée: ${duration}ms');
         debugPrint('   📊 Efficacité: ${efficiency} bytes/s');
       } else {
-        debugPrint('❌ Échec texte long après ${stopwatch.elapsedMilliseconds}ms');
+        debugPrint(
+            '❌ Échec texte long après ${stopwatch.elapsedMilliseconds}ms');
       }
     } catch (e) {
       stopwatch.stop();
-      debugPrint('❌ Erreur texte long après ${stopwatch.elapsedMilliseconds}ms: $e');
+      debugPrint(
+          '❌ Erreur texte long après ${stopwatch.elapsedMilliseconds}ms: $e');
     }
   }
 }
 
 /// Extension pour faciliter les tests depuis l'UI
 extension EdgeTtsVpsTestWidget on EdgeTtsVpsTest {
-  
   /// Lance tous les tests et retourne un résumé
   static Future<String> runAllTestsAndGetSummary() async {
     final buffer = StringBuffer();
-    
+
     // Rediriger debugPrint vers notre buffer
     final originalDebugPrint = debugPrint;
     debugPrint = (String? message, {int? wrapWidth}) {
@@ -173,7 +173,7 @@ extension EdgeTtsVpsTestWidget on EdgeTtsVpsTest {
       }
       originalDebugPrint?.call(message, wrapWidth: wrapWidth);
     };
-    
+
     try {
       await testSimpleSynthesis();
       await testLongTextPerformance();
@@ -181,7 +181,7 @@ extension EdgeTtsVpsTestWidget on EdgeTtsVpsTest {
       // Restaurer debugPrint
       debugPrint = originalDebugPrint;
     }
-    
+
     return buffer.toString();
   }
 }

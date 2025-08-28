@@ -6,7 +6,7 @@ import '../../core/widgets/haptic_wrapper.dart';
 /// Écran d'export des données
 class ExportScreen extends ConsumerStatefulWidget {
   const ExportScreen({super.key});
-  
+
   @override
   ConsumerState<ExportScreen> createState() => _ExportScreenState();
 }
@@ -20,14 +20,14 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     ExportDataType.streakData,
     ExportDataType.milestones,
   };
-  
+
   bool _isExporting = false;
   ExportResult? _lastExport;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exporter les données'),
@@ -85,7 +85,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                     });
                   },
                 ),
-                
+
                 // Date personnalisée
                 const Divider(),
                 ListTile(
@@ -105,7 +105,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                         end: _selectedRange.end,
                       ),
                     );
-                    
+
                     if (range != null) {
                       setState(() {
                         _selectedRange = DateRange(
@@ -119,9 +119,9 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Format
           _SectionCard(
             title: 'Format',
@@ -170,9 +170,9 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Données à inclure
           _SectionCard(
             title: 'Données à inclure',
@@ -183,7 +183,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                   type: ExportDataType.allTimeStats,
                   title: 'Statistiques globales',
                   subtitle: 'Total des répétitions, sessions, temps',
-                  isSelected: _selectedDataTypes.contains(ExportDataType.allTimeStats),
+                  isSelected:
+                      _selectedDataTypes.contains(ExportDataType.allTimeStats),
                   onChanged: (selected) {
                     setState(() {
                       if (selected) {
@@ -198,7 +199,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                   type: ExportDataType.dailyMetrics,
                   title: 'Détails quotidiens',
                   subtitle: 'Métriques jour par jour',
-                  isSelected: _selectedDataTypes.contains(ExportDataType.dailyMetrics),
+                  isSelected:
+                      _selectedDataTypes.contains(ExportDataType.dailyMetrics),
                   onChanged: (selected) {
                     setState(() {
                       if (selected) {
@@ -213,7 +215,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                   type: ExportDataType.streakData,
                   title: 'Série (Streak)',
                   subtitle: 'Série actuelle et record',
-                  isSelected: _selectedDataTypes.contains(ExportDataType.streakData),
+                  isSelected:
+                      _selectedDataTypes.contains(ExportDataType.streakData),
                   onChanged: (selected) {
                     setState(() {
                       if (selected) {
@@ -228,7 +231,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                   type: ExportDataType.milestones,
                   title: 'Milestones',
                   subtitle: 'Accomplissements atteints',
-                  isSelected: _selectedDataTypes.contains(ExportDataType.milestones),
+                  isSelected:
+                      _selectedDataTypes.contains(ExportDataType.milestones),
                   onChanged: (selected) {
                     setState(() {
                       if (selected) {
@@ -244,7 +248,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                     type: ExportDataType.charts,
                     title: 'Graphiques',
                     subtitle: 'Visualisations des tendances',
-                    isSelected: _selectedDataTypes.contains(ExportDataType.charts),
+                    isSelected:
+                        _selectedDataTypes.contains(ExportDataType.charts),
                     onChanged: (selected) {
                       setState(() {
                         if (selected) {
@@ -258,13 +263,13 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Résultat du dernier export
           if (_lastExport != null)
             Card(
-              color: _lastExport!.success 
+              color: _lastExport!.success
                   ? Colors.green.withOpacity(0.1)
                   : Colors.red.withOpacity(0.1),
               child: Padding(
@@ -275,21 +280,20 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                     Row(
                       children: [
                         Icon(
-                          _lastExport!.success 
+                          _lastExport!.success
                               ? Icons.check_circle
                               : Icons.error,
-                          color: _lastExport!.success 
-                              ? Colors.green
-                              : Colors.red,
+                          color:
+                              _lastExport!.success ? Colors.green : Colors.red,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          _lastExport!.success 
+                          _lastExport!.success
                               ? 'Export réussi'
                               : 'Échec de l\'export',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: _lastExport!.success 
+                            color: _lastExport!.success
                                 ? Colors.green
                                 : Colors.red,
                           ),
@@ -334,11 +338,11 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                 ),
               ),
             ),
-          
+
           const SizedBox(height: 80),
         ],
       ),
-      
+
       // Bouton d'export
       floatingActionButton: HapticWrapper(
         type: HapticType.impact,
@@ -347,7 +351,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             : () => _performExport(),
         child: FloatingActionButton.extended(
           onPressed: null,
-          icon: _isExporting 
+          icon: _isExporting
               ? const SizedBox(
                   width: 20,
                   height: 20,
@@ -358,34 +362,33 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                 )
               : const Icon(Icons.download),
           label: Text(_isExporting ? 'Export...' : 'Exporter'),
-          backgroundColor: _selectedDataTypes.isEmpty 
-              ? Colors.grey
-              : theme.primaryColor,
+          backgroundColor:
+              _selectedDataTypes.isEmpty ? Colors.grey : theme.primaryColor,
         ),
       ),
     );
   }
-  
+
   String _getRangeValue() {
     final now = DateTime.now();
     final daysDiff = now.difference(_selectedRange.start).inDays;
-    
+
     if (daysDiff == 7) return 'week';
     if (daysDiff == 30) return 'month';
     if (daysDiff == 365) return 'year';
     if (_selectedRange.start.year == 2020) return 'all';
     return 'custom';
   }
-  
+
   Future<void> _performExport() async {
     setState(() {
       _isExporting = true;
       _lastExport = null;
     });
-    
+
     final service = ExportService.instance;
     ExportResult result;
-    
+
     try {
       switch (_selectedFormat) {
         case ExportFormat.pdf:
@@ -395,15 +398,16 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             includeCharts: _selectedDataTypes.contains(ExportDataType.charts),
           );
           break;
-          
+
         case ExportFormat.csv:
           result = await service.exportToCSV(
             range: _selectedRange,
             dataTypes: _selectedDataTypes.toList(),
-            includeDetails: _selectedDataTypes.contains(ExportDataType.dailyMetrics),
+            includeDetails:
+                _selectedDataTypes.contains(ExportDataType.dailyMetrics),
           );
           break;
-          
+
         case ExportFormat.json:
           result = await service.exportToJSON(
             range: _selectedRange,
@@ -412,15 +416,16 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
           );
           break;
       }
-      
+
       setState(() {
         _lastExport = result;
       });
-      
+
       if (result.success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export ${_selectedFormat.name.toUpperCase()} créé avec succès'),
+            content: Text(
+                'Export ${_selectedFormat.name.toUpperCase()} créé avec succès'),
             action: SnackBarAction(
               label: 'Partager',
               onPressed: () async {
@@ -443,13 +448,13 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
       });
     }
   }
-  
+
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-           '${date.month.toString().padLeft(2, '0')}/'
-           '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
-  
+
   String _formatFileSize(int bytes) {
     if (bytes < 1024) {
       return '$bytes B';
@@ -466,17 +471,17 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-  
+
   const _SectionCard({
     required this.title,
     required this.icon,
     required this.child,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +515,7 @@ class _RangeOption extends StatelessWidget {
   final String value;
   final String groupValue;
   final ValueChanged<String?> onChanged;
-  
+
   const _RangeOption({
     required this.title,
     required this.subtitle,
@@ -518,7 +523,7 @@ class _RangeOption extends StatelessWidget {
     required this.groupValue,
     required this.onChanged,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return RadioListTile<String>(
@@ -540,7 +545,7 @@ class _FormatOption extends StatelessWidget {
   final Color color;
   final bool isSelected;
   final VoidCallback onTap;
-  
+
   const _FormatOption({
     required this.format,
     required this.title,
@@ -550,11 +555,11 @@ class _FormatOption extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return ListTile(
       leading: Container(
         width: 40,
@@ -584,7 +589,7 @@ class _DataTypeOption extends StatelessWidget {
   final String subtitle;
   final bool isSelected;
   final ValueChanged<bool> onChanged;
-  
+
   const _DataTypeOption({
     required this.type,
     required this.title,
@@ -592,7 +597,7 @@ class _DataTypeOption extends StatelessWidget {
     required this.isSelected,
     required this.onChanged,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(

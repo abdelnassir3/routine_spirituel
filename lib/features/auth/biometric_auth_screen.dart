@@ -6,31 +6,32 @@ import '../../core/services/secure_storage_service.dart';
 import '../../core/providers/secure_storage_provider.dart';
 
 /// Écran d'authentification biométrique
-/// 
+///
 /// Affiché au démarrage si la protection biométrique est activée
 class BiometricAuthScreen extends ConsumerStatefulWidget {
   const BiometricAuthScreen({super.key});
 
   @override
-  ConsumerState<BiometricAuthScreen> createState() => _BiometricAuthScreenState();
+  ConsumerState<BiometricAuthScreen> createState() =>
+      _BiometricAuthScreenState();
 }
 
-class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen> 
+class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
     with WidgetsBindingObserver {
   final BiometricService _biometricService = BiometricService.instance;
   final SecureStorageService _secureStorage = SecureStorageService.instance;
-  
+
   bool _isAuthenticating = false;
   String? _errorMessage;
   String _biometricType = 'biométrique';
   int _failedAttempts = 0;
   static const int _maxFailedAttempts = 3;
-  
+
   // PIN fallback
   final TextEditingController _pinController = TextEditingController();
   bool _showPinInput = false;
   bool _obscurePin = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -41,14 +42,14 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       _authenticate();
     });
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _pinController.dispose();
     super.dispose();
   }
-  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Réauthentifier quand l'app revient au premier plan
@@ -56,7 +57,7 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       _authenticate();
     }
   }
-  
+
   Future<void> _loadBiometricType() async {
     final type = await _biometricService.getPrimaryBiometricType();
     if (mounted) {
@@ -65,25 +66,26 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       });
     }
   }
-  
+
   Future<void> _authenticate() async {
     if (_isAuthenticating) return;
-    
+
     setState(() {
       _isAuthenticating = true;
       _errorMessage = null;
     });
-    
+
     final result = await _biometricService.authenticate(
-      localizedReason: 'Authentifiez-vous pour accéder à vos routines spirituelles',
+      localizedReason:
+          'Authentifiez-vous pour accéder à vos routines spirituelles',
       biometricOnly: false, // Permettre le fallback au code PIN système
     );
-    
+
     if (mounted) {
       setState(() {
         _isAuthenticating = false;
       });
-      
+
       if (result.success) {
         // Authentification réussie, naviguer vers l'app
         _onAuthenticationSuccess();
@@ -93,11 +95,11 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       }
     }
   }
-  
+
   void _handleAuthenticationFailure(BiometricAuthResult result) {
     setState(() {
       _failedAttempts++;
-      
+
       if (result.isCanceled) {
         _errorMessage = 'Authentification annulée';
       } else if (result.isLocked) {
@@ -111,7 +113,7 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       }
     });
   }
-  
+
   Future<void> _authenticateWithPin() async {
     if (_pinController.text.isEmpty) {
       setState(() {
@@ -119,20 +121,20 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       });
       return;
     }
-    
+
     setState(() {
       _isAuthenticating = true;
       _errorMessage = null;
     });
-    
+
     // Vérifier le code PIN
     final isValid = await _secureStorage.verifyPinCode(_pinController.text);
-    
+
     if (mounted) {
       setState(() {
         _isAuthenticating = false;
       });
-      
+
       if (isValid) {
         _onAuthenticationSuccess();
       } else {
@@ -143,15 +145,15 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       }
     }
   }
-  
+
   void _onAuthenticationSuccess() {
     // Réinitialiser les compteurs
     _failedAttempts = 0;
-    
+
     // Naviguer vers l'écran principal
     context.go('/home');
   }
-  
+
   Future<void> _skipAuthentication() async {
     // Option pour désactiver la protection (nécessite une authentification)
     final confirmed = await showDialog<bool>(
@@ -177,7 +179,7 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       final success = await _biometricService.disableBiometricProtection();
       if (success && mounted) {
@@ -185,12 +187,12 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -224,9 +226,9 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                       color: theme.primaryColor,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Titre
                   Text(
                     'RISAQ',
@@ -235,21 +237,21 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                       color: theme.primaryColor,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Sous-titre
                   Text(
-                    _showPinInput 
+                    _showPinInput
                         ? 'Entrez votre code PIN'
                         : 'Authentification requise',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Zone d'authentification
                   if (_showPinInput) ...[
                     // Input PIN
@@ -270,7 +272,9 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePin ? Icons.visibility : Icons.visibility_off,
+                              _obscurePin
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
@@ -282,15 +286,16 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                         onSubmitted: (_) => _authenticateWithPin(),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Bouton valider PIN
                     SizedBox(
                       width: size.width > 400 ? 400 : null,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: _isAuthenticating ? null : _authenticateWithPin,
+                        onPressed:
+                            _isAuthenticating ? null : _authenticateWithPin,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -302,15 +307,16 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text('Valider'),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Bouton retour biométrie
                     TextButton.icon(
                       onPressed: () {
@@ -340,7 +346,8 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : Text('Utiliser $_biometricType'),
@@ -351,9 +358,9 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Bouton code PIN
                     TextButton.icon(
                       onPressed: () {
@@ -366,7 +373,7 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                       label: const Text('Utiliser le code PIN'),
                     ),
                   ],
-                  
+
                   // Message d'erreur
                   if (_errorMessage != null) ...[
                     const SizedBox(height: 24),
@@ -400,16 +407,17 @@ class _BiometricAuthScreenState extends ConsumerState<BiometricAuthScreen>
                       ),
                     ),
                   ],
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Option pour désactiver
                   TextButton(
                     onPressed: _skipAuthentication,
                     child: Text(
                       'Désactiver la protection',
                       style: TextStyle(
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                        color:
+                            theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),

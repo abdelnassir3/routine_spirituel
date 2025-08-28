@@ -4,16 +4,16 @@ import '../../../core/services/analytics_service.dart';
 /// Card pour afficher les milestones
 class MilestonesCard extends StatelessWidget {
   final List<Milestone> milestones;
-  
+
   const MilestonesCard({
     super.key,
     required this.milestones,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (milestones.isEmpty) {
       return Card(
         child: Padding(
@@ -49,10 +49,10 @@ class MilestonesCard extends StatelessWidget {
         ),
       );
     }
-    
+
     // Limiter à 5 milestones récents
     final recentMilestones = milestones.take(5).toList();
-    
+
     return Column(
       children: recentMilestones.map((milestone) {
         return _MilestoneItem(milestone: milestone);
@@ -64,13 +64,13 @@ class MilestonesCard extends StatelessWidget {
 /// Item de milestone
 class _MilestoneItem extends StatelessWidget {
   final Milestone milestone;
-  
+
   const _MilestoneItem({required this.milestone});
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -113,7 +113,7 @@ class _MilestoneItem extends StatelessWidget {
       ),
     );
   }
-  
+
   IconData _getIconForMilestone(Milestone milestone) {
     switch (milestone.type) {
       case 'repetitions':
@@ -128,7 +128,7 @@ class _MilestoneItem extends StatelessWidget {
         return Icons.emoji_events;
     }
   }
-  
+
   Color _getColorForMilestone(Milestone milestone) {
     if (milestone.value >= 1000000) {
       return Colors.purple;
@@ -142,7 +142,7 @@ class _MilestoneItem extends StatelessWidget {
       return Colors.green;
     }
   }
-  
+
   String _getFormattedValue(Milestone milestone) {
     if (milestone.value < 1000) {
       return '${milestone.value} ${milestone.type}';
@@ -152,11 +152,11 @@ class _MilestoneItem extends StatelessWidget {
       return '${(milestone.value / 1000000).toStringAsFixed(milestone.value % 1000000 == 0 ? 0 : 1)}M ${milestone.type}';
     }
   }
-  
+
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {
@@ -180,11 +180,11 @@ class _MilestoneItem extends StatelessWidget {
       return 'Il y a $years an${years > 1 ? 's' : ''}';
     }
   }
-  
+
   Widget? _getMilestoneBadge(Milestone milestone) {
     String? badgeText;
     Color? badgeColor;
-    
+
     if (milestone.value >= 1000000) {
       badgeText = 'LÉGENDAIRE';
       badgeColor = Colors.purple;
@@ -198,9 +198,9 @@ class _MilestoneItem extends StatelessWidget {
       badgeText = 'SPÉCIAL';
       badgeColor = Colors.blue;
     }
-    
+
     if (badgeText == null) return null;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(

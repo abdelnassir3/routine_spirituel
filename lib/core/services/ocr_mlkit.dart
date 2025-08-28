@@ -69,8 +69,7 @@ class MlkitOcrService implements OcrService {
       for (int i = 1; i <= pageCount; i++) {
         final page = await doc.getPage(i);
         final pageImage = await page.render(
-            width: page.width, 
-            height: page.height);
+            width: page.width, height: page.height, format: PdfPageImageFormat.png);
         await page.close();
 
         if (pageImage == null) continue;

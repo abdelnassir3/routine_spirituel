@@ -16,4 +16,3 @@ class PermissionService {
     return status.isGranted || status.isLimited;
   }
 }
-

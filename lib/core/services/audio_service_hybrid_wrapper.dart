@@ -23,17 +23,17 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
   StreamSubscription<Duration>? _positionSubscription;
   bool _isDisposing = false;
-  
+
   // Settings hybrides configurables
   final HybridAudioSettings _settings;
 
   AudioServiceHybridWrapper({
     required AudioTtsService fallbackTtsService,
     HybridAudioSettings? settings,
-  }) : _fallbackTtsService = fallbackTtsService,
-       _settings = settings ?? HybridAudioSettings.defaultSettings() {
+  })  : _fallbackTtsService = fallbackTtsService,
+        _settings = settings ?? HybridAudioSettings.defaultSettings() {
     _setupAudioPlayer();
-    
+
     TtsLogger.info('🎯 AudioServiceHybridWrapper initialisé', {
       'quranicProvider': _settings.quranicProvider.displayName,
       'preferredReciter': _settings.preferredReciter,
@@ -44,7 +44,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
   void _setupAudioPlayer() {
     _initAudioSession();
-    
+
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
       _safeAddToPositionStream(position);
     });
@@ -64,7 +64,8 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         avAudioSessionCategory: AVAudioSessionCategory.playback,
         avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.duckOthers,
         avAudioSessionMode: AVAudioSessionMode.defaultMode,
-        avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+        avAudioSessionRouteSharingPolicy:
+            AVAudioSessionRouteSharingPolicy.defaultPolicy,
         avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
         androidAudioAttributes: const AndroidAudioAttributes(
           contentType: AndroidAudioContentType.speech,
@@ -74,7 +75,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
         androidWillPauseWhenDucked: false,
       ));
-      
+
       TtsLogger.info('🔊 Session audio configurée', {
         'category': 'playback',
         'options': 'duckOthers',
@@ -103,38 +104,44 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     try {
       // Arrêter toute lecture en cours de manière complète
       await stop();
-      
+
       // Attendre un peu pour s'assurer que tout est bien arrêté
       await Future.delayed(Duration(milliseconds: 100));
 
       // Analyser le contenu avec le système existant
-      final contentAnalysis = await HybridAudioService.analyzeContentDetails(text);
-      
+      final contentAnalysis =
+          await HybridAudioService.analyzeContentDetails(text);
+
       TtsLogger.info('🔍 Analyse de contenu', {
         'contentType': contentAnalysis.contentType.toString(),
         'verses': contentAnalysis.verses.length,
-        'arabicRatio': (contentAnalysis.languageRatio.arabic * 100).toStringAsFixed(1) + '%',
-        'frenchRatio': (contentAnalysis.languageRatio.french * 100).toStringAsFixed(1) + '%',
-        'textPreview': text.substring(0, text.length > 50 ? 50 : text.length) + '...',
+        'arabicRatio':
+            (contentAnalysis.languageRatio.arabic * 100).toStringAsFixed(1) +
+                '%',
+        'frenchRatio':
+            (contentAnalysis.languageRatio.french * 100).toStringAsFixed(1) +
+                '%',
+        'textPreview':
+            text.substring(0, text.length > 50 ? 50 : text.length) + '...',
       });
 
       // Router selon le type de contenu
       if (contentAnalysis.contentType == ContentType.quranicVerse) {
-        
         // CONTENU CORANIQUE -> Utiliser les APIs Quran
         TtsLogger.info('🕌 Routage vers API Quran', {
-          'verses': contentAnalysis.verses.map((v) => '${v.surah}:${v.verse}').join(', '),
+          'verses': contentAnalysis.verses
+              .map((v) => '${v.surah}:${v.verse}')
+              .join(', '),
           'provider': _settings.quranicProvider.displayName,
           'reciter': _settings.preferredReciter,
         });
 
         await _playQuranicAudio(contentAnalysis, voice, speed);
-        
+
         TtsLogger.metric('hybrid_wrapper.route.quran', 1, {
           'provider': _settings.quranicProvider.name,
           'verses': contentAnalysis.verses.length,
         });
-
       } else {
         // TEXTE NORMAL -> Utiliser système hybride avec Edge-TTS
         TtsLogger.info('🗣️ Routage vers système hybride Edge-TTS', {
@@ -142,13 +149,13 @@ class AudioServiceHybridWrapper implements AudioTtsService {
           'enableDiacritization': _settings.enableDiacritization,
         });
 
-        await _playHybridTtsAudio(contentAnalysis, voice, speed, pitch, allowFallback);
-        
+        await _playHybridTtsAudio(
+            contentAnalysis, voice, speed, pitch, allowFallback);
+
         TtsLogger.metric('hybrid_wrapper.route.tts', 1, {
           'contentType': contentAnalysis.contentType.name,
         });
       }
-
     } catch (e) {
       TtsLogger.error('Erreur AudioServiceHybridWrapper', {
         'error': e.toString(),
@@ -160,7 +167,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         TtsLogger.warning('🔄 Fallback global vers service TTS traditionnel', {
           'reason': e.toString(),
         });
-        
+
         try {
           // Ajuster la vitesse pour le fallback TTS selon la langue
           double adjustedSpeed = speed;
@@ -175,7 +182,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
             // Pour le français, vitesse normale mais limitée
             adjustedSpeed = speed.clamp(0.5, 0.8);
           }
-          
+
           await _fallbackTtsService.playText(
             text,
             voice: voice,
@@ -183,7 +190,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
             pitch: pitch,
             allowFallback: true,
           );
-          
+
           TtsLogger.metric('hybrid_wrapper.fallback.success', 1);
           return;
         } catch (fallbackError) {
@@ -195,7 +202,6 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
       TtsLogger.metric('hybrid_wrapper.error', 1);
       rethrow;
-      
     } finally {
       timer.stop();
     }
@@ -209,7 +215,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
   ) async {
     // Ajuster la vitesse pour la récitation coranique (plus lente)
     final adjustedSpeed = _adjustSpeedForQuran(speed);
-    
+
     // Utiliser le système hybride existant
     final audioBytes = await HybridAudioService.generateAudio(
       analysis.originalText,
@@ -260,7 +266,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         }
       }
     }
-    
+
     // Fallback vers le service TTS traditionnel
     if (allowFallback) {
       // Fallback vers le service TTS traditionnel avec vitesse ajustée
@@ -274,17 +280,19 @@ class AudioServiceHybridWrapper implements AudioTtsService {
       } else {
         adjustedSpeed = speed.clamp(0.5, 0.8);
       }
-      
+
       // Utiliser le texte original pour le fallback
       final textForFallback = analysis.originalText;
-      
+
       TtsLogger.info('🔄 Activation du fallback flutter_tts', {
-        'text': textForFallback.substring(0, textForFallback.length > 50 ? 50 : textForFallback.length) + '...',
+        'text': textForFallback.substring(
+                0, textForFallback.length > 50 ? 50 : textForFallback.length) +
+            '...',
         'voice': voice,
         'adjustedSpeed': adjustedSpeed,
         'isArabic': _isArabicContent(textForFallback),
       });
-      
+
       await _fallbackTtsService.playText(
         textForFallback,
         voice: voice,
@@ -314,14 +322,15 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         await session.setActive(true);
         TtsLogger.info('🔊 Session audio activée');
       } catch (e) {
-        TtsLogger.debug('Erreur activation session audio', {'error': e.toString()});
+        TtsLogger.debug(
+            'Erreur activation session audio', {'error': e.toString()});
       }
 
       // Créer un fichier temporaire
       final tempDir = await getTemporaryDirectory();
       final tempFile = File(
           '${tempDir.path}/${prefix}_${DateTime.now().millisecondsSinceEpoch}.mp3');
-      
+
       await tempFile.writeAsBytes(audioBytes);
 
       TtsLogger.info('📁 Fichier audio créé', {
@@ -338,10 +347,10 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
       // Charger et jouer avec just_audio
       await _audioPlayer.setFilePath(tempFile.path);
-      
+
       // Attendre que l'audio soit complètement chargé
       await _audioPlayer.load();
-      
+
       // Vérifier la durée pour s'assurer que le fichier est valide
       final duration = _audioPlayer.duration;
       TtsLogger.info('🎵 Audio chargé', {
@@ -355,7 +364,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
       // Jouer l'audio
       await _audioPlayer.play();
-      
+
       TtsLogger.info('▶️ Audio lecture démarrée', {
         'isPlaying': _audioPlayer.playing,
         'volume': _audioPlayer.volume,
@@ -364,11 +373,11 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 
       // Attendre pour vérifier si la lecture fonctionne réellement
       await Future.delayed(Duration(milliseconds: 500));
-      
+
       final isActuallyPlaying = _audioPlayer.playing;
       final currentState = _audioPlayer.processingState;
       final currentPosition = _audioPlayer.position.inMilliseconds;
-      
+
       TtsLogger.info('🔊 État lecture après 500ms', {
         'isPlaying': isActuallyPlaying,
         'position': currentPosition,
@@ -376,31 +385,31 @@ class AudioServiceHybridWrapper implements AudioTtsService {
       });
 
       // Vérifier si l'audio joue réellement
-      if (!isActuallyPlaying || 
+      if (!isActuallyPlaying ||
           currentState == ProcessingState.idle ||
           (duration == null || duration.inMilliseconds == 0)) {
-        
         TtsLogger.warning('⚠️ Audio MP3 non compatible détecté', {
           'isPlaying': isActuallyPlaying,
           'processingState': currentState.name,
           'duration': duration?.inMilliseconds,
           'position': currentPosition,
         });
-        
+
         // Arrêter complètement la tentative de lecture Edge-TTS
         await _audioPlayer.stop();
         await _audioPlayer.dispose();
-        
+
         // Aussi arrêter tout service TTS en arrière-plan qui pourrait jouer
         await _fallbackTtsService.stop();
-        
+
         // Recréer un nouveau player pour éviter les conflits
         await _recreateAudioPlayer();
-        
+
         // Attendre un peu pour s'assurer que tout est arrêté
         await Future.delayed(Duration(milliseconds: 200));
-        
-        throw Exception('Audio MP3 d\'Edge-TTS incompatible avec AudioPlayer iOS - fallback requis');
+
+        throw Exception(
+            'Audio MP3 d\'Edge-TTS incompatible avec AudioPlayer iOS - fallback requis');
       }
 
       // Nettoyer après un délai
@@ -410,7 +419,8 @@ class AudioServiceHybridWrapper implements AudioTtsService {
             await tempFile.delete();
           }
         } catch (e) {
-          TtsLogger.debug('Erreur nettoyage fichier temp', {'error': e.toString()});
+          TtsLogger.debug(
+              'Erreur nettoyage fichier temp', {'error': e.toString()});
         }
       });
 
@@ -418,7 +428,6 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         'size': audioBytes.length,
         'prefix': prefix,
       });
-
     } catch (e) {
       TtsLogger.error('Erreur lecture audio bytes', {
         'error': e.toString(),
@@ -433,12 +442,12 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     // La récitation coranique doit être plus lente
     // Mapper 0.5-1.5 -> 0.4-0.8
     final adjustedSpeed = (originalSpeed * 0.6 + 0.1).clamp(0.4, 0.8);
-    
+
     TtsLogger.info('⚡ Ajustement vitesse récitation', {
       'original': originalSpeed,
       'adjusted': adjustedSpeed,
     });
-    
+
     return adjustedSpeed;
   }
 
@@ -447,9 +456,9 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F]');
     final arabicMatches = arabicRegex.allMatches(text).length;
     final totalChars = text.replaceAll(RegExp(r'\s'), '').length;
-    
+
     if (totalChars == 0) return false;
-    
+
     // Si plus de 50% du contenu est arabe
     return (arabicMatches / totalChars) > 0.5;
   }
@@ -459,10 +468,10 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     try {
       // Annuler la subscription existante
       await _positionSubscription?.cancel();
-      
+
       // Créer un nouveau player
       _audioPlayer = AudioPlayer();
-      
+
       // Reconfigurer les listeners avec protection
       if (!_isDisposing && !_positionController.isClosed) {
         _positionSubscription = _audioPlayer.positionStream.listen((position) {
@@ -475,7 +484,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
           }
         });
       }
-      
+
       TtsLogger.info('🔄 Nouveau AudioPlayer créé pour éviter les conflits');
     } catch (e) {
       TtsLogger.error('Erreur recréation AudioPlayer', {
@@ -489,16 +498,16 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     try {
       // Arrêter d'abord le lecteur audio principal
       await _audioPlayer.stop();
-      
+
       // Arrêter le service TTS de fallback
       await _fallbackTtsService.stop();
-      
+
       // Réinitialiser le stream de position de manière sécurisée
       _safeAddToPositionStream(Duration.zero);
-      
+
       // Attendre un peu pour s'assurer que tout est arrêté
       await Future.delayed(Duration(milliseconds: 100));
-      
+
       TtsLogger.info('🛑 AudioServiceHybridWrapper arrêté complètement');
     } catch (e) {
       TtsLogger.error('Erreur stop wrapper', {
@@ -521,13 +530,13 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     try {
       // Analyser le contenu pour le pré-cache
       final analysis = await HybridAudioService.analyzeContentDetails(text);
-      
+
       // Pré-générer l'audio selon le type
       if (analysis.contentType == ContentType.quranicVerse) {
         TtsLogger.info('Pré-cache API Quran initié', {
           'verses': analysis.verses.length,
         });
-        
+
         // Le système hybride gère déjà le cache
         await HybridAudioService.generateAudio(
           text,
@@ -539,7 +548,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
         TtsLogger.info('Pré-cache TTS hybride initié', {
           'contentType': analysis.contentType.toString(),
         });
-        
+
         await HybridAudioService.generateAudio(
           text,
           language: 'auto',
@@ -547,12 +556,11 @@ class AudioServiceHybridWrapper implements AudioTtsService {
           settings: _settings,
         );
       }
-      
     } catch (e) {
       TtsLogger.debug('Échec pré-cache wrapper', {
         'error': e.toString(),
       });
-      
+
       // Fallback vers le service traditionnel
       await _fallbackTtsService.cacheIfNeeded(
         text,
@@ -579,7 +587,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
     try {
       _positionSubscription?.cancel();
       _audioPlayer.dispose();
-      
+
       // Fermeture sécurisée du controller
       if (!_positionController.isClosed) {
         _positionController.close();
@@ -608,21 +616,22 @@ class AudioServiceHybridWrapper implements AudioTtsService {
 }
 
 /// Provider Riverpod pour le wrapper hybride
-final audioServiceHybridWrapperProvider = Provider<AudioServiceHybridWrapper>((ref) {
+final audioServiceHybridWrapperProvider =
+    Provider<AudioServiceHybridWrapper>((ref) {
   final smartTts = ref.watch(smartTtsServiceProvider);
-  
+
   // Configuration optimisée pour récitation coranique
   final hybridSettings = HybridAudioSettings.highQuality();
-  
+
   final wrapper = AudioServiceHybridWrapper(
     fallbackTtsService: smartTts,
     settings: hybridSettings,
   );
-  
+
   ref.onDispose(() {
     wrapper.dispose();
   });
-  
+
   return wrapper;
 });
 

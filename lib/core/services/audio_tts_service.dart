@@ -8,7 +8,8 @@ abstract class AudioTtsService {
   });
   Future<void> stop();
   Stream<Duration> positionStream();
-  Future<void> cacheIfNeeded(String text, {required String voice, double speed = 1.0});
+  Future<void> cacheIfNeeded(String text,
+      {required String voice, double speed = 1.0});
   // Optional helpers for UI
   // Returns list of voices as {name, locale}
   // Implementations may return empty when unsupported

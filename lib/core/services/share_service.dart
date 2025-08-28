@@ -11,30 +11,31 @@ import '../utils/app_logger.dart';
 import 'analytics_service.dart';
 
 /// Service de partage social des statistiques
-/// 
+///
 /// Permet de créer et partager des cartes visuelles des accomplissements
 /// spirituels sur les réseaux sociaux
 class ShareService {
   static ShareService? _instance;
-  
+
   // Services
   final AnalyticsService _analyticsService = AnalyticsService.instance;
-  
+
   // Configuration
   static const String _shareFolder = 'spiritual_routines_shares';
-  static const Size _defaultCardSize = Size(1080, 1080); // Format carré Instagram
+  static const Size _defaultCardSize =
+      Size(1080, 1080); // Format carré Instagram
   static const Size _storySize = Size(1080, 1920); // Format story
-  
+
   // Singleton
   static ShareService get instance {
     _instance ??= ShareService._();
     return _instance!;
   }
-  
+
   ShareService._();
-  
+
   // ===== Création de cartes visuelles =====
-  
+
   /// Créer une carte de streak
   Future<ShareCard> createStreakCard({
     required StreakData streak,
@@ -46,30 +47,30 @@ class ShareService {
         'currentStreak': streak.currentStreak,
         'style': style.name,
       });
-      
+
       // Créer le widget de la carte
       final widget = _StreakCardWidget(
         streak: streak,
         style: style,
         message: customMessage,
       );
-      
+
       // Convertir en image
       final imageBytes = await _widgetToImage(widget, _defaultCardSize);
-      
+
       // Sauvegarder l'image
       final fileName = 'streak_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await _saveImageToFile(fileName, imageBytes);
-      
+
       // Générer le message de partage
-      final shareMessage = customMessage ?? 
+      final shareMessage = customMessage ??
           '🔥 ${streak.currentStreak} jours de pratique spirituelle consécutive !\n'
-          '#RoutinesSpirituelle #Streak #Motivation';
-      
+              '#RoutinesSpirituelle #Streak #Motivation';
+
       AppLogger.logUserAction('streak_card_created', {
         'streak': streak.currentStreak,
       });
-      
+
       return ShareCard(
         imagePath: file.path,
         message: shareMessage,
@@ -80,7 +81,7 @@ class ShareService {
       rethrow;
     }
   }
-  
+
   /// Créer une carte de milestone
   Future<ShareCard> createMilestoneCard({
     required Milestone milestone,
@@ -92,32 +93,32 @@ class ShareService {
         'milestone': milestone.value,
         'type': milestone.type,
       });
-      
+
       // Créer le widget de la carte
       final widget = _MilestoneCardWidget(
         milestone: milestone,
         style: style,
         message: customMessage,
       );
-      
+
       // Convertir en image
       final imageBytes = await _widgetToImage(widget, _defaultCardSize);
-      
+
       // Sauvegarder l'image
       final fileName = 'milestone_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await _saveImageToFile(fileName, imageBytes);
-      
+
       // Générer le message de partage
-      final shareMessage = customMessage ?? 
+      final shareMessage = customMessage ??
           '🏆 J\'ai atteint ${_formatMilestoneValue(milestone.value)} ${milestone.type} !\n'
-          '${milestone.description}\n'
-          '#Accomplissement #RoutinesSpirituelle #Milestone';
-      
+              '${milestone.description}\n'
+              '#Accomplissement #RoutinesSpirituelle #Milestone';
+
       AppLogger.logUserAction('milestone_card_created', {
         'milestone': milestone.value,
         'type': milestone.type,
       });
-      
+
       return ShareCard(
         imagePath: file.path,
         message: shareMessage,
@@ -128,7 +129,7 @@ class ShareService {
       rethrow;
     }
   }
-  
+
   /// Créer une carte de statistiques mensuelles
   Future<ShareCard> createMonthlyStatsCard({
     required MonthlyMetrics metrics,
@@ -137,39 +138,39 @@ class ShareService {
   }) async {
     try {
       AppLogger.logDebugInfo('Creating monthly stats card');
-      
+
       // Créer le widget de la carte
       final widget = _MonthlyStatsCardWidget(
         metrics: metrics,
         style: style,
         message: customMessage,
       );
-      
+
       // Convertir en image
       final imageBytes = await _widgetToImage(widget, _defaultCardSize);
-      
+
       // Sauvegarder l'image
       final fileName = 'monthly_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await _saveImageToFile(fileName, imageBytes);
-      
+
       // Générer le message de partage
-      final progressText = metrics.progressionPercent > 0 
+      final progressText = metrics.progressionPercent > 0
           ? '📈 +${metrics.progressionPercent}% vs mois dernier'
           : '';
-      
-      final shareMessage = customMessage ?? 
+
+      final shareMessage = customMessage ??
           '📊 Mes statistiques du mois :\n'
-          '• ${metrics.totalRepetitions} répétitions\n'
-          '• ${metrics.totalSessions} sessions complétées\n'
-          '• ${metrics.activeDays} jours actifs\n'
-          '$progressText\n'
-          '#StatsSpirituelle #Progression #Motivation';
-      
+              '• ${metrics.totalRepetitions} répétitions\n'
+              '• ${metrics.totalSessions} sessions complétées\n'
+              '• ${metrics.activeDays} jours actifs\n'
+              '$progressText\n'
+              '#StatsSpirituelle #Progression #Motivation';
+
       AppLogger.logUserAction('monthly_card_created', {
         'repetitions': metrics.totalRepetitions,
         'sessions': metrics.totalSessions,
       });
-      
+
       return ShareCard(
         imagePath: file.path,
         message: shareMessage,
@@ -180,7 +181,7 @@ class ShareService {
       rethrow;
     }
   }
-  
+
   /// Créer une story de progression
   Future<ShareCard> createProgressStory({
     required List<ChartData> progressData,
@@ -190,28 +191,28 @@ class ShareService {
   }) async {
     try {
       AppLogger.logDebugInfo('Creating progress story');
-      
+
       // Créer le widget de la story
       final widget = _ProgressStoryWidget(
         progressData: progressData,
         title: title,
         style: style,
       );
-      
+
       // Convertir en image (format story)
       final imageBytes = await _widgetToImage(widget, _storySize);
-      
+
       // Sauvegarder l'image
       final fileName = 'story_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await _saveImageToFile(fileName, imageBytes);
-      
+
       // Générer le message de partage
-      final shareMessage = customMessage ?? 
+      final shareMessage = customMessage ??
           '📈 Ma progression spirituelle\n'
-          '#ProgressionSpirituelle #Motivation #Story';
-      
+              '#ProgressionSpirituelle #Motivation #Story';
+
       AppLogger.logUserAction('progress_story_created');
-      
+
       return ShareCard(
         imagePath: file.path,
         message: shareMessage,
@@ -222,30 +223,30 @@ class ShareService {
       rethrow;
     }
   }
-  
+
   // ===== Partage =====
-  
+
   /// Partager une carte
   Future<bool> shareCard(ShareCard card) async {
     try {
       final file = XFile(card.imagePath);
-      
+
       await Share.shareXFiles(
         [file],
         text: card.message,
       );
-      
+
       AppLogger.logUserAction('card_shared', {
         'type': card.type.name,
       });
-      
+
       return true;
     } catch (e) {
       AppLogger.logError('Failed to share card', e);
       return false;
     }
   }
-  
+
   /// Partager du texte simple
   Future<bool> shareText({
     required String text,
@@ -256,24 +257,25 @@ class ShareService {
         text,
         subject: subject,
       );
-      
+
       AppLogger.logUserAction('text_shared');
-      
+
       return true;
     } catch (e) {
       AppLogger.logError('Failed to share text', e);
       return false;
     }
   }
-  
+
   /// Partager un lien d'invitation
   Future<bool> shareInviteLink() async {
     const appStoreLink = 'https://apps.apple.com/app/spiritual-routines';
-    const playStoreLink = 'https://play.google.com/store/apps/details?id=com.spiritual.routines';
-    
+    const playStoreLink =
+        'https://play.google.com/store/apps/details?id=com.spiritual.routines';
+
     final platform = Platform.isIOS ? 'iOS' : 'Android';
     final storeLink = Platform.isIOS ? appStoreLink : playStoreLink;
-    
+
     final message = '🕌 Rejoins-moi sur Spiritual Routines !\n\n'
         'Une app pour maintenir tes routines spirituelles avec :\n'
         '• Compteur de dhikr intelligent\n'
@@ -281,15 +283,15 @@ class ShareService {
         '• Rappels personnalisés\n'
         '• Mode hors-ligne complet\n\n'
         'Télécharge sur $platform : $storeLink';
-    
+
     return shareText(
       text: message,
       subject: 'Invitation - Spiritual Routines',
     );
   }
-  
+
   // ===== Templates prédéfinis =====
-  
+
   /// Obtenir les messages de partage prédéfinis
   List<ShareTemplate> getShareTemplates() {
     return [
@@ -335,17 +337,17 @@ class ShareService {
       ),
     ];
   }
-  
+
   // ===== Helpers =====
-  
+
   /// Convertir un widget en image
   Future<Uint8List> _widgetToImage(Widget widget, Size size) async {
     final repaintBoundary = RenderRepaintBoundary();
     final renderView = ui.PlatformDispatcher.instance.views.first;
-    
+
     final pipelineOwner = PipelineOwner();
     final buildOwner = BuildOwner(focusManager: FocusManager());
-    
+
     final renderObjectToWidgetElement = RenderObjectToWidgetAdapter(
       container: repaintBoundary,
       child: Directionality(
@@ -357,45 +359,45 @@ class ShareService {
         ),
       ),
     ).attachToRenderTree(buildOwner);
-    
+
     buildOwner.buildScope(renderObjectToWidgetElement);
     buildOwner.finalizeTree();
-    
+
     pipelineOwner.rootNode = repaintBoundary;
     pipelineOwner.flushLayout();
     pipelineOwner.flushCompositingBits();
     pipelineOwner.flushPaint();
-    
+
     final image = await repaintBoundary.toImage(
       pixelRatio: renderView.devicePixelRatio,
     );
-    
+
     final byteData = await image.toByteData(
       format: ui.ImageByteFormat.png,
     );
-    
+
     return byteData!.buffer.asUint8List();
   }
-  
+
   /// Sauvegarder une image dans un fichier
   Future<File> _saveImageToFile(String fileName, Uint8List imageBytes) async {
     final directory = await _getShareDirectory();
     final file = File('${directory.path}/$fileName');
     return await file.writeAsBytes(imageBytes);
   }
-  
+
   /// Obtenir le répertoire de partage
   Future<Directory> _getShareDirectory() async {
     final directory = await getTemporaryDirectory();
     final shareDir = Directory('${directory.path}/$_shareFolder');
-    
+
     if (!await shareDir.exists()) {
       await shareDir.create(recursive: true);
     }
-    
+
     return shareDir;
   }
-  
+
   /// Formater la valeur d'un milestone
   String _formatMilestoneValue(int value) {
     if (value < 1000) {
@@ -406,18 +408,18 @@ class ShareService {
       return '${(value / 1000000).toStringAsFixed(value % 1000000 == 0 ? 0 : 1)}M';
     }
   }
-  
+
   /// Nettoyer les anciennes images
   Future<void> cleanOldShares() async {
     try {
       final directory = await _getShareDirectory();
-      
+
       await for (final entity in directory.list()) {
         if (entity is File) {
           await entity.delete();
         }
       }
-      
+
       AppLogger.logDebugInfo('Cleaned old share images');
     } catch (e) {
       AppLogger.logError('Failed to clean old shares', e);
@@ -432,13 +434,13 @@ class _StreakCardWidget extends StatelessWidget {
   final StreakData streak;
   final ShareCardStyle style;
   final String? message;
-  
+
   const _StreakCardWidget({
     required this.streak,
     required this.style,
     this.message,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -462,7 +464,7 @@ class _StreakCardWidget extends StatelessWidget {
               painter: _PatternPainter(),
             ),
           ),
-          
+
           // Contenu
           Center(
             child: Column(
@@ -483,7 +485,7 @@ class _StreakCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Nombre de jours
                 Text(
                   '${streak.currentStreak}',
@@ -494,7 +496,7 @@ class _StreakCardWidget extends StatelessWidget {
                     height: 1,
                   ),
                 ),
-                
+
                 // Label
                 Text(
                   'JOURS',
@@ -505,12 +507,13 @@ class _StreakCardWidget extends StatelessWidget {
                     letterSpacing: 4,
                   ),
                 ),
-                
+
                 const SizedBox(height: 60),
-                
+
                 // Record
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(30),
@@ -535,7 +538,7 @@ class _StreakCardWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Message personnalisé
                 if (message != null) ...[
                   const SizedBox(height: 40),
@@ -554,7 +557,7 @@ class _StreakCardWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Logo/watermark
           Positioned(
             bottom: 40,
@@ -581,17 +584,17 @@ class _MilestoneCardWidget extends StatelessWidget {
   final Milestone milestone;
   final ShareCardStyle style;
   final String? message;
-  
+
   const _MilestoneCardWidget({
     required this.milestone,
     required this.style,
     this.message,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final color = _getColorForMilestone(milestone);
-    
+
     return Container(
       width: 1080,
       height: 1080,
@@ -613,7 +616,7 @@ class _MilestoneCardWidget extends StatelessWidget {
               painter: _PatternPainter(),
             ),
           ),
-          
+
           // Contenu
           Center(
             child: Column(
@@ -634,7 +637,7 @@ class _MilestoneCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Valeur
                 Text(
                   _formatValue(milestone.value),
@@ -645,7 +648,7 @@ class _MilestoneCardWidget extends StatelessWidget {
                     height: 1,
                   ),
                 ),
-                
+
                 // Type
                 Text(
                   milestone.type.toUpperCase(),
@@ -656,9 +659,9 @@ class _MilestoneCardWidget extends StatelessWidget {
                     letterSpacing: 3,
                   ),
                 ),
-                
+
                 const SizedBox(height: 40),
-                
+
                 // Description
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 80),
@@ -671,11 +674,12 @@ class _MilestoneCardWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 // Badge de rareté
                 const SizedBox(height: 40),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(30),
@@ -693,7 +697,7 @@ class _MilestoneCardWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Logo/watermark
           Positioned(
             bottom: 40,
@@ -713,7 +717,7 @@ class _MilestoneCardWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   Color _getColorForMilestone(Milestone milestone) {
     if (milestone.value >= 1000000) {
       return Colors.purple;
@@ -727,7 +731,7 @@ class _MilestoneCardWidget extends StatelessWidget {
       return Colors.green;
     }
   }
-  
+
   String _formatValue(int value) {
     if (value < 1000) {
       return value.toString();
@@ -737,7 +741,7 @@ class _MilestoneCardWidget extends StatelessWidget {
       return '${(value / 1000000).toStringAsFixed(value % 1000000 == 0 ? 0 : 1)}M';
     }
   }
-  
+
   String _getRarityLabel(int value) {
     if (value >= 1000000) {
       return 'LÉGENDAIRE';
@@ -758,13 +762,13 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
   final MonthlyMetrics metrics;
   final ShareCardStyle style;
   final String? message;
-  
+
   const _MonthlyStatsCardWidget({
     required this.metrics,
     required this.style,
     this.message,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -788,7 +792,7 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
               painter: _PatternPainter(),
             ),
           ),
-          
+
           // Contenu
           Padding(
             padding: const EdgeInsets.all(80),
@@ -806,7 +810,7 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 60),
-                
+
                 // Stats principales
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -821,9 +825,9 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 60),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -832,17 +836,19 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
                       label: 'JOURS ACTIFS',
                     ),
                     _StatColumn(
-                      value: '${(metrics.totalDuration / 3600).toStringAsFixed(1)}h',
+                      value:
+                          '${(metrics.totalDuration / 3600).toStringAsFixed(1)}h',
                       label: 'TEMPS TOTAL',
                     ),
                   ],
                 ),
-                
+
                 // Progression
                 if (metrics.progressionPercent != 0) ...[
                   const SizedBox(height: 60),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 20),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(30),
@@ -881,7 +887,7 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Logo/watermark
           Positioned(
             bottom: 40,
@@ -907,12 +913,12 @@ class _MonthlyStatsCardWidget extends StatelessWidget {
 class _StatColumn extends StatelessWidget {
   final String value;
   final String label;
-  
+
   const _StatColumn({
     required this.value,
     required this.label,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -946,13 +952,13 @@ class _ProgressStoryWidget extends StatelessWidget {
   final List<ChartData> progressData;
   final String title;
   final ShareCardStyle style;
-  
+
   const _ProgressStoryWidget({
     required this.progressData,
     required this.title,
     required this.style,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -974,7 +980,7 @@ class _ProgressStoryWidget extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 100),
-              
+
               // Titre
               Text(
                 title.toUpperCase(),
@@ -985,9 +991,9 @@ class _ProgressStoryWidget extends StatelessWidget {
                   letterSpacing: 2,
                 ),
               ),
-              
+
               const SizedBox(height: 100),
-              
+
               // Graphique
               Container(
                 height: 400,
@@ -1004,14 +1010,14 @@ class _ProgressStoryWidget extends StatelessWidget {
                   child: Container(),
                 ),
               ),
-              
+
               const SizedBox(height: 80),
-              
+
               // Stats résumées
               _buildStatsSummary(),
-              
+
               const Spacer(),
-              
+
               // Call to action
               Container(
                 padding: const EdgeInsets.all(32),
@@ -1037,9 +1043,9 @@ class _ProgressStoryWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Logo
               Text(
                 'Spiritual Routines',
@@ -1055,17 +1061,17 @@ class _ProgressStoryWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatsSummary() {
     final total = progressData.fold<double>(
-      0, 
+      0,
       (sum, data) => sum + data.value,
     );
     final average = total / progressData.length;
     final max = progressData.map((d) => d.value).reduce(
-      (a, b) => a > b ? a : b,
-    );
-    
+          (a, b) => a > b ? a : b,
+        );
+
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
@@ -1083,7 +1089,7 @@ class _ProgressStoryWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1115,7 +1121,7 @@ class _PatternPainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white.withOpacity(0.05)
       ..style = PaintingStyle.fill;
-    
+
     // Dessiner des cercles en pattern
     const spacing = 80.0;
     for (double x = 0; x < size.width; x += spacing) {
@@ -1128,7 +1134,7 @@ class _PatternPainter extends CustomPainter {
       }
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
@@ -1137,36 +1143,38 @@ class _PatternPainter extends CustomPainter {
 class _SimpleChartPainter extends CustomPainter {
   final List<ChartData> data;
   final Color color;
-  
+
   _SimpleChartPainter({
     required this.data,
     required this.color,
   });
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     if (data.isEmpty) return;
-    
+
     final paint = Paint()
       ..color = color
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
-    
+
     final fillPaint = Paint()
       ..color = color.withOpacity(0.2)
       ..style = PaintingStyle.fill;
-    
+
     final path = Path();
     final fillPath = Path();
-    
+
     final maxValue = data.map((d) => d.value).reduce((a, b) => a > b ? a : b);
     final xStep = size.width / (data.length - 1).clamp(1, double.infinity);
-    
+
     for (int i = 0; i < data.length; i++) {
       final x = i * xStep;
       final normalizedValue = data[i].value / maxValue;
-      final y = size.height - (normalizedValue * size.height * 0.8) - size.height * 0.1;
-      
+      final y = size.height -
+          (normalizedValue * size.height * 0.8) -
+          size.height * 0.1;
+
       if (i == 0) {
         path.moveTo(x, y);
         fillPath.moveTo(x, size.height);
@@ -1175,25 +1183,27 @@ class _SimpleChartPainter extends CustomPainter {
         path.lineTo(x, y);
         fillPath.lineTo(x, y);
       }
-      
+
       // Point
       canvas.drawCircle(
         Offset(x, y),
         4,
-        Paint()..color = color..style = PaintingStyle.fill,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.fill,
       );
     }
-    
+
     // Fermer le chemin de remplissage
     if (data.isNotEmpty) {
       fillPath.lineTo((data.length - 1) * xStep, size.height);
       fillPath.close();
     }
-    
+
     canvas.drawPath(fillPath, fillPaint);
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
@@ -1223,7 +1233,7 @@ class ShareCard {
   final String imagePath;
   final String message;
   final ShareCardType type;
-  
+
   ShareCard({
     required this.imagePath,
     required this.message,
@@ -1237,7 +1247,7 @@ class ShareTemplate {
   final String title;
   final String message;
   final IconData icon;
-  
+
   ShareTemplate({
     required this.id,
     required this.title,

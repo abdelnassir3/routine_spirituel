@@ -9,7 +9,7 @@ class MetricsCard extends StatelessWidget {
   final Color color;
   final bool isWide;
   final VoidCallback? onTap;
-  
+
   const MetricsCard({
     super.key,
     required this.title,
@@ -20,11 +20,11 @@ class MetricsCard extends StatelessWidget {
     this.isWide = false,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       child: InkWell(
@@ -32,7 +32,7 @@ class MetricsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: isWide 
+          child: isWide
               ? Row(
                   children: [
                     Container(
@@ -73,7 +73,8 @@ class MetricsCard extends StatelessWidget {
                               Text(
                                 subtitle,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                                  color: theme.textTheme.bodySmall?.color
+                                      ?.withOpacity(0.7),
                                 ),
                               ),
                             ],
@@ -106,7 +107,8 @@ class MetricsCard extends StatelessWidget {
                           Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
-                            color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
+                            color: theme.textTheme.bodySmall?.color
+                                ?.withOpacity(0.5),
                           ),
                       ],
                     ),
@@ -114,7 +116,8 @@ class MetricsCard extends StatelessWidget {
                     Text(
                       title,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                        color:
+                            theme.textTheme.bodySmall?.color?.withOpacity(0.7),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -129,7 +132,8 @@ class MetricsCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                        color:
+                            theme.textTheme.bodySmall?.color?.withOpacity(0.7),
                       ),
                     ),
                   ],

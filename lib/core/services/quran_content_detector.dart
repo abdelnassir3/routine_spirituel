@@ -16,11 +16,12 @@ class QuranContentDetector {
 
     try {
       // Charger le corpus Coran complet depuis les assets
-      final String jsonString = await rootBundle.loadString('assets/corpus/quran_full.json');
+      final String jsonString =
+          await rootBundle.loadString('assets/corpus/quran_full.json');
       final List<dynamic> quranData = jsonDecode(jsonString);
 
       _quranIndex = {};
-      
+
       for (final verse in quranData) {
         if (verse is Map<String, dynamic>) {
           final quranVerse = QuranVerse(
@@ -29,7 +30,7 @@ class QuranContentDetector {
             textAr: verse['textAr'] ?? '',
             textFr: verse['textFr'] ?? '',
           );
-          
+
           // Indexer par le texte arabe nettoyé
           final cleanArabicText = _cleanArabicText(quranVerse.textAr);
           if (cleanArabicText.isNotEmpty) {
@@ -39,16 +40,20 @@ class QuranContentDetector {
       }
 
       _isInitialized = true;
-      print('✅ QuranContentDetector initialisé avec ${_quranIndex!.length} versets');
-      
+      print(
+          '✅ QuranContentDetector initialisé avec ${_quranIndex!.length} versets');
+
       if (_quranIndex!.length < 6000) {
-        print('⚠️ ATTENTION: Nombre de versets insuffisant (attendu: 6236, reçu: ${_quranIndex!.length})');
+        print(
+            '⚠️ ATTENTION: Nombre de versets insuffisant (attendu: 6236, reçu: ${_quranIndex!.length})');
       } else {
-        print('📖 Corpus Coran complet chargé (${_quranIndex!.length}/6236 versets)');
+        print(
+            '📖 Corpus Coran complet chargé (${_quranIndex!.length}/6236 versets)');
       }
     } catch (e) {
       print('❌ Erreur initialisation QuranContentDetector: $e');
-      print('💡 Vérification: assets/corpus/quran_full.json existe et est accessible');
+      print(
+          '💡 Vérification: assets/corpus/quran_full.json existe et est accessible');
       _quranIndex = {};
       _isInitialized = true;
     }
@@ -66,7 +71,7 @@ class QuranContentDetector {
     }
 
     final cleanedText = _cleanArabicText(text);
-    
+
     // 1. Recherche exacte
     if (_quranIndex!.containsKey(cleanedText)) {
       final verse = _quranIndex![cleanedText]!;
@@ -85,8 +90,9 @@ class QuranContentDetector {
 
     for (final entry in _quranIndex!.entries) {
       final similarity = _calculateTextSimilarity(cleanedText, entry.key);
-      
-      if (similarity > 0.85) { // Seuil de confiance élevé
+
+      if (similarity > 0.85) {
+        // Seuil de confiance élevé
         partialMatches.add(entry.value);
         if (similarity > bestConfidence) {
           bestConfidence = similarity;
@@ -107,7 +113,7 @@ class QuranContentDetector {
 
     // 3. Vérifier si le texte contient des motifs coraniques typiques
     final linguisticConfidence = _analyzeArabicLinguisticFeatures(text);
-    
+
     return QuranDetectionResult(
       isQuranic: linguisticConfidence > 0.7,
       confidence: linguisticConfidence,
@@ -149,7 +155,7 @@ class QuranContentDetector {
 
     final similarity1 = commonWords / words1.length;
     final similarity2 = commonWords / words2.length;
-    
+
     // Retourner la moyenne des deux similarités
     return (similarity1 + similarity2) / 2;
   }
@@ -193,7 +199,7 @@ class QuranContentDetector {
     if (text.contains('بِسْمِ اللَّهِ') || text.contains('باسم الله')) {
       confidence += 0.3; // Basmala
     }
-    
+
     if (text.contains('يَا أَيُّهَا') || text.contains('يأيها')) {
       confidence += 0.2; // Appel typique du Coran
     }
@@ -228,7 +234,7 @@ class QuranContentDetector {
     final cleanedSearch = _cleanArabicText(partialText);
 
     for (final entry in _quranIndex!.entries) {
-      if (entry.key.contains(cleanedSearch) || 
+      if (entry.key.contains(cleanedSearch) ||
           _calculateTextSimilarity(cleanedSearch, entry.key) > 0.7) {
         results.add(entry.value);
       }
@@ -257,15 +263,15 @@ class QuranDetectionResult {
   @override
   String toString() {
     return 'QuranDetectionResult(isQuranic: $isQuranic, confidence: $confidence, '
-           'matchType: $matchType, verse: ${verse?.toString()})';
+        'matchType: $matchType, verse: ${verse?.toString()})';
   }
 }
 
 /// Types de correspondance
 enum MatchType {
-  none,      // Aucune correspondance
-  exact,     // Correspondance exacte
-  partial,   // Correspondance partielle
+  none, // Aucune correspondance
+  exact, // Correspondance exacte
+  partial, // Correspondance partielle
   linguistic // Basé sur l'analyse linguistique
 }
 

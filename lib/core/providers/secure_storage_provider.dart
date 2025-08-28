@@ -32,7 +32,8 @@ final isBiometricEnabledProvider = FutureProvider<bool>((ref) async {
 });
 
 /// Provider pour récupérer les données de la dernière session
-final lastSessionDataProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+final lastSessionDataProvider =
+    FutureProvider<Map<String, dynamic>?>((ref) async {
   final storage = ref.watch(secureStorageProvider);
   return storage.getLastSessionData();
 });
@@ -40,16 +41,16 @@ final lastSessionDataProvider = FutureProvider<Map<String, dynamic>?>((ref) asyn
 /// Notifier pour gérer l'état d'authentification
 class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
   final SecureStorageService _storage;
-  
+
   AuthNotifier(this._storage) : super(const AsyncValue.loading()) {
     _loadAuthState();
   }
-  
+
   Future<void> _loadAuthState() async {
     try {
       final token = await _storage.getAuthToken();
       final session = await _storage.getUserSession();
-      
+
       if (token != null && session != null) {
         state = AsyncValue.data(
           AuthState.authenticated(
@@ -65,7 +66,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
       state = AsyncValue.error(e, stack);
     }
   }
-  
+
   Future<void> login({
     required String token,
     required String userId,
@@ -73,21 +74,21 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
     String? refreshToken,
   }) async {
     state = const AsyncValue.loading();
-    
+
     try {
       // Sauvegarder les tokens
       await _storage.saveAuthTokens(
         accessToken: token,
         refreshToken: refreshToken,
       );
-      
+
       // Sauvegarder la session
       await _storage.saveUserSession({
         'user_id': userId,
         'user_email': email,
         'login_time': DateTime.now().toIso8601String(),
       });
-      
+
       state = AsyncValue.data(
         AuthState.authenticated(
           token: token,
@@ -99,10 +100,10 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
       state = AsyncValue.error(e, stack);
     }
   }
-  
+
   Future<void> logout() async {
     state = const AsyncValue.loading();
-    
+
     try {
       await _storage.clearAuthData();
       state = const AsyncValue.data(AuthState.unauthenticated());
@@ -110,7 +111,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
       state = AsyncValue.error(e, stack);
     }
   }
-  
+
   Future<void> refreshToken() async {
     try {
       final refreshToken = await _storage.getRefreshToken();
@@ -118,11 +119,10 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
         await logout();
         return;
       }
-      
+
       // TODO: Implémenter l'appel API pour rafraîchir le token
       // final newTokens = await _apiService.refreshToken(refreshToken);
       // await _storage.saveAuthTokens(...)
-      
     } catch (e) {
       await logout();
     }
@@ -135,20 +135,20 @@ class AuthState {
   final String? token;
   final String? userId;
   final String? userEmail;
-  
+
   const AuthState({
     required this.isAuthenticated,
     this.token,
     this.userId,
     this.userEmail,
   });
-  
+
   const AuthState.authenticated({
     required String this.token,
     this.userId,
     this.userEmail,
   }) : isAuthenticated = true;
-  
+
   const AuthState.unauthenticated()
       : isAuthenticated = false,
         token = null,
@@ -157,7 +157,8 @@ class AuthState {
 }
 
 /// Provider pour l'état d'authentification
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<AuthState>>((ref) {
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AsyncValue<AuthState>>((ref) {
   final storage = ref.watch(secureStorageProvider);
   return AuthNotifier(storage);
 });

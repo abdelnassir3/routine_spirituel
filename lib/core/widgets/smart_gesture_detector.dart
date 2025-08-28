@@ -8,7 +8,7 @@ import '../providers/haptic_provider.dart';
 /// Détecteur de gestes intelligents avec support multi-touch et patterns
 class SmartGestureDetector extends ConsumerStatefulWidget {
   final Widget child;
-  
+
   // Callbacks simples
   final VoidCallback? onTap;
   final VoidCallback? onDoubleTap;
@@ -16,19 +16,19 @@ class SmartGestureDetector extends ConsumerStatefulWidget {
   final Function(SwipeDirection)? onSwipe;
   final VoidCallback? onCircle;
   final VoidCallback? onZigzag;
-  
+
   // Callbacks avancés
   final Function(double)? onPinch; // Scale factor
   final Function(double)? onRotate; // Angle en radians
   final Function(Offset)? onPan;
-  
+
   // Configuration
   final bool enableSwipe;
   final bool enablePinch;
   final bool enableRotate;
   final bool enablePatterns;
   final bool hapticFeedback;
-  
+
   const SmartGestureDetector({
     super.key,
     required this.child,
@@ -47,27 +47,28 @@ class SmartGestureDetector extends ConsumerStatefulWidget {
     this.enablePatterns = false,
     this.hapticFeedback = true,
   });
-  
+
   @override
-  ConsumerState<SmartGestureDetector> createState() => _SmartGestureDetectorState();
+  ConsumerState<SmartGestureDetector> createState() =>
+      _SmartGestureDetectorState();
 }
 
 class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
   final GestureService _gestureService = GestureService.instance;
-  
+
   // Tracking du swipe
   Offset? _swipeStart;
   DateTime? _swipeStartTime;
-  
+
   // Tracking du dessin
   final List<Offset> _drawPoints = [];
   bool _isDrawing = false;
-  
+
   // Multi-touch tracking
   double? _initialScale;
   double? _initialRotation;
   int _pointerCount = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -80,7 +81,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               widget.onTap!();
             }
           : null,
-          
+
       onDoubleTap: widget.onDoubleTap != null
           ? () async {
               if (widget.hapticFeedback) {
@@ -89,7 +90,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               widget.onDoubleTap!();
             }
           : null,
-          
+
       onLongPress: widget.onLongPress != null
           ? () async {
               if (widget.hapticFeedback) {
@@ -98,13 +99,13 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               widget.onLongPress!();
             }
           : null,
-      
+
       // Pan pour swipe et dessin
       onPanStart: widget.enableSwipe || widget.enablePatterns
           ? (details) {
               _swipeStart = details.globalPosition;
               _swipeStartTime = DateTime.now();
-              
+
               if (widget.enablePatterns) {
                 _isDrawing = true;
                 _drawPoints.clear();
@@ -112,32 +113,35 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               }
             }
           : null,
-          
-      onPanUpdate: widget.enableSwipe || widget.enablePatterns || widget.onPan != null
-          ? (details) {
-              if (widget.enablePatterns && _isDrawing) {
-                _drawPoints.add(details.localPosition);
-              }
-              
-              if (widget.onPan != null) {
-                widget.onPan!(details.delta);
-              }
-            }
-          : null,
-          
+
+      onPanUpdate:
+          widget.enableSwipe || widget.enablePatterns || widget.onPan != null
+              ? (details) {
+                  if (widget.enablePatterns && _isDrawing) {
+                    _drawPoints.add(details.localPosition);
+                  }
+
+                  if (widget.onPan != null) {
+                    widget.onPan!(details.delta);
+                  }
+                }
+              : null,
+
       onPanEnd: widget.enableSwipe || widget.enablePatterns
           ? (details) async {
               // Détecter le swipe
-              if (widget.enableSwipe && _swipeStart != null && _swipeStartTime != null) {
+              if (widget.enableSwipe &&
+                  _swipeStart != null &&
+                  _swipeStartTime != null) {
                 final endPosition = details.globalPosition;
                 final duration = DateTime.now().difference(_swipeStartTime!);
-                
+
                 final direction = _gestureService.analyzeSwipe(
                   start: _swipeStart!,
                   end: endPosition,
                   duration: duration,
                 );
-                
+
                 if (direction != null && widget.onSwipe != null) {
                   if (widget.hapticFeedback) {
                     await ref.hapticSwipe();
@@ -145,9 +149,11 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
                   widget.onSwipe!(direction);
                 }
               }
-              
+
               // Détecter les patterns de dessin
-              if (widget.enablePatterns && _isDrawing && _drawPoints.length > 3) {
+              if (widget.enablePatterns &&
+                  _isDrawing &&
+                  _drawPoints.length > 3) {
                 // Détection de cercle
                 if (_gestureService.detectCircleGesture(_drawPoints)) {
                   if (widget.hapticFeedback) {
@@ -163,7 +169,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
                   widget.onZigzag?.call();
                 }
               }
-              
+
               // Reset
               _swipeStart = null;
               _swipeStartTime = null;
@@ -171,7 +177,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               _drawPoints.clear();
             }
           : null,
-      
+
       // Scale pour pinch
       onScaleStart: widget.enablePinch || widget.enableRotate
           ? (details) {
@@ -180,21 +186,26 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               _pointerCount = details.pointerCount;
             }
           : null,
-          
+
       onScaleUpdate: widget.enablePinch || widget.enableRotate
           ? (details) {
               // Pinch zoom
-              if (widget.enablePinch && widget.onPinch != null && _pointerCount >= 2) {
+              if (widget.enablePinch &&
+                  widget.onPinch != null &&
+                  _pointerCount >= 2) {
                 final scaleDiff = details.scale - (_initialScale ?? 1.0);
                 if (scaleDiff.abs() > 0.01) {
                   widget.onPinch!(details.scale);
                   _initialScale = details.scale;
                 }
               }
-              
+
               // Rotation
-              if (widget.enableRotate && widget.onRotate != null && _pointerCount >= 2) {
-                final rotationDiff = details.rotation - (_initialRotation ?? 0.0);
+              if (widget.enableRotate &&
+                  widget.onRotate != null &&
+                  _pointerCount >= 2) {
+                final rotationDiff =
+                    details.rotation - (_initialRotation ?? 0.0);
                 if (rotationDiff.abs() > 0.01) {
                   widget.onRotate!(details.rotation);
                   _initialRotation = details.rotation;
@@ -202,7 +213,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               }
             }
           : null,
-          
+
       onScaleEnd: widget.enablePinch || widget.enableRotate
           ? (details) {
               _initialScale = null;
@@ -210,7 +221,7 @@ class _SmartGestureDetectorState extends ConsumerState<SmartGestureDetector> {
               _pointerCount = 0;
             }
           : null,
-      
+
       child: widget.child,
     );
   }
@@ -223,7 +234,7 @@ class GestureCounterZone extends ConsumerStatefulWidget {
   final VoidCallback? onReset;
   final VoidCallback? onPauseResume;
   final bool showVisualFeedback;
-  
+
   const GestureCounterZone({
     super.key,
     required this.count,
@@ -232,7 +243,7 @@ class GestureCounterZone extends ConsumerStatefulWidget {
     this.onPauseResume,
     this.showVisualFeedback = true,
   });
-  
+
   @override
   ConsumerState<GestureCounterZone> createState() => _GestureCounterZoneState();
 }
@@ -243,7 +254,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
   late Animation<double> _scaleAnimation;
   String? _lastGesture;
   Timer? _feedbackTimer;
-  
+
   @override
   void initState() {
     super.initState();
@@ -259,21 +270,21 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
       curve: Curves.easeInOut,
     ));
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     _feedbackTimer?.cancel();
     super.dispose();
   }
-  
+
   void _showFeedback(String gesture) {
     if (!widget.showVisualFeedback) return;
-    
+
     setState(() {
       _lastGesture = gesture;
     });
-    
+
     _feedbackTimer?.cancel();
     _feedbackTimer = Timer(const Duration(seconds: 1), () {
       if (mounted) {
@@ -282,29 +293,29 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
         });
       }
     });
-    
+
     _animationController.forward().then((_) {
       _animationController.reverse();
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final gestureService = GestureService.instance;
-    
+
     return SmartGestureDetector(
       enableSwipe: true,
       enablePatterns: true,
       hapticFeedback: true,
-      
+
       // Tap pour incrémenter
       onTap: () {
         widget.onCountChanged(widget.count + 1);
         gestureService.handleCounterIncrement();
         _showFeedback('+1');
       },
-      
+
       // Double tap pour pause/resume
       onDoubleTap: widget.onPauseResume != null
           ? () {
@@ -313,7 +324,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
               _showFeedback('⏸');
             }
           : null,
-      
+
       // Long press pour reset
       onLongPress: widget.onReset != null
           ? () {
@@ -322,7 +333,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
               _showFeedback('↻');
             }
           : null,
-      
+
       // Swipe pour naviguer
       onSwipe: (direction) {
         switch (direction) {
@@ -349,7 +360,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
             break;
         }
       },
-      
+
       // Cercle pour reset
       onCircle: widget.onReset != null
           ? () {
@@ -357,7 +368,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
               _showFeedback('↻');
             }
           : null,
-      
+
       // Zigzag pour annuler dernier
       onZigzag: () {
         if (widget.count > 0) {
@@ -365,7 +376,7 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
           _showFeedback('↶');
         }
       },
-      
+
       child: AnimatedBuilder(
         animation: _scaleAnimation,
         builder: (context, child) {
@@ -410,9 +421,9 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
                           )
                         : const SizedBox(height: 40),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Compteur
                   Text(
                     widget.count.toString(),
@@ -422,9 +433,9 @@ class _GestureCounterZoneState extends ConsumerState<GestureCounterZone>
                       color: theme.primaryColor,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Instructions
                   Text(
                     'Tap: +1 | Swipe ↑: +10 | Swipe →: +5',

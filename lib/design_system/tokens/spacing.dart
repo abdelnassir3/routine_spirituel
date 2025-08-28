@@ -5,26 +5,26 @@ import 'package:flutter/material.dart';
 class Spacing {
   // Base unit: 4dp
   static const double unit = 4.0;
-  
+
   // Spacing scale
   static const double none = 0;
-  static const double xxs = unit * 0.5;  // 2dp
-  static const double xs = unit;         // 4dp
-  static const double sm = unit * 2;     // 8dp
-  static const double md = unit * 3;     // 12dp
-  static const double lg = unit * 4;     // 16dp
-  static const double xl = unit * 5;     // 20dp
-  static const double xxl = unit * 6;    // 24dp
-  static const double xxxl = unit * 8;   // 32dp
+  static const double xxs = unit * 0.5; // 2dp
+  static const double xs = unit; // 4dp
+  static const double sm = unit * 2; // 8dp
+  static const double md = unit * 3; // 12dp
+  static const double lg = unit * 4; // 16dp
+  static const double xl = unit * 5; // 20dp
+  static const double xxl = unit * 6; // 24dp
+  static const double xxxl = unit * 8; // 32dp
   static const double xxxxl = unit * 10; // 40dp
-  
+
   // Component-specific spacing
   static const double cardPadding = lg;
   static const double pagePadding = lg;
   static const double listItemGap = sm;
   static const double sectionGap = xxl;
   static const double buttonGap = md;
-  
+
   // Touch targets (minimum 48dp for accessibility)
   static const double minTouchTarget = 48.0;
   static const double minTouchTargetHeight = 48.0;
@@ -41,7 +41,7 @@ class Corners {
   static const double xl = 20.0;
   static const double xxl = 28.0;
   static const double full = 999.0; // Stadium/Pill shape
-  
+
   // Component-specific radii
   static const double button = md;
   static const double card = lg;

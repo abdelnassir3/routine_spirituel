@@ -1,6 +1,6 @@
 # Contraintes Techniques - Projet Spiritual Routines
 
-**Dernière mise à jour: 2025-08-27 02:10**
+**Dernière mise à jour: 2025-08-27 14:30**
 
 ## Contraintes de performance
 - **Latence UI**: <200ms pour toutes interactions
@@ -33,7 +33,7 @@
 ## Contraintes techniques
 - **Framework**: Flutter 3.x minimum avec null safety
 - **State management**: Riverpod 2.5+ obligatoire
-- **Base de données**: Drift (SQL) + Isar (NoSQL) pour persistance
+- **Base de données**: Drift (SQL) + Isar (NoSQL) pour persistance (isar_generator temporairement désactivé - conflit freezed 3.2.0)
 - **Audio**: just_audio + audio_service pour background
 - **Tests**: Coverage minimum 60% global, 80% services critiques
 - **Build runner**: Obligatoire après modifications modèles (drift/isar/freezed)
@@ -81,3 +81,9 @@
 3. **Pull Request** : CI/CD avec tests + coverage
 4. **Release** : build.sh + tests integration complets
 5. **Post-release** : Monitoring crash rate <0.1%
+
+## État Qualité (Août 2025)
+- ✅ Infrastructure qualité déployée : scripts lint/test/build, GitHub Actions
+- ✅ 45 tests unitaires créés (services critiques couverts)
+- ✅ 72 dépendances mises à jour, js package forcé vers 0.7.2
+- ✅ Design system réparé (colors.dart, shadows.dart, typography.dart, secure_logging_service.dart)

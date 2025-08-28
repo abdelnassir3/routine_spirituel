@@ -63,13 +63,13 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
     // En mode normal, utiliser la tâche passée en paramètre
     return widget.task;
   }
-  
+
   // État de chargement de l'audio
   bool _isLoadingAudio = false;
   String _loadingMessage = '';
   int _currentSegment = 0;
   int _totalSegments = 0;
-  
+
   @override
   void initState() {
     super.initState();
@@ -120,7 +120,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
     final bilingualDisplay = ref.watch(bilingualDisplayProvider);
     // En mode mains libres, écouter les changements du provider global
     // Cela forcera la reconstruction de l'interface quand la tâche change
-    final currentTask = _currentTask; // Ceci utilise le getter qui surveille le provider
+    final currentTask =
+        _currentTask; // Ceci utilise le getter qui surveille le provider
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final readerTheme = ref.watch(enhancedReaderThemeModeProvider);
@@ -311,13 +312,12 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
 
                   // Contenu principal de lecture
                   Expanded(
-                    child: _buildSessionTextContent(
-                        context, language),
+                    child: _buildSessionTextContent(context, language),
                   ),
 
                   // Contrôles de session
-                  _buildSessionControls(context, counterState,
-                      handsFreeMode, language),
+                  _buildSessionControls(
+                      context, counterState, handsFreeMode, language),
                 ],
               ),
             ),
@@ -460,8 +460,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
   }
 
   /// Contenu textuel pour session active
-  Widget _buildSessionTextContent(
-      BuildContext context, String language) {
+  Widget _buildSessionTextContent(BuildContext context, String language) {
     // Lire les préférences de style
     final textScale = ref.watch(enhancedReaderTextScaleProvider);
     final lineHeight = ref.watch(enhancedReaderLineHeightProvider);
@@ -479,7 +478,9 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       // IMPORTANT: Utiliser une clé unique basée sur l'ID de la tâche
       // pour forcer la reconstruction quand la tâche change
       key: ValueKey(_currentTask.id),
-      future: ref.read(contentServiceProvider).getBuiltTextsForTask(_currentTask.id),
+      future: ref
+          .read(contentServiceProvider)
+          .getBuiltTextsForTask(_currentTask.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -659,8 +660,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
   }
 
   /// Section contrôles de session
-  Widget _buildSessionControls(BuildContext context,
-      CounterState counterState, bool handsFreeMode, String language) {
+  Widget _buildSessionControls(BuildContext context, CounterState counterState,
+      bool handsFreeMode, String language) {
     final theme = Theme.of(context);
 
     return Container(
@@ -789,12 +790,13 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
           future: ref.read(userSettingsServiceProvider).getTtsSpeed(),
           builder: (context, snapshot) {
             final currentSpeed = snapshot.data ?? 0.9;
-            
+
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color:
+                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -815,7 +817,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                       ),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -834,10 +837,13 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                   SliderTheme(
                     data: SliderThemeData(
                       trackHeight: 4,
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                      thumbShape:
+                          const RoundSliderThumbShape(enabledThumbRadius: 8),
+                      overlayShape:
+                          const RoundSliderOverlayShape(overlayRadius: 16),
                       activeTrackColor: theme.colorScheme.primary,
-                      inactiveTrackColor: theme.colorScheme.surfaceContainerHighest,
+                      inactiveTrackColor:
+                          theme.colorScheme.surfaceContainerHighest,
                       thumbColor: theme.colorScheme.primary,
                       overlayColor: theme.colorScheme.primary.withOpacity(0.2),
                     ),
@@ -847,7 +853,9 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                       max: 1.5,
                       divisions: 20,
                       onChanged: (value) async {
-                        await ref.read(userSettingsServiceProvider).setTtsSpeed(value);
+                        await ref
+                            .read(userSettingsServiceProvider)
+                            .setTtsSpeed(value);
                         // Force le rebuild du widget
                         setState(() {});
                       },
@@ -858,7 +866,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
             );
           },
         ),
-        
+
         // Première ligne d'actions
         Row(
           children: [
@@ -902,8 +910,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                                   if (_totalSegments > 1)
                                     Text(
                                       'Segment $_currentSegment/$_totalSegments',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.primary.withOpacity(0.7),
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.primary
+                                            .withOpacity(0.7),
                                         fontSize: 10,
                                       ),
                                     ),
@@ -1232,11 +1242,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       } catch (e) {
         print('⚠️ DEBUG: Erreur arrêt TTS: $e');
       }
-      
+
       // 3. NE PAS invalider les providers car cela recrée le service SANS Coqui
       // Les services sont déjà configurés correctement au démarrage
       print('🛑 DEBUG: Services audio conservés (pas de réinitialisation)');
-      
     } catch (e) {
       print('❌ DEBUG: Erreur globale _stopAllAudio: $e');
       // Ignorer silencieusement les erreurs
@@ -1251,24 +1260,26 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
         _isLoadingAudio = true;
         _loadingMessage = 'Préparation de l\'audio...';
       });
-      
+
       // IMPORTANT: Arrêter tout audio en cours avant de lire le nouveau texte
       await _stopAllAudio();
-      
+
       // Attendre un peu pour s'assurer que l'audio est bien arrêté
       await Future.delayed(Duration(milliseconds: 500));
-      
+
       // Utiliser directement _currentTask pour être sûr d'avoir la bonne tâche
       final interfaceLanguage = ref.read(readerLanguageProvider);
-      
+
       print('🎧 DEBUG: _playCurrentText appelé pour tâche ${_currentTask.id}');
       print('🎧 DEBUG: Catégorie de la tâche: ${_currentTask.category}');
 
       // Vérifier la configuration audio pour cette tâche
-      final audioPrefs = await ref.read(taskAudioPrefsProvider)
+      final audioPrefs = await ref
+          .read(taskAudioPrefsProvider)
           .getForTaskLocale(_currentTask.id, interfaceLanguage);
-      print('🎧 DEBUG: Configuration audio pour tâche ${_currentTask.id}: source=${audioPrefs.source}');
-      
+      print(
+          '🎧 DEBUG: Configuration audio pour tâche ${_currentTask.id}: source=${audioPrefs.source}');
+
       // Vérifier la configuration TTS et audio de la tâche
       final ttsConfig = await ref.read(ttsConfigProvider.future);
       print('🎧 DEBUG: Configuration TTS:');
@@ -1277,11 +1288,11 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       print('  - API Key présente: ${ttsConfig.coquiApiKey.isNotEmpty}');
       print('  - API Key longueur: ${ttsConfig.coquiApiKey.length}');
       print('  - Endpoint: ${ttsConfig.coquiEndpoint}');
-      
+
       // Vérifier que le service SmartTTS est bien configuré
       final smartTts = ref.read(audioTtsServiceProvider);
       print('🎧 DEBUG: Service TTS actuel: ${smartTts.runtimeType}');
-      
+
       // Si c'est un fichier audio personnalisé, ne pas utiliser TTS
       if (audioPrefs.source == 'file' && audioPrefs.hasLocalFile) {
         _showMessage('Lecture de fichier audio personnalisé non implémentée');
@@ -1289,12 +1300,16 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       }
 
       // Récupérer le contenu textuel des deux langues POUR _currentTask
-      final (textFr, textAr) =
-          await ref.read(contentServiceProvider).getBuiltTextsForTask(_currentTask.id);
-      print('🎧 DEBUG: Récupération texte pour _currentTask.id: ${_currentTask.id}');
+      final (textFr, textAr) = await ref
+          .read(contentServiceProvider)
+          .getBuiltTextsForTask(_currentTask.id);
+      print(
+          '🎧 DEBUG: Récupération texte pour _currentTask.id: ${_currentTask.id}');
       print('🎧 DEBUG: _currentTask.category: ${_currentTask.category}');
-      print('🎧 DEBUG: Texte FR récupéré: ${textFr?.substring(0, textFr.length > 50 ? 50 : textFr.length) ?? "null"}...');
-      print('🎧 DEBUG: Texte AR récupéré: ${textAr?.substring(0, textAr.length > 50 ? 50 : textAr.length) ?? "null"}...');
+      print(
+          '🎧 DEBUG: Texte FR récupéré: ${textFr?.substring(0, textFr.length > 50 ? 50 : textFr.length) ?? "null"}...');
+      print(
+          '🎧 DEBUG: Texte AR récupéré: ${textAr?.substring(0, textAr.length > 50 ? 50 : textAr.length) ?? "null"}...');
 
       // Déterminer quel texte utiliser selon l'interface
       final currentText = interfaceLanguage == 'ar' ? textAr : textFr;
@@ -1310,25 +1325,28 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       // Récupérer la vitesse configurée par l'utilisateur
       final userSettings = ref.read(userSettingsServiceProvider);
       final configuredSpeed = await userSettings.getTtsSpeed();
-      
+
       // Utiliser le service TTS configuré (SmartTtsService avec Coqui)
       final tts = ref.read(audioTtsServiceProvider);
       final languageCode = isActuallyArabic ? 'ar' : 'fr';
-      
-      print('🎧 DEBUG: Lecture avec langue: $languageCode, vitesse: $configuredSpeed');
-      print('🎧 DEBUG: Texte complet à lire: ${currentText.substring(0, currentText.length > 100 ? 100 : currentText.length)}...');
+
+      print(
+          '🎧 DEBUG: Lecture avec langue: $languageCode, vitesse: $configuredSpeed');
+      print(
+          '🎧 DEBUG: Texte complet à lire: ${currentText.substring(0, currentText.length > 100 ? 100 : currentText.length)}...');
 
       print('🎧 DEBUG: Appel playText avec:');
-      print('  - Texte: ${currentText.substring(0, currentText.length > 100 ? 100 : currentText.length)}...');
+      print(
+          '  - Texte: ${currentText.substring(0, currentText.length > 100 ? 100 : currentText.length)}...');
       print('  - Langue: $languageCode');
       print('  - Vitesse: $configuredSpeed');
       print('  - Longueur du texte: ${currentText.length} caractères');
-      
+
       // Mettre à jour le message de chargement
       setState(() {
         _loadingMessage = 'Synthèse vocale en cours...';
       });
-      
+
       // Lancer la lecture avec gestion d'erreur améliorée
       try {
         await tts.playText(
@@ -1337,7 +1355,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
           speed: configuredSpeed,
           pitch: 1.0,
         );
-        
+
         _showMessage('🆗 Lecture terminée');
       } catch (playError) {
         print('❌ Erreur lors de la lecture TTS: $playError');
@@ -1883,7 +1901,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
   List<InlineSpan> _buildTextSpansWithLineBreaks(String text, TextStyle style) {
     final spans = <InlineSpan>[];
     final lines = text.split('\n');
-    
+
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].isNotEmpty) {
         spans.add(TextSpan(
@@ -1896,7 +1914,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
         spans.add(const TextSpan(text: '\n'));
       }
     }
-    
+
     return spans;
   }
 

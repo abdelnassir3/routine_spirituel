@@ -5,13 +5,14 @@ abstract class OcrService {
 
 class StubOcrService implements OcrService {
   @override
-  Future<String> recognizeImage(String imagePath, {String language = 'auto'}) async {
+  Future<String> recognizeImage(String imagePath,
+      {String language = 'auto'}) async {
     return 'Texte OCR depuis image ($language)';
   }
 
   @override
-  Future<String> recognizePdf(String pdfPath, {String language = 'auto'}) async {
+  Future<String> recognizePdf(String pdfPath,
+      {String language = 'auto'}) async {
     return 'Texte OCR depuis PDF ($language)';
   }
 }
-

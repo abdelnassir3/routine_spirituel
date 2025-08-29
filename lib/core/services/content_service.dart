@@ -15,6 +15,12 @@ import 'package:isar/isar.dart'
     if (dart.library.io) '../persistence/isar_mobile_stub.dart';
 
 final isarProvider = FutureProvider<Isar>((ref) async {
+  // Sur web, utiliser le stub Isar qui ne fait que simuler les opérations
+  if (kIsWeb) {
+    // Retourner le stub Isar pour la compatibilité web
+    return IsarStub() as Isar;
+  }
+  
   final dir = await getApplicationSupportDirectory();
   final isar = await Isar.open(
     [ContentDocSchema, VerseDocSchema, TaskContentSchema],

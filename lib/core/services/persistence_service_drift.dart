@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift; // ✅ pour Value<T>
 
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
 import 'package:spiritual_routines/core/persistence/drift_schema.dart';
 import 'package:spiritual_routines/core/services/persistence_service.dart';
+import 'package:spiritual_routines/core/services/persistence_service_web_stub.dart';
 
 class DriftPersistenceService implements PersistenceService {
   DriftPersistenceService(this._ref)
@@ -157,8 +159,14 @@ class DriftPersistenceService implements PersistenceService {
   String _genId() => DateTime.now().microsecondsSinceEpoch.toString();
 }
 
-final persistenceServiceProvider =
-    Provider<DriftPersistenceService>((ref) => DriftPersistenceService(ref));
+final persistenceServiceProvider = Provider<PersistenceService>((ref) {
+  if (kIsWeb) {
+    // Sur web, utiliser le stub qui évite d'accéder à Drift
+    return WebStubPersistenceService();
+  }
+  // Sur mobile/desktop, utiliser la vraie implémentation Drift
+  return DriftPersistenceService(ref);
+});
 
 final recoveryOptionsProvider = FutureProvider<RecoveryOptions>((ref) async {
   final svc = ref.read(persistenceServiceProvider);

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spiritual_routines/features/splash/animated_splash_screen.dart';
@@ -11,7 +12,8 @@ import 'package:spiritual_routines/features/content/modern_content_editor_page.d
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/', // Start directly at home to avoid splash screen issues on web
+    debugLogDiagnostics: true,
     routes: [
       GoRoute(
         path: '/splash',
@@ -21,7 +23,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const ModernHomePage(),
+        builder: (context, state) {
+          print('🏠 Building home page');
+          try {
+            return const ModernHomePage();
+          } catch (e, stackTrace) {
+            print('❌ Error building ModernHomePage: $e');
+            print('Stack trace: $stackTrace');
+            // Return a simple fallback page
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('RISAQ Home Page'),
+                    const Text('Error loading main page'),
+                    Text('Error: $e'),
+                    ElevatedButton(
+                      onPressed: () => context.go('/splash'),
+                      child: const Text('Back to Splash'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
         routes: [
           GoRoute(
             path: 'routines',

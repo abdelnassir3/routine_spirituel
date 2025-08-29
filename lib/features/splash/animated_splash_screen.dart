@@ -14,6 +14,8 @@ class AnimatedSplashScreen extends StatefulWidget {
 
 class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     with TickerProviderStateMixin {
+  // Navigation state flag
+  bool _isNavigating = false;
   // Controllers principaux
   late AnimationController _masterController;
   late AnimationController _logoController;
@@ -260,39 +262,109 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   }
 
   Future<void> _startAnimationSequence() async {
-    // Séquence d'animations orchestrée
-    await Future.delayed(const Duration(milliseconds: 200));
+    // Séquence d'animations orchestrée - version accélérée pour le web
+    await Future.delayed(const Duration(milliseconds: 100));
 
     // Démarrer le logo avec effet d'entrée spectaculaire
     _logoController.forward();
 
-    // Déclencher les ondes après 300ms
-    await Future.delayed(const Duration(milliseconds: 300));
+    // Déclencher les ondes après 200ms
+    await Future.delayed(const Duration(milliseconds: 200));
     _waveController.repeat();
 
-    // Particules après 500ms
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Particules après 300ms
+    await Future.delayed(const Duration(milliseconds: 300));
     _particleController.forward();
 
-    // Brillance après 800ms
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Brillance après 400ms
+    await Future.delayed(const Duration(milliseconds: 400));
     _shineController.forward();
 
-    // Texte après 1200ms
-    await Future.delayed(const Duration(milliseconds: 1200));
+    // Texte après 600ms
+    await Future.delayed(const Duration(milliseconds: 600));
     _textController.forward();
 
-    // Vibration de confirmation
-    await Future.delayed(const Duration(milliseconds: 500));
-    HapticFeedback.mediumImpact();
-
-    // Attendre avant la navigation
-    await Future.delayed(const Duration(milliseconds: 1500));
-
-    // Navigation avec transition fluide
-    if (mounted) {
-      context.go('/');
+    // Vibration de confirmation (non-bloquante sur web)
+    try {
+      await Future.delayed(const Duration(milliseconds: 300));
+      HapticFeedback.mediumImpact();
+    } catch (e) {
+      // Ignore vibration errors on web
+      print('🌐 Web: Vibration not supported, continuing navigation');
     }
+
+    // Navigation plus rapide - total ~2.5s au lieu de 4.7s
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Debug navigation
+    print('🚀 Navigation vers la page d\'accueil...');
+    
+    // CRITICAL FIX: Force complete widget replacement on web
+    if (mounted) {
+      try {
+        // First, stop all animations immediately
+        _disposeAnimations();
+        
+        // Set navigation flag to hide the splash screen content
+        setState(() {
+          _isNavigating = true;
+        });
+        
+        // Small delay to ensure state update
+        await Future.delayed(const Duration(milliseconds: 50));
+        
+        // Use immediate navigation without animation on web
+        if (mounted) {
+          // Web-specific navigation that forces complete replacement
+          final router = GoRouter.of(context);
+          
+          // Clear the current route stack and navigate
+          router.go('/');
+          print('✅ Navigation directe vers /');
+          
+          // Force another frame update to ensure rendering
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              // Force a complete route refresh
+              router.refresh();
+              print('✅ Route refresh forcé');
+            }
+          });
+        }
+      } catch (e) {
+        print('❌ Erreur navigation: $e');
+        // Fallback: Direct navigation without checks
+        if (mounted) {
+          GoRouter.of(context).go('/');
+          print('✅ Navigation fallback exécutée');
+        }
+      }
+    } else {
+      print('❌ Widget non monté, navigation annulée');
+    }
+  }
+  
+  void _disposeAnimations() {
+    // Stop and reset all animations to ensure clean transition
+    _masterController.stop();
+    _masterController.reset();
+    
+    _logoController.stop();
+    _logoController.reset();
+    
+    _particleController.stop();
+    _particleController.reset();
+    
+    _waveController.stop();
+    _waveController.reset();
+    
+    _shineController.stop();
+    _shineController.reset();
+    
+    _textController.stop();
+    _textController.reset();
+    
+    print('🧹 Animations disposed and reset');
   }
 
   @override
@@ -308,6 +380,11 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Return empty container if navigating to prevent rendering issues
+    if (_isNavigating) {
+      return const SizedBox.shrink();
+    }
+    
     final size = MediaQuery.of(context).size;
 
     return Scaffold(

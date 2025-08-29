@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spiritual_routines/core/data/seed_data.dart';
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
@@ -39,6 +40,19 @@ class DatabaseSeeder {
 
     print(
         '🌱 Initialisation de la base de données avec les données de base...');
+
+    // Sur la plateforme web, utiliser les stubs Isar seulement
+    if (kIsWeb) {
+      print('🌐 Plateforme web détectée - utilisation des stubs de données');
+      try {
+        await _seedWebDatabase();
+      } catch (e) {
+        print('⚠️ Erreur web database seeder : $e');
+        // Sur web, continuer même si il y a des erreurs
+        await markAsSeeded();
+      }
+      return;
+    }
 
     try {
       final themeDao = ref.read(themeDaoProvider);
@@ -175,6 +189,27 @@ class DatabaseSeeder {
     // final taskDao = ref.read(taskDaoProvider);
 
     print('🔄 Base de données réinitialisée');
+  }
+
+  /// Initialisation simplifiée pour la plateforme web (utilise seulement les stubs)
+  Future<void> _seedWebDatabase() async {
+    try {
+      // Sur web, pas de vraie initialisation de base de données
+      // Juste simuler les opérations avec les stubs
+      
+      print('📊 Simulation: ${SeedData.themes.length} thèmes');
+      print('📿 Simulation: ${SeedData.themes.fold(0, (sum, t) => sum + (t['routines'] as List).length)} routines');
+      print('📖 Simulation: ${SeedData.standaloneInvocations.length} invocations individuelles');
+
+      // Marquer comme initialisé sans essayer d'accéder aux vraies bases
+      await markAsSeeded();
+      print('✅ Base de données web (stub) initialisée avec succès !');
+      print('🌐 Mode web: Fonctionnement avec stubs - pas de persistance');
+    } catch (e) {
+      print('❌ Erreur lors de l\'initialisation web : $e');
+      // Ne pas faire échouer pour la compatibilité web
+      await markAsSeeded();
+    }
   }
 
   String _genId() => DateTime.now().microsecondsSinceEpoch.toString();

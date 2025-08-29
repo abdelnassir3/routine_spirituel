@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode, debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -9,6 +9,8 @@ import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
 import 'package:spiritual_routines/design_system/inspired_theme.dart'
     show reduceMotionProvider, modernPaletteIdProvider, modernThemeProvider;
+import 'package:spiritual_routines/design_system/theme.dart'
+    show currentThemeIdProvider;
 import 'package:spiritual_routines/l10n/app_localizations.dart';
 import 'package:spiritual_routines/core/services/database_seeder.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
@@ -45,14 +47,27 @@ void main() async {
       // Charger l'option accessibilité: réduire les animations
       final reduce = (await prefs.readValue('ui_reduce_motion')) == 'on';
       container.read(reduceMotionProvider.notifier).state = reduce;
-    } catch (_) {}
+    } catch (e) {
+      print('⚠️ Erreur lors du chargement des préférences : $e');
+    }
 
-    // Charger le thème depuis les paramètres utilisateur
-    // final userSettings = container.read(userSettingsServiceProvider);
-    // final savedThemeId = await userSettings.getSelectedThemeId();
-    // container.read(currentThemeIdProvider.notifier).state = savedThemeId;
+    // Sur web, éviter d'accéder aux providers qui pourraient utiliser Drift
+    if (!kIsWeb) {
+      // Charger le thème depuis les paramètres utilisateur (mobile seulement)
+      try {
+        final userSettings = container.read(userSettingsServiceProvider);
+        final savedThemeId = await userSettings.getSelectedThemeId();
+        container.read(currentThemeIdProvider.notifier).state = savedThemeId;
+      } catch (e) {
+        print('⚠️ Erreur lors du chargement du thème : $e');
+      }
+    }
   } catch (e) {
     print('Erreur lors de l\'initialisation de la base : $e');
+    // Sur web, continuer même en cas d'erreur pour permettre à l'app de démarrer
+    if (kIsWeb) {
+      print('🌐 Mode web : continuation malgré l\'erreur d\'initialisation');
+    }
   }
 
   runApp(UncontrolledProviderScope(

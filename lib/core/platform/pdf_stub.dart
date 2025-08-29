@@ -21,7 +21,7 @@ class PdfPage {
   Future<PdfPageImage?> render({
     required int width,
     required int height,
-    required PdfPageFormat format,
+    required PdfPageImageFormat format,
   }) async {
     return null;
   }
@@ -33,7 +33,7 @@ class PdfPageImage {
   final Uint8List bytes = Uint8List(0);
 }
 
-enum PdfPageFormat {
-  PNG,
-  JPEG,
+enum PdfPageImageFormat {
+  png,
+  jpeg,
 }

@@ -16,9 +16,18 @@ class MlkitOcrService implements OcrService {
   final OCRWrapper _ocrWrapper = OCRWrapper();
   final PlatformService _platform = PlatformService.instance;
 
+  /// Check if current platform supports ML Kit
+  bool get _isPlatformSupported => !kIsWeb && (_platform.isMobile || _platform.isMacOS);
+
   @override
   Future<String> recognizeImage(String imagePath,
       {String language = 'auto'}) async {
+    // Early return for unsupported platforms
+    if (!_isPlatformSupported) {
+      debugPrint('MLKit OCR not supported on this platform');
+      return '';
+    }
+
     // Utiliser le wrapper OCR pour cross-platform
     if (_ocrWrapper.isOCRAvailable) {
       final text = await _ocrWrapper.extractTextFromImage(imagePath);
@@ -55,6 +64,12 @@ class MlkitOcrService implements OcrService {
   @override
   Future<String> recognizePdf(String pdfPath,
       {String language = 'auto'}) async {
+    // Early return for unsupported platforms
+    if (!_isPlatformSupported) {
+      debugPrint('MLKit PDF OCR not supported on this platform');
+      return '';
+    }
+
     // PDF rendering n'est pas disponible sur toutes les plateformes
     if (!_platform.isMobile && !_platform.isMacOS) {
       debugPrint('PDF OCR non disponible sur cette plateforme');

@@ -246,6 +246,16 @@
   </style>
 </head>
 <body>
+  <script src='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.mjs' type='module'></script>
+  <script type='module'>
+  var { pdfjsLib } = globalThis;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs';
+
+  var pdfRenderOptions = {
+    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/',
+    cMapPacked: true,
+  }
+  </script>
   <!-- Custom loading screen -->
   <div class="loading-screen" id="loading-screen">
     <div class="loading-logo">
@@ -259,18 +269,32 @@
   </div>
   
   <script>
+    // Function to hide loading screen
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
+        setTimeout(function() {
+          loadingScreen.style.display = 'none';
+        }, 300);
+      }
+    }
+    
     // Remove loading screen when Flutter is ready
     window.addEventListener('flutter-initialized', function() {
-      setTimeout(function() {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-          loadingScreen.style.opacity = '0';
-          setTimeout(function() {
-            loadingScreen.style.display = 'none';
-          }, 300);
-        }
-      }, 100);
+      setTimeout(hideLoadingScreen, 100);
     });
+    
+    // Also listen for Flutter's first frame
+    window.addEventListener('flutter-first-frame', function() {
+      hideLoadingScreen();
+    });
+    
+    // Fallback: Remove loading screen after 3 seconds max
+    setTimeout(function() {
+      hideLoadingScreen();
+      console.log('Loading screen removed (fallback timer)');
+    }, 3000);
     
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {

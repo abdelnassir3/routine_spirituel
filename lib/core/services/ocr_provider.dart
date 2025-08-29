@@ -3,7 +3,8 @@ import 'dart:io' show Platform;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:spiritual_routines/core/services/ocr_service.dart';
-import 'package:spiritual_routines/core/services/ocr_mlkit.dart';
+import 'package:spiritual_routines/core/services/ocr_mlkit.dart'
+    if (dart.library.js) '../services/ocr_mlkit_web.dart';
 import 'package:spiritual_routines/core/services/ocr_tesseract.dart';
 import 'package:spiritual_routines/core/services/ocr_macos_vision.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';

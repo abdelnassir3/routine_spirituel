@@ -32,4 +32,9 @@ abstract class PersistenceService {
   Future<void> handleRecovery(RecoveryChoice choice);
   Future<SyncResult> syncWithCloud();
   Stream<SyncStatus> watchSyncStatus();
+  
+  // Session management
+  void setCurrentSession(String sessionId);
+  String? getCurrentSession();
+  void clearCurrentSession();
 }

@@ -80,6 +80,32 @@ class Isar {
   }
 }
 
+// IsarStub class for web platform compatibility
+class IsarStub extends Isar {
+  @override
+  static Future<IsarStub> open(List<dynamic> schemas, {String? directory}) async {
+    return IsarStub();
+  }
+
+  @override
+  void close() {
+    // Stub implementation - do nothing
+  }
+
+  @override
+  dynamic get contentDocs => _IsarCollectionStub();
+  @override
+  dynamic get taskContents => _IsarCollectionStub();
+  @override
+  dynamic get verseDocs => _IsarCollectionStub();
+
+  @override
+  Future<void> writeTxn(Function() fn) async {
+    // Stub implementation - just call the function without persistence
+    fn();
+  }
+}
+
 class _IsarCollectionStub {
   _IsarFilterStub filter() => _IsarFilterStub();
   Future<void> put(dynamic doc) async {}
@@ -90,10 +116,12 @@ class _IsarFilterStub {
   _IsarFilterStub taskIdEqualTo(String value) => this;
   _IsarFilterStub and() => this;
   _IsarFilterStub localeEqualTo(String value) => this;
+  _IsarFilterStub surahEqualTo(int value) => this;
+  _IsarFilterStub ayahBetween(int start, int end) => this;
+  _IsarFilterStub sortByAyah() => this;
   Future<ContentDoc?> findFirst() async => null;
+  Future<List<VerseDoc>> findAll() async => <VerseDoc>[];
 }
 
-// Provider stub
-final isarProvider = FutureProvider<Isar>((ref) async {
-  throw UnsupportedError('Isar is not supported on web. Use Drift instead.');
-});
+// Provider stub is in content_service.dart to avoid conflicts
+// The isarProvider is defined in content_service.dart

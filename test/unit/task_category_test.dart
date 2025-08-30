@@ -19,49 +19,49 @@ void main() {
 
     test('louange category should have correct properties', () {
       const category = TaskCategory.louange;
-      
+
       expect(category.label, equals('Louange'));
       expect(category.emoji, equals('📿'));
     });
 
     test('protection category should have correct properties', () {
       const category = TaskCategory.protection;
-      
+
       expect(category.label, equals('Protection'));
       expect(category.emoji, equals('🛡️'));
     });
 
     test('pardon category should have correct properties', () {
       const category = TaskCategory.pardon;
-      
+
       expect(category.label, equals('Pardon'));
       expect(category.emoji, equals('🤲'));
     });
 
     test('guidance category should have correct properties', () {
       const category = TaskCategory.guidance;
-      
+
       expect(category.label, equals('Guidance'));
       expect(category.emoji, equals('🌟'));
     });
 
     test('gratitude category should have correct properties', () {
       const category = TaskCategory.gratitude;
-      
+
       expect(category.label, equals('Gratitude'));
       expect(category.emoji, equals('🙏'));
     });
 
     test('healing category should have correct properties', () {
       const category = TaskCategory.healing;
-      
+
       expect(category.label, equals('Guérison'));
       expect(category.emoji, equals('💚'));
     });
 
     test('custom category should have correct properties', () {
       const category = TaskCategory.custom;
-      
+
       expect(category.label, equals('Personnalisé'));
       expect(category.emoji, equals('✨'));
     });
@@ -70,7 +70,7 @@ void main() {
       const category1 = TaskCategory.louange;
       const category2 = TaskCategory.louange;
       const category3 = TaskCategory.protection;
-      
+
       expect(category1, equals(category2));
       expect(category1, isNot(equals(category3)));
     });
@@ -94,12 +94,16 @@ void main() {
             return 'Custom prayers';
         }
       }
-      
-      expect(getDescription(TaskCategory.louange), equals('Praise and worship'));
-      expect(getDescription(TaskCategory.protection), equals('Divine protection'));
-      expect(getDescription(TaskCategory.pardon), equals('Forgiveness requests'));
+
+      expect(
+          getDescription(TaskCategory.louange), equals('Praise and worship'));
+      expect(
+          getDescription(TaskCategory.protection), equals('Divine protection'));
+      expect(
+          getDescription(TaskCategory.pardon), equals('Forgiveness requests'));
       expect(getDescription(TaskCategory.guidance), equals('Seeking guidance'));
-      expect(getDescription(TaskCategory.gratitude), equals('Expressing gratitude'));
+      expect(getDescription(TaskCategory.gratitude),
+          equals('Expressing gratitude'));
       expect(getDescription(TaskCategory.healing), equals('Healing prayers'));
       expect(getDescription(TaskCategory.custom), equals('Custom prayers'));
     });
@@ -107,14 +111,14 @@ void main() {
     test('should have unique labels', () {
       final labels = TaskCategory.values.map((e) => e.label).toList();
       final uniqueLabels = Set<String>.from(labels);
-      
+
       expect(uniqueLabels.length, equals(labels.length));
     });
 
     test('should have unique emojis', () {
       final emojis = TaskCategory.values.map((e) => e.emoji).toList();
       final uniqueEmojis = Set<String>.from(emojis);
-      
+
       expect(uniqueEmojis.length, equals(emojis.length));
     });
 
@@ -143,15 +147,15 @@ void main() {
       final spiritualCategories = TaskCategory.values
           .where((category) => category != TaskCategory.custom)
           .toList();
-      
+
       expect(spiritualCategories.length, equals(6));
       expect(spiritualCategories, isNot(contains(TaskCategory.custom)));
-      
+
       // Map to display strings
       final displayStrings = TaskCategory.values
           .map((category) => '${category.emoji} ${category.label}')
           .toList();
-      
+
       expect(displayStrings, contains('📿 Louange'));
       expect(displayStrings, contains('🛡️ Protection'));
       expect(displayStrings, contains('✨ Personnalisé'));
@@ -159,14 +163,15 @@ void main() {
 
     test('toString should return name', () {
       expect(TaskCategory.louange.toString(), equals('TaskCategory.louange'));
-      expect(TaskCategory.protection.toString(), equals('TaskCategory.protection'));
+      expect(TaskCategory.protection.toString(),
+          equals('TaskCategory.protection'));
       expect(TaskCategory.custom.toString(), equals('TaskCategory.custom'));
     });
 
     test('should be serializable to name', () {
       // This tests that enum names can be used for serialization
       final categoryNames = TaskCategory.values.map((e) => e.name).toList();
-      
+
       for (final name in categoryNames) {
         final category = TaskCategory.values.firstWhere((e) => e.name == name);
         expect(category.name, equals(name));

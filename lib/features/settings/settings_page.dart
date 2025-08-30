@@ -4,6 +4,7 @@ import 'package:spiritual_routines/core/services/corpus_importer.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
+import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
 import 'package:spiritual_routines/core/services/smart_tts_service.dart';
 import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
@@ -657,6 +658,41 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           const ListTile(
               title: Text('Lecture audio (TTS)'),
               subtitle: Text('Voix et vitesse')),
+          // Aperçu TTS via adaptateur cross‑plateforme (Web-safe)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: Row(
+              children: [
+                FilledButton.tonal(
+                  onPressed: () async {
+                    final adapter = ref.read(ttsAdapterProvider);
+                    // FR demo
+                    await adapter.speak(
+                      'Bonjour, ceci est un aperçu T T S.',
+                      voice: 'fr-FR-DeniseNeural',
+                      speed: await settings.getTtsSpeed(),
+                      pitch: await settings.getTtsPitch(),
+                    );
+                  },
+                  child: const Text('Aperçu FR (adapter)'),
+                ),
+                const SizedBox(width: 12),
+                FilledButton.tonal(
+                  onPressed: () async {
+                    final adapter = ref.read(ttsAdapterProvider);
+                    // AR demo
+                    await adapter.speak(
+                      'مرحبا، هذه معاينة تحويل النص إلى كلام.',
+                      voice: 'ar-SA-HamedNeural',
+                      speed: await settings.getTtsSpeed(),
+                      pitch: await settings.getTtsPitch(),
+                    );
+                  },
+                  child: const Text('Aperçu AR (adapter)'),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: FutureBuilder<double>(

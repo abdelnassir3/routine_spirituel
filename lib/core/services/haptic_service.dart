@@ -102,10 +102,16 @@ class HapticService {
         await Haptics.vibrate(HapticsType.success);
       } else if (Platform.isAndroid) {
         // Pattern: court-pause-court-pause-long
-        await Vibration.vibrate(
-          pattern: [0, 100, 50, 100, 50, 200],
-          intensities: _hasAmplitudeControl ? [0, 128, 0, 128, 0, 255] : null,
-        );
+        if (_hasAmplitudeControl) {
+          await Vibration.vibrate(
+            pattern: [0, 100, 50, 100, 50, 200],
+            intensities: [0, 128, 0, 128, 0, 255],
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: [0, 100, 50, 100, 50, 200],
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
@@ -124,11 +130,16 @@ class HapticService {
         await Haptics.vibrate(HapticsType.success);
       } else if (Platform.isAndroid) {
         // Pattern célébration : série de vibrations croissantes
-        await Vibration.vibrate(
-          pattern: [0, 50, 50, 100, 50, 150, 50, 200],
-          intensities:
-              _hasAmplitudeControl ? [0, 100, 0, 150, 0, 200, 0, 255] : null,
-        );
+        if (_hasAmplitudeControl) {
+          await Vibration.vibrate(
+            pattern: [0, 50, 50, 100, 50, 150, 50, 200],
+            intensities: [0, 100, 0, 150, 0, 200, 0, 255],
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: [0, 50, 50, 100, 50, 150, 50, 200],
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
@@ -253,10 +264,16 @@ class HapticService {
         await Haptics.vibrate(HapticsType.warning);
       } else if (Platform.isAndroid) {
         // Pattern d'erreur : buzz rapide
-        await Vibration.vibrate(
-          pattern: [0, 50, 30, 50, 30, 50],
-          intensities: _hasAmplitudeControl ? [0, 255, 0, 255, 0, 255] : null,
-        );
+        if (_hasAmplitudeControl) {
+          await Vibration.vibrate(
+            pattern: [0, 50, 30, 50, 30, 50],
+            intensities: [0, 255, 0, 255, 0, 255],
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: [0, 50, 30, 50, 30, 50],
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
@@ -272,10 +289,16 @@ class HapticService {
         await Haptics.vibrate(HapticsType.success);
       } else if (Platform.isAndroid) {
         // Pattern de succès : deux taps distincts
-        await Vibration.vibrate(
-          pattern: [0, 100, 100, 100],
-          intensities: _hasAmplitudeControl ? [0, 200, 0, 200] : null,
-        );
+        if (_hasAmplitudeControl) {
+          await Vibration.vibrate(
+            pattern: [0, 100, 100, 100],
+            intensities: [0, 200, 0, 200],
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: [0, 100, 100, 100],
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
@@ -330,10 +353,16 @@ class HapticService {
         await Haptics.vibrate(HapticsType.warning);
       } else if (Platform.isAndroid) {
         // Pattern de notification : long-court-court
-        await Vibration.vibrate(
-          pattern: [0, 200, 100, 100, 100, 100],
-          intensities: _hasAmplitudeControl ? [0, 255, 0, 150, 0, 150] : null,
-        );
+        if (_hasAmplitudeControl) {
+          await Vibration.vibrate(
+            pattern: [0, 200, 100, 100, 100, 100],
+            intensities: [0, 255, 0, 150, 0, 150],
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: [0, 200, 100, 100, 100, 100],
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Haptic error: $e');
@@ -351,10 +380,16 @@ class HapticService {
 
     try {
       if (Platform.isAndroid) {
-        await Vibration.vibrate(
-          pattern: pattern,
-          intensities: _hasAmplitudeControl ? intensities : null,
-        );
+        if (_hasAmplitudeControl && intensities != null) {
+          await Vibration.vibrate(
+            pattern: pattern,
+            intensities: intensities,
+          );
+        } else {
+          await Vibration.vibrate(
+            pattern: pattern,
+          );
+        }
       } else if (Platform.isIOS) {
         // iOS ne supporte pas les patterns custom, utiliser le plus proche
         await Haptics.vibrate(HapticsType.medium);

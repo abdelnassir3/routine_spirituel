@@ -10,7 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  testWidgets('Basic widget test - MaterialApp creation', (WidgetTester tester) async {
+  testWidgets('Basic widget test - MaterialApp creation',
+      (WidgetTester tester) async {
     // Simple test to verify MaterialApp can be created
     await tester.pumpWidget(
       const ProviderScope(
@@ -33,7 +34,7 @@ void main() {
   testWidgets('Provider scope functionality test', (WidgetTester tester) async {
     // Test that ProviderScope works correctly
     final testProvider = StateProvider<int>((ref) => 0);
-    
+
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(

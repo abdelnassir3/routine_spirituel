@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:spiritual_routines/core/adapters/adapters.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,8 +74,8 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   void initState() {
     super.initState();
 
-    // Vibration subtile au démarrage
-    HapticFeedback.lightImpact();
+    // Vibration subtile au démarrage (adapter, no-op Web)
+    AdapterFactories.haptic.lightImpact();
 
     _initializeAnimations();
     _generateParticles();
@@ -304,7 +305,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
     // Vibration de confirmation
     await Future.delayed(const Duration(milliseconds: 500));
-    HapticFeedback.mediumImpact();
+    AdapterFactories.haptic.mediumImpact();
   }
 
   @override

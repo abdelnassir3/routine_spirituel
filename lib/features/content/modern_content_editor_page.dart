@@ -23,12 +23,14 @@ import 'package:spiritual_routines/features/content/quran_verse_selector.dart';
 import 'package:spiritual_routines/core/platform/media_picker_wrapper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:path/path.dart' as p;
+// Import conditionnel pour Platform, File et Directory
+import 'dart:io' show Platform, File, Directory if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 class ModernContentEditorPage extends ConsumerStatefulWidget {
   final String taskId;
@@ -63,6 +65,27 @@ class _ModernContentEditorPageState
   // États d'animation et d'interaction
   final GlobalKey _audioSectionKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
+
+  // Helper pour obtenir la plateforme de manière sûre
+  String get _platformInfo {
+    if (kIsWeb) {
+      return "Web";
+    } else {
+      // Utilisation sûre de Platform uniquement sur non-Web
+      if (!kIsWeb) {
+        try {
+          if (Platform.isAndroid) return "Android";
+          if (Platform.isIOS) return "iOS";
+          if (Platform.isMacOS) return "macOS";
+          if (Platform.isWindows) return "Windows";
+          if (Platform.isLinux) return "Linux";
+        } catch (e) {
+          return "Unknown";
+        }
+      }
+      return "Unknown";
+    }
+  }
 
   @override
   void initState() {
@@ -1037,7 +1060,7 @@ class _ModernContentEditorPageState
           );
 
       if (mounted) {
-        HapticFeedback.lightImpact();
+        await ref.hapticLightTap();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
@@ -1090,7 +1113,7 @@ class _ModernContentEditorPageState
     final theme = Theme.of(context);
 
     // Animation de feedback
-    HapticFeedback.mediumImpact();
+    await ref.hapticImpact();
 
     try {
       final contentSvc = ref.read(contentServiceProvider);
@@ -1349,7 +1372,7 @@ class _ModernContentEditorPageState
 
             // Feedback utilisateur
             if (mounted) {
-              HapticFeedback.lightImpact();
+              await ref.hapticLightTap();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Row(
@@ -2052,7 +2075,7 @@ class _ModernContentEditorPageState
     final correctedCtrl = isArabic ? _correctedCtrlAR : _correctedCtrlFR;
 
     setState(() => _busyImport = true);
-    HapticFeedback.mediumImpact();
+    await ref.hapticImpact();
 
     try {
       await content.setSource(
@@ -2363,7 +2386,7 @@ class _ModernContentEditorPageState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '🔍 OCR Debug: ${isArabic ? "Arabe" : "Français"} - ${kIsWeb ? "Web" : Platform.operatingSystem} - Engine: $engine'),
+                '🔍 OCR Debug: ${isArabic ? "Arabe" : "Français"} - $_platformInfo - Engine: $engine'),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -2379,7 +2402,7 @@ class _ModernContentEditorPageState
       // Debug OCR service info
       if (mounted) {
         final serviceName = ocr.runtimeType.toString();
-        final platformInfo = kIsWeb ? "Web" : Platform.operatingSystem;
+        final platformInfo = _platformInfo;
         final languageInfo = isArabic ? "Arabe" : "Français";
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2946,7 +2969,7 @@ class _ModernContentEditorPageState
       });
 
       if (mounted) {
-        HapticFeedback.lightImpact();
+        await ref.hapticLightTap();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
@@ -2991,7 +3014,7 @@ class _ModernContentEditorPageState
     if (filePath != null) {
       try {
         await ref.read(audioPlayerServiceProvider).playFile(filePath);
-        HapticFeedback.lightImpact();
+        await ref.hapticLightTap();
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

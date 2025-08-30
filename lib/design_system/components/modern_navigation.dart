@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
@@ -124,9 +125,12 @@ class _ModernBottomNavigationState extends State<ModernBottomNavigation>
                     item,
                     isSelected,
                     reduce ? kAlwaysCompleteAnimation : _animations[index],
-                    () {
+                    () async {
+                      // Haptic via adapter (no-op on Web)
+                      try {
+                        await ref.hapticLightTap();
+                      } catch (_) {}
                       widget.onTap(index);
-                      HapticFeedback.lightImpact();
                     },
                   );
                 }),
@@ -507,46 +511,55 @@ class ModernAppBar extends StatelessWidget implements PreferredSizeWidget {
                         : 0,
                     right: actions != null ? 16 : 0,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: centerTitle
-                        ? CrossAxisAlignment.center
-                        : CrossAxisAlignment.start,
-                    children: [
-                      if (title != null)
-                        DefaultTextStyle(
-                          style: theme.textTheme.titleLarge!.copyWith(
-                            color: foregroundColor ??
-                                (gradient != null
-                                    ? Colors.white
-                                    : theme.colorScheme.onSurface),
-                            fontWeight: FontWeight.w600,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment:
+                        centerTitle ? Alignment.center : Alignment.centerLeft,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: centerTitle
+                          ? CrossAxisAlignment.center
+                          : CrossAxisAlignment.start,
+                      children: [
+                        if (title != null)
+                          DefaultTextStyle(
+                            style: theme.textTheme.titleLarge!.copyWith(
+                              color: foregroundColor ??
+                                  (gradient != null
+                                      ? Colors.white
+                                      : theme.colorScheme.onSurface),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            child: title!,
                           ),
-                          child: title!,
-                        ),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        DefaultTextStyle(
-                          style: theme.textTheme.bodySmall!.copyWith(
-                            color: (foregroundColor ??
-                                    (gradient != null
-                                        ? Colors.white
-                                        : theme.colorScheme.onSurface))
-                                .withOpacity(0.7),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 2),
+                          DefaultTextStyle(
+                            style: theme.textTheme.bodySmall!.copyWith(
+                              color: (foregroundColor ??
+                                      (gradient != null
+                                          ? Colors.white
+                                          : theme.colorScheme.onSurface))
+                                  .withOpacity(0.7),
+                            ),
+                            child: subtitle!,
                           ),
-                          child: subtitle!,
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
 
               // Actions
               if (actions != null)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: actions!,
+                Flexible(
+                  flex: 0,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: actions!,
+                  ),
                 ),
             ],
           ),

@@ -12,17 +12,21 @@ void main() {
     setUpAll(() {
       // Set desktop size for all tests
       TestWidgetsFlutterBinding.ensureInitialized()
-          .window.physicalSizeTestValue = const Size(1920, 1080);
+          .window
+          .physicalSizeTestValue = const Size(1920, 1080);
       TestWidgetsFlutterBinding.ensureInitialized()
-          .window.devicePixelRatioTestValue = 1.0;
+          .window
+          .devicePixelRatioTestValue = 1.0;
     });
 
     tearDownAll(() {
       // Reset window size
       TestWidgetsFlutterBinding.ensureInitialized()
-          .window.physicalSizeTestValue = null;
+          .window
+          .physicalSizeTestValue = null;
       TestWidgetsFlutterBinding.ensureInitialized()
-          .window.devicePixelRatioTestValue = null;
+          .window
+          .devicePixelRatioTestValue = null;
     });
 
     testWidgets('Keyboard shortcuts work in the app', (tester) async {
@@ -129,7 +133,8 @@ void main() {
       // Focus should move to previous widget
     });
 
-    testWidgets('Scrollbar is visible and interactive on desktop', (tester) async {
+    testWidgets('Scrollbar is visible and interactive on desktop',
+        (tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -215,7 +220,7 @@ void main() {
         // Hover over the icon
         await gesture.moveTo(tester.getCenter(iconButton.first));
         await tester.pump();
-        
+
         // Wait for tooltip to appear
         await tester.pump(const Duration(seconds: 2));
 

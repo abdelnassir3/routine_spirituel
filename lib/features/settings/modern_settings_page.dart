@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 import 'package:spiritual_routines/core/services/corpus_importer.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
+import 'package:spiritual_routines/core/services/database_seeder.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
+import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/smart_tts_service.dart';
 import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
@@ -801,9 +805,9 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredFr();
-                              await ref.read(audioTtsServiceProvider).playText(
+                              await ref.read(ttsAdapterProvider).speak(
                                   'Lecture de test en français',
-                                  voice: voice,
+                                  voice: voice ?? 'fr-FR-DeniseNeural',
                                   speed: speed,
                                   pitch: pitch);
                             },
@@ -818,9 +822,9 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
                               final speed = await settings.getTtsSpeed();
                               final pitch = await settings.getTtsPitch();
                               final voice = await settings.getTtsPreferredAr();
-                              await ref.read(audioTtsServiceProvider).playText(
+                              await ref.read(ttsAdapterProvider).speak(
                                   'تجربة القراءة بالعربية',
-                                  voice: voice,
+                                  voice: voice ?? 'ar-SA-HamedNeural',
                                   speed: speed,
                                   pitch: pitch);
                             },
@@ -1295,6 +1299,45 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // Dev-only: Reset & Reseed database (helps Web preview)
+        if (kDebugMode)
+          _buildSectionCard(
+            context,
+            title: 'Données (développement)',
+            icon: Icons.storage_rounded,
+            children: [
+              _buildActionTile(
+                title: 'Réinitialiser et ré‑ensemencer',
+                subtitle:
+                    'Efface le flag seed et réinjecte les données de base',
+                icon: Icons.restart_alt_rounded,
+                onTap: () async {
+                  final scaffold = ScaffoldMessenger.of(context);
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) =>
+                        const Center(child: CircularProgressIndicator()),
+                  );
+                  try {
+                    final seeder = ref.read(databaseSeederProvider);
+                    await seeder.resetDatabase();
+                    await seeder.seedDatabase();
+                    if (context.mounted) Navigator.of(context).pop();
+                    scaffold.showSnackBar(
+                      const SnackBar(
+                          content: Text('Base réinitialisée et ré‑ensemencée')),
+                    );
+                  } catch (e) {
+                    if (context.mounted) Navigator.of(context).pop();
+                    scaffold.showSnackBar(
+                      SnackBar(content: Text('Erreur: $e')),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         // Diacritizer section
         _buildSectionCard(
           context,

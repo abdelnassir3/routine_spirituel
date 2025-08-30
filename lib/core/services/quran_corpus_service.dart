@@ -6,7 +6,8 @@ import 'package:isar/isar.dart'
 import 'package:spiritual_routines/core/persistence/isar_collections.dart'
     if (dart.library.html) '../persistence/isar_web_stub.dart'
     if (dart.library.io) '../persistence/isar_mobile_stub.dart';
-import 'package:spiritual_routines/core/services/content_service.dart' show ContentService, isarProvider; // Import both
+import 'package:spiritual_routines/core/services/content_service.dart'
+    show ContentService, isarProvider; // Import both
 
 final quranCorpusServiceProvider =
     Provider<QuranCorpusService>((ref) => QuranCorpusService(ref));

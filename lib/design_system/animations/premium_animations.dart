@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 /// Animation Durations
 class AnimationDurations {
@@ -997,7 +999,8 @@ class _TimeDisplayAnimationState extends State<TimeDisplayAnimation>
 }
 
 /// Micro Interaction Animation
-class MicroInteractionAnimation extends StatefulWidget {
+
+class MicroInteractionAnimation extends ConsumerStatefulWidget {
   const MicroInteractionAnimation({
     super.key,
     required this.child,
@@ -1012,11 +1015,12 @@ class MicroInteractionAnimation extends StatefulWidget {
   final double scaleFactor;
 
   @override
-  State<MicroInteractionAnimation> createState() =>
+  ConsumerState<MicroInteractionAnimation> createState() =>
       _MicroInteractionAnimationState();
 }
 
-class _MicroInteractionAnimationState extends State<MicroInteractionAnimation>
+class _MicroInteractionAnimationState
+    extends ConsumerState<MicroInteractionAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -1051,7 +1055,8 @@ class _MicroInteractionAnimationState extends State<MicroInteractionAnimation>
     });
 
     if (widget.hapticFeedback) {
-      HapticFeedback.lightImpact();
+      // Adapter-based haptic (no-op on Web)
+      ref.hapticLightTap();
     }
 
     widget.onTap?.call();

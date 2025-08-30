@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:spiritual_routines/core/adapters/share.dart';
+import 'package:spiritual_routines/core/adapters/share_adapter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
@@ -487,13 +488,11 @@ class ExportService {
     }
 
     try {
-      final file = XFile(export.filePath!);
-
-      await Share.shareXFiles(
-        [file],
-        subject: 'Export Spiritual Routines',
-        text: 'Mes statistiques spirituelles du ${_formatDate(DateTime.now())}',
-      );
+      final share = getShareAdapter();
+      await share.shareFiles([export.filePath!],
+          subject: 'Export Spiritual Routines',
+          text:
+              'Mes statistiques spirituelles du ${_formatDate(DateTime.now())}');
 
       AppLogger.logUserAction('export_shared', {
         'format': export.format?.name,

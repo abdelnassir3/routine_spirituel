@@ -17,7 +17,8 @@ class MlkitOcrService implements OcrService {
   final PlatformService _platform = PlatformService.instance;
 
   /// Check if current platform supports ML Kit
-  bool get _isPlatformSupported => !kIsWeb && (_platform.isMobile || _platform.isMacOS);
+  bool get _isPlatformSupported =>
+      !kIsWeb && (_platform.isMobile || _platform.isMacOS);
 
   @override
   Future<String> recognizeImage(String imagePath,
@@ -84,7 +85,9 @@ class MlkitOcrService implements OcrService {
       for (int i = 1; i <= pageCount; i++) {
         final page = await doc.getPage(i);
         final pageImage = await page.render(
-            width: page.width, height: page.height, format: PdfPageImageFormat.png);
+            width: page.width,
+            height: page.height,
+            format: PdfPageImageFormat.png);
         await page.close();
 
         if (pageImage == null) continue;

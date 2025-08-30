@@ -8,7 +8,7 @@ import 'package:spiritual_routines/core/services/transcription_service.dart';
 import 'package:spiritual_routines/core/services/ocr_mlkit.dart';
 import 'package:spiritual_routines/features/content/quran_verse_selector.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
+import 'dart:io' show Platform, File if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:spiritual_routines/core/services/task_audio_prefs.dart';

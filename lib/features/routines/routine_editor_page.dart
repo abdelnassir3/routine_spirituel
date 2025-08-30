@@ -14,7 +14,8 @@ import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
 import 'package:spiritual_routines/l10n/app_localizations.dart';
 import 'package:spiritual_routines/core/services/task_audio_prefs.dart';
-import 'dart:io';
+// Removed unused dart:io import to ensure Web safety
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 // Design system moderne
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
@@ -94,7 +95,10 @@ class RoutineEditorPage extends ConsumerWidget {
                       ),
                     ),
                     child: IconButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        ref.hapticLightTap();
+                        Navigator.pop(context);
+                      },
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
                         color: Colors.white,
@@ -284,7 +288,7 @@ class RoutineEditorPage extends ConsumerWidget {
                     .read(secure.userSettingsServiceProvider)
                     .readValue('ui_reorder_haptics')) !=
                 'off';
-            if (hapticsOn) await HapticFeedback.lightImpact();
+            if (hapticsOn) await ref.hapticLightTap();
             // Read snack toggle from secure settings service used in routines feature
             final showSnack = (await ref
                     .read(secure.userSettingsServiceProvider)
@@ -1315,7 +1319,7 @@ class RoutineEditorPage extends ConsumerWidget {
         await taskDao.deleteById(task.id);
 
         // Feedback haptique
-        HapticFeedback.lightImpact();
+        ref.hapticLightTap();
 
         // Message de confirmation
         if (context.mounted) {

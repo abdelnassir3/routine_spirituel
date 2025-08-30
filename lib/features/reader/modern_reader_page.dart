@@ -14,8 +14,10 @@ import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
 import 'package:spiritual_routines/features/reader/reading_prefs.dart';
 import 'package:spiritual_routines/features/session/session_state.dart';
-import 'package:spiritual_routines/features/settings/user_settings_service.dart';
+import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/l10n/app_localizations.dart';
+import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 // Design system moderne
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
@@ -698,7 +700,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              HapticFeedback.lightImpact();
+              ref.hapticLightTap();
               onTap();
             },
             borderRadius: BorderRadius.circular(12),
@@ -1038,7 +1040,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
       message: tooltip ?? '',
       child: InkWell(
         onTap: () {
-          HapticFeedback.selectionClick();
+          ref.hapticSelection();
           onTap();
         },
         borderRadius: BorderRadius.circular(8),
@@ -1065,7 +1067,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
   Widget _buildLanguageButton(String lang, bool isSelected) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.lightImpact();
+        ref.hapticLightTap();
         _languageToggleController.forward().then((_) {
           ref.read(readerLanguageProvider.notifier).state = lang.toLowerCase();
           _languageToggleController.reverse();
@@ -1264,7 +1266,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
 
     return GestureDetector(
       onTap: () {
-        HapticFeedback.mediumImpact();
+        ref.hapticImpact();
         _playButtonController.forward().then((_) {
           ref.read(readerIsPlayingProvider.notifier).state = !isPlaying;
           _playButtonController.reverse();
@@ -1597,7 +1599,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
                       category: _getCategoryFromRoutine(routine),
                       showCheckbox: false,
                       onTap: () {
-                        HapticFeedback.lightImpact();
+                        ref.hapticLightTap();
                         _selectRoutine(routine);
                       },
                       priority: TaskPriority.medium,
@@ -1694,7 +1696,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
   }) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.lightImpact();
+        ref.hapticLightTap();
         onTap();
       },
       child: Container(
@@ -1793,7 +1795,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
       if (idx == -1) return;
       final nextIdx = idx + relative;
       if (nextIdx < 0 || nextIdx >= tasks.length) {
-        HapticFeedback.selectionClick();
+        ref.hapticSelection();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1806,7 +1808,7 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
       ref.read(readerNavDirectionProvider.notifier).state = relative;
       // Update provider (AnimatedSwitcher prendra le relais pour l’animation)
       ref.read(readerCurrentTaskProvider.notifier).state = nextTask;
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1900,12 +1902,38 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
     );
   }
 
-  void _startTTS() {
-    // TODO: Implement TTS start
+  Future<void> _startTTS() async {
+    try {
+      final adapter = ref.read(ttsAdapterProvider);
+      final settings = ref.read(userSettingsServiceProvider);
+      final lang = ref.read(readerLanguageProvider);
+      final speed = await settings.getTtsSpeed();
+      final pitch = await settings.getTtsPitch();
+
+      final voice = lang == 'ar' ? 'ar-SA-HamedNeural' : 'fr-FR-DeniseNeural';
+
+      final task = ref.read(readerCurrentTaskProvider);
+      final sample = lang == 'ar'
+          ? 'بدء القراءة. هذه معاينة للصوت.'
+          : 'Démarrage de la lecture. Ceci est un aperçu de la voix.';
+      final text = (task?.notesFr?.isNotEmpty == true && lang != 'ar')
+          ? task!.notesFr!
+          : sample;
+
+      await adapter.speak(
+        text,
+        voice: voice,
+        speed: speed,
+        pitch: pitch,
+      );
+    } catch (_) {}
   }
 
-  void _stopTTS() {
-    // TODO: Implement TTS stop
+  Future<void> _stopTTS() async {
+    try {
+      final adapter = ref.read(ttsAdapterProvider);
+      await adapter.stop();
+    } catch (_) {}
   }
 
   void _showReaderSettings(BuildContext context) {

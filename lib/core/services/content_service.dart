@@ -20,7 +20,7 @@ final isarProvider = FutureProvider<Isar>((ref) async {
     // Retourner le stub Isar pour la compatibilité web
     return IsarStub() as Isar;
   }
-  
+
   final dir = await getApplicationSupportDirectory();
   final isar = await Isar.open(
     [ContentDocSchema, VerseDocSchema, TaskContentSchema],

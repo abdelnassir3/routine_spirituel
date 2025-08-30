@@ -26,6 +26,8 @@ import 'package:spiritual_routines/features/reader/modern_reader_page.dart'
         readerProgressProvider,
         readerLanguageProvider;
 import 'package:spiritual_routines/core/services/smart_tts_service.dart';
+import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/l10n/app_localizations.dart';
 
@@ -239,7 +241,7 @@ class _EnhancedModernReaderPageState
     if (!mounted) return;
 
     // Vibration haptique
-    HapticFeedback.heavyImpact();
+    ref.hapticImpact();
 
     // Afficher un dialog de félicitations moderne qui se ferme automatiquement
     showDialog(
@@ -303,7 +305,7 @@ class _EnhancedModernReaderPageState
     final theme = Theme.of(context);
 
     // Vibration haptique pour succès
-    HapticFeedback.heavyImpact();
+    ref.hapticImpact();
 
     // Afficher dialog de félicitations
     await showDialog(
@@ -2017,7 +2019,7 @@ class _EnhancedModernReaderPageState
       // Réinitialiser le progress
       ref.read(readerProgressProvider.notifier).state = 0.0;
 
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2065,7 +2067,7 @@ class _EnhancedModernReaderPageState
       // Réinitialiser le progress
       ref.read(readerProgressProvider.notifier).state = 0.0;
 
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2207,11 +2209,13 @@ class _EnhancedModernReaderPageState
         }
       }
 
-      // Lancer la lecture TTS avec la langue détectée automatiquement
-      final tts = ref.read(audioTtsServiceProvider);
-      await tts.playText(
+      // Lancer la lecture TTS via l'adaptateur cross‑plateforme (Web‑safe)
+      final tts = ref.read(ttsAdapterProvider);
+      final voice =
+          isActuallyArabic ? 'ar-SA-HamedNeural' : 'fr-FR-DeniseNeural';
+      await tts.speak(
         currentText,
-        voice: ttsLang,
+        voice: voice,
         speed: ttsSpeed,
         pitch: ttsPitch,
       );
@@ -2275,7 +2279,7 @@ class _EnhancedModernReaderPageState
               onPressed: () {
                 ref.read(enhancedReaderFocusModeProvider.notifier).state =
                     !focusMode;
-                HapticFeedback.lightImpact();
+                ref.hapticLightTap();
               },
               icon: Icon(
                 focusMode
@@ -2386,7 +2390,7 @@ class _EnhancedModernReaderPageState
     final current = ref.read(enhancedReaderTextScaleProvider);
     final newScale = (current + delta).clamp(0.8, 1.6);
     ref.read(enhancedReaderTextScaleProvider.notifier).state = newScale;
-    HapticFeedback.selectionClick();
+    ref.hapticSelection();
 
     // TODO: Sauvegarder la préférence
     try {
@@ -2400,7 +2404,7 @@ class _EnhancedModernReaderPageState
 
   /// Afficher le bottom sheet de paramètres avancés
   void _showEnhancedSettingsBottomSheet(BuildContext context) {
-    HapticFeedback.mediumImpact();
+    ref.hapticImpact();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -2556,7 +2560,7 @@ class _EnhancedModernReaderPageState
             onTap: () {
               ref.read(enhancedReaderThemeModeProvider.notifier).state =
                   themeMode;
-              HapticFeedback.selectionClick();
+              ref.hapticSelection();
             },
             child: Container(
               width: 80,
@@ -2858,7 +2862,7 @@ class _EnhancedModernReaderPageState
     ref.read(enhancedReaderThemeModeProvider.notifier).state =
         EnhancedReaderThemeMode.system;
 
-    HapticFeedback.mediumImpact();
+    ref.hapticImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Paramètres réinitialisés')),
     );
@@ -2884,7 +2888,7 @@ class _EnhancedModernReaderPageState
       await prefs.writeValue('enhanced_reader_theme_mode',
           ref.read(enhancedReaderThemeModeProvider).name);
 
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Paramètres sauvegardés')),

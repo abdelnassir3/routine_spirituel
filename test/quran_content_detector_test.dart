@@ -4,13 +4,13 @@ import 'package:spiritual_routines/core/services/quran_content_detector.dart';
 
 void main() {
   group('QuranContentDetector Tests', () {
-    
     setUpAll(() async {
       // Mock the asset bundle to simulate asset loading
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMessageHandler('flutter/assets', (message) async {
-        final String key = const StandardMessageCodec().decodeMessage(message!) as String;
-        
+        final String key =
+            const StandardMessageCodec().decodeMessage(message!) as String;
+
         if (key == 'assets/corpus/quran_full.json') {
           // Return a minimal valid Quran corpus for testing
           return Uint8List.fromList('''[
@@ -32,9 +32,10 @@ void main() {
     "textAr": "الم",
     "textFr": "Alif, Lam, Mim."
   }
-]'''.codeUnits);
+]'''
+              .codeUnits);
         }
-        
+
         return null;
       });
     });
@@ -43,9 +44,9 @@ void main() {
       // Reset initialization state for testing
       QuranContentDetector._isInitialized = false;
       QuranContentDetector._quranIndex = null;
-      
+
       await QuranContentDetector.initialize();
-      
+
       // Verify initialization
       expect(QuranContentDetector._isInitialized, true);
       expect(QuranContentDetector._quranIndex, isNotNull);
@@ -55,9 +56,8 @@ void main() {
     test('should detect Quranic content with high confidence', () async {
       // Test with Al-Fatiha verse 1
       final result = await QuranContentDetector.detectQuranContent(
-        "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
-      );
-      
+          "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ");
+
       expect(result.isQuranic, true);
       expect(result.confidence, greaterThan(0.9));
       expect(result.matchType, MatchType.exact);
@@ -67,17 +67,16 @@ void main() {
     });
 
     test('should not detect non-Quranic Arabic text', () async {
-      final result = await QuranContentDetector.detectQuranContent(
-        "مرحبا كيف حالك اليوم"
-      );
-      
+      final result =
+          await QuranContentDetector.detectQuranContent("مرحبا كيف حالك اليوم");
+
       expect(result.isQuranic, false);
       expect(result.confidence, lessThan(0.8));
     });
 
     test('should handle empty text gracefully', () async {
       final result = await QuranContentDetector.detectQuranContent("");
-      
+
       expect(result.isQuranic, false);
       expect(result.confidence, 0.0);
     });

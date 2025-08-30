@@ -194,17 +194,62 @@ class DatabaseSeeder {
   /// Initialisation simplifiée pour la plateforme web (utilise seulement les stubs)
   Future<void> _seedWebDatabase() async {
     try {
-      // Sur web, pas de vraie initialisation de base de données
-      // Juste simuler les opérations avec les stubs
-      
-      print('📊 Simulation: ${SeedData.themes.length} thèmes');
-      print('📿 Simulation: ${SeedData.themes.fold(0, (sum, t) => sum + (t['routines'] as List).length)} routines');
-      print('📖 Simulation: ${SeedData.standaloneInvocations.length} invocations individuelles');
+      // Sur Web: semer un minimum de données réelles dans Drift (IndexedDB)
+      final themeDao = ref.read(themeDaoProvider);
+      final routineDao = ref.read(routineDaoProvider);
+      final taskDao = ref.read(taskDaoProvider);
 
-      // Marquer comme initialisé sans essayer d'accéder aux vraies bases
+      int themeCount = 0;
+      int routineCount = 0;
+      int taskCount = 0;
+
+      for (final themeData in SeedData.themes) {
+        final themeId = themeData['id'] as String? ?? _genId();
+        await themeDao.upsertTheme(ThemesCompanion(
+          id: drift.Value(themeId),
+          nameFr: drift.Value(themeData['nameFr'] as String? ?? 'Thème'),
+          nameAr: drift.Value(themeData['nameAr'] as String? ?? 'موضوع'),
+          frequency: drift.Value(themeData['frequency'] as String? ?? 'daily'),
+          createdAt: drift.Value(DateTime.now()),
+          metadata: const drift.Value('{}'),
+        ));
+        themeCount++;
+
+        // Routines minimales (sans dépendance Isar)
+        final routines = (themeData['routines'] as List?) ?? const [];
+        for (final r in routines) {
+          final routineId = r['id'] as String? ?? _genId();
+          await routineDao.upsertRoutine(RoutinesCompanion(
+            id: drift.Value(routineId),
+            themeId: drift.Value(themeId),
+            nameFr: drift.Value(r['nameFr'] as String? ?? 'Routine'),
+            nameAr: drift.Value(r['nameAr'] as String? ?? 'روتين'),
+            orderIndex: const drift.Value(0),
+          ));
+          routineCount++;
+
+          // Optionnel: créer 1 tâche texte placeholder pour afficher quelque chose dans l'éditeur
+          final taskId = _genId();
+          await taskDao.upsertTask(TasksCompanion(
+            id: drift.Value(taskId),
+            routineId: drift.Value(routineId),
+            type: const drift.Value('text'),
+            category: const drift.Value('reading'),
+            defaultReps: const drift.Value(1),
+            contentId: const drift.Value(null),
+            notesFr: const drift.Value('Contenu de démonstration (Web)'),
+            notesAr: const drift.Value('محتوى تجريبي (ويب)'),
+            orderIndex: const drift.Value(0),
+            audioSettings: const drift.Value('{}'),
+            displaySettings: const drift.Value('{}'),
+          ));
+          taskCount++;
+        }
+      }
+
       await markAsSeeded();
-      print('✅ Base de données web (stub) initialisée avec succès !');
-      print('🌐 Mode web: Fonctionnement avec stubs - pas de persistance');
+      print(
+          '✅ Base de données Web initialisée: thèmes=$themeCount, routines=$routineCount, tâches=$taskCount');
     } catch (e) {
       print('❌ Erreur lors de l\'initialisation web : $e');
       // Ne pas faire échouer pour la compatibilité web

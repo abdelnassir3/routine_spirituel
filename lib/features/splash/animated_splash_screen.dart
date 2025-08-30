@@ -2,17 +2,21 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:go_router/go_router.dart';
 
 /// 🌙✨ Écran de démarrage spectaculaire avec animations premium
-class AnimatedSplashScreen extends StatefulWidget {
+class AnimatedSplashScreen extends ConsumerStatefulWidget {
   const AnimatedSplashScreen({super.key});
 
   @override
-  State<AnimatedSplashScreen> createState() => _AnimatedSplashScreenState();
+  @override
+  ConsumerState<AnimatedSplashScreen> createState() =>
+      _AnimatedSplashScreenState();
 }
 
-class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
+class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
     with TickerProviderStateMixin {
   // Navigation state flag
   bool _isNavigating = false;
@@ -56,7 +60,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     super.initState();
 
     // Vibration subtile au démarrage
-    HapticFeedback.lightImpact();
+    ref.hapticLightTap();
 
     _initializeAnimations();
     _generateParticles();
@@ -287,7 +291,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     // Vibration de confirmation (non-bloquante sur web)
     try {
       await Future.delayed(const Duration(milliseconds: 300));
-      HapticFeedback.mediumImpact();
+      ref.hapticImpact();
     } catch (e) {
       // Ignore vibration errors on web
       print('🌐 Web: Vibration not supported, continuing navigation');
@@ -298,30 +302,30 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
     // Debug navigation
     print('🚀 Navigation vers la page d\'accueil...');
-    
+
     // CRITICAL FIX: Force complete widget replacement on web
     if (mounted) {
       try {
         // First, stop all animations immediately
         _disposeAnimations();
-        
+
         // Set navigation flag to hide the splash screen content
         setState(() {
           _isNavigating = true;
         });
-        
+
         // Small delay to ensure state update
         await Future.delayed(const Duration(milliseconds: 50));
-        
+
         // Use immediate navigation without animation on web
         if (mounted) {
           // Web-specific navigation that forces complete replacement
           final router = GoRouter.of(context);
-          
+
           // Clear the current route stack and navigate
           router.go('/');
           print('✅ Navigation directe vers /');
-          
+
           // Force another frame update to ensure rendering
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -343,27 +347,27 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       print('❌ Widget non monté, navigation annulée');
     }
   }
-  
+
   void _disposeAnimations() {
     // Stop and reset all animations to ensure clean transition
     _masterController.stop();
     _masterController.reset();
-    
+
     _logoController.stop();
     _logoController.reset();
-    
+
     _particleController.stop();
     _particleController.reset();
-    
+
     _waveController.stop();
     _waveController.reset();
-    
+
     _shineController.stop();
     _shineController.reset();
-    
+
     _textController.stop();
     _textController.reset();
-    
+
     print('🧹 Animations disposed and reset');
   }
 
@@ -384,7 +388,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     if (_isNavigating) {
       return const SizedBox.shrink();
     }
-    
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(

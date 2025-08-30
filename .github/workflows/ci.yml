@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI/CD Multi-Platform
 
 on:
   push:
@@ -17,9 +17,7 @@ jobs:
         flutter-version: '3.32.8'
         
     - name: Install dependencies
-      run: |
-        flutter pub get
-        dart pub add --dev test
+      run: flutter pub get
         
     - name: Generate code
       run: dart run build_runner build --delete-conflicting-outputs
@@ -37,3 +35,51 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         file: coverage/lcov.info
+
+  build-multi-platform:
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: web
+            build-cmd: 'flutter build web --release'
+          - os: ubuntu-latest  
+            target: android
+            build-cmd: 'flutter build apk --release'
+          - os: macos-latest
+            target: ios
+            build-cmd: 'flutter build ios --release --no-codesign'
+          - os: macos-latest
+            target: macos
+            build-cmd: 'flutter build macos --release'
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.8'
+        
+    - name: Install dependencies
+      run: flutter pub get
+      
+    - name: Generate code
+      run: dart run build_runner build --delete-conflicting-outputs
+      
+    - name: Build ${{ matrix.target }}
+      run: ${{ matrix.build-cmd }}
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.target }}
+        path: |
+          build/web/
+          build/app/outputs/flutter-apk/
+          build/ios/iphoneos/
+          build/macos/Build/Products/Release/
+        retention-days: 7

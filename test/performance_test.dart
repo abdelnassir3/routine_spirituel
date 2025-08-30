@@ -11,7 +11,7 @@ void main() {
       const expectedTitleFontSize = 20.0;
       const expectedLetterSpacing = -0.3;
       const expectedBorderWidth = 1.5;
-      
+
       // Vérifier les valeurs
       expect(expectedPadding.left, equals(20));
       expect(expectedPadding.top, equals(20));
@@ -30,7 +30,7 @@ void main() {
       const enableDebugLogs = false;
       const enableContentCache = true;
       const cacheExpiration = Duration(minutes: 5);
-      
+
       // Vérifier les optimisations
       expect(transitionDuration.inMilliseconds, equals(250));
       expect(enableDebugLogs, isFalse);

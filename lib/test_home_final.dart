@@ -282,7 +282,7 @@ class _OptimizedHomePageState extends State<OptimizedHomePage>
                             borderRadius: BorderRadius.circular(20),
                             child: InkWell(
                               onTap: () {
-                                HapticFeedback.mediumImpact();
+                                AdapterFactories.haptic.mediumImpact();
                               },
                               borderRadius: BorderRadius.circular(20),
                               child: Container(
@@ -480,7 +480,7 @@ class _OptimizedHomePageState extends State<OptimizedHomePage>
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              HapticFeedback.mediumImpact();
+              AdapterFactories.haptic.mediumImpact();
             },
             customBorder: const CircleBorder(),
             child: const Icon(
@@ -696,7 +696,7 @@ class _OptimizedHomePageState extends State<OptimizedHomePage>
 
     return InkWell(
       onTap: () {
-        HapticFeedback.lightImpact();
+        AdapterFactories.haptic.lightImpact();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

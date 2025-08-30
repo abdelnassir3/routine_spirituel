@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode, debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:device_preview/device_preview.dart' show DevicePreview;
 
 import 'package:spiritual_routines/app/router.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart'; // Nouveau design system moderne
@@ -70,9 +71,12 @@ void main() async {
     }
   }
 
-  runApp(UncontrolledProviderScope(
-    container: container,
-    child: const SpiritualRoutinesApp(),
+  runApp(DevicePreview(
+    enabled: !kReleaseMode && kIsWeb,
+    builder: (context) => UncontrolledProviderScope(
+      container: container,
+      child: const SpiritualRoutinesApp(),
+    ),
   ));
 }
 
@@ -91,6 +95,11 @@ class SpiritualRoutinesApp extends ConsumerWidget {
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+
+      // Device Preview pour développement Web
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
 
       // Localisation: utilise la langue du système
       supportedLocales: AppLocalizations.supportedLocales,

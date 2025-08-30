@@ -142,7 +142,10 @@ void main() {
 
   // Clean up after tests
   tearDown(() {
-    TestWidgetsFlutterBinding.ensureInitialized().window.physicalSizeTestValue = null;
-    TestWidgetsFlutterBinding.ensureInitialized().window.devicePixelRatioTestValue = null;
+    TestWidgetsFlutterBinding.ensureInitialized().window.physicalSizeTestValue =
+        null;
+    TestWidgetsFlutterBinding.ensureInitialized()
+        .window
+        .devicePixelRatioTestValue = null;
   });
 }

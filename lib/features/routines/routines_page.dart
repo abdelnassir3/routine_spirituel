@@ -13,6 +13,7 @@ import 'package:spiritual_routines/core/widgets/responsive_layout.dart';
 import 'package:spiritual_routines/features/session/session_state.dart';
 import 'package:spiritual_routines/features/settings/user_settings_service.dart';
 import 'package:spiritual_routines/l10n/app_localizations.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 // Period filter state: 'all' | 'daily' | 'weekly' | 'monthly'
 final selectedPeriodFilterProvider = StateProvider<String>((ref) => 'all');
@@ -427,7 +428,7 @@ class _PeriodThemesReorderableState
                 .read(userSettingsServiceProvider)
                 .readValue('ui_reorder_haptics')) !=
             'off';
-        if (hapticsOn) await HapticFeedback.selectionClick();
+        if (hapticsOn) await ref.hapticSelection();
         final showSnack = (await ref
                 .read(userSettingsServiceProvider)
                 .readValue('ui_reorder_snackbar')) !=
@@ -583,7 +584,7 @@ class _ThemeRoutinesReorderableState
                 .read(userSettingsServiceProvider)
                 .readValue('ui_reorder_haptics')) !=
             'off';
-        if (hapticsOn) await HapticFeedback.lightImpact();
+        if (hapticsOn) await ref.hapticLightTap();
         final showSnack = (await ref
                 .read(userSettingsServiceProvider)
                 .readValue('ui_reorder_snackbar')) !=

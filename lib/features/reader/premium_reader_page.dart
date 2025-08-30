@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'dart:io' show Platform if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/progress_service.dart';
 import 'package:spiritual_routines/core/services/content_service.dart';
 import 'package:spiritual_routines/features/reader/current_progress.dart';
@@ -22,6 +23,9 @@ import 'package:spiritual_routines/core/services/tts_cache_service.dart';
 import 'package:spiritual_routines/core/services/task_audio_prefs.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
+import 'package:spiritual_routines/core/adapters/share.dart';
+import 'package:spiritual_routines/core/adapters/share_adapter.dart';
+import 'package:spiritual_routines/core/services/share_service.dart';
 
 // Import du nouveau design system
 import 'package:spiritual_routines/design_system/advanced_theme.dart';
@@ -1046,12 +1050,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   // Méthodes d'interaction
   void _goToPrevious(BuildContext context, ProgressRow progress) {
     ref.read(progressServiceProvider).advanceToPrevious(widget.sessionId);
-    HapticFeedback.lightImpact();
+    ref.hapticLightTap();
   }
 
   void _goToNext(BuildContext context, ProgressRow progress) {
     ref.read(progressServiceProvider).decrementCurrent(widget.sessionId);
-    HapticFeedback.lightImpact();
+    ref.hapticLightTap();
   }
 
   void _showSettings(BuildContext context) {
@@ -1063,7 +1067,8 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   }
 
   void _shareProgress(BuildContext context) {
-    // Implémenter le partage
+    final shareMessage = 'Lecture en cours – session ${widget.sessionId}';
+    ShareService.instance.shareText(text: shareMessage, subject: 'Spiritual Routines');
   }
 }
 

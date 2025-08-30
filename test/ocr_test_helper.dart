@@ -5,14 +5,13 @@ import 'package:spiritual_routines/services/ocr/ocr_wrapper.dart';
 
 /// Helper pour tester les fonctionnalités OCR
 class OCRTestHelper {
-  
   /// Vérifie que l'OCR est disponible sur la plateforme actuelle
   static Future<void> checkOCRAvailability() async {
     print('🔍 Vérification de la disponibilité OCR...');
-    
+
     final ocrWrapper = OCRWrapper();
     final isAvailable = await ocrWrapper.isAvailable();
-    
+
     if (isAvailable) {
       print('✅ OCR disponible sur cette plateforme');
       print('📱 Service utilisé: ${ocrWrapper.currentService.runtimeType}');
@@ -21,15 +20,15 @@ class OCRTestHelper {
       print('💡 Assurez-vous d\'être sur iOS/Android');
     }
   }
-  
+
   /// Test OCR avec une image locale
   static Future<void> testLocalImage(String imagePath) async {
     print('🖼️ Test OCR sur: $imagePath');
-    
+
     try {
       final ocrWrapper = OCRWrapper();
       final result = await ocrWrapper.recognizeTextFromImage(imagePath);
-      
+
       if (result != null && result.isNotEmpty) {
         print('✅ Texte extrait avec succès:');
         print('---');
@@ -43,7 +42,7 @@ class OCRTestHelper {
       print('❌ Erreur OCR: $e');
     }
   }
-  
+
   /// Affiche les langues supportées
   static void showSupportedLanguages() {
     print('🌍 Langues OCR supportées:');

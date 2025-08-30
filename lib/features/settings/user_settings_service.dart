@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:spiritual_routines/core/adapters/adapters.dart';
 
 /// Clés de stockage
 const _kModeKey = 'diacritizer_mode'; // 'stub' | 'api'
@@ -26,10 +26,9 @@ const _kUiDarkMode = 'ui_dark_mode'; // 'on' | 'off'
 const _kUiPaletteId = 'ui_palette_id';
 
 class UserSettingsService {
-  UserSettingsService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+  UserSettingsService() : _storage = AdapterFactories.storage;
 
-  final FlutterSecureStorage _storage;
+  final StorageAdapter _storage;
 
   // -------- Diacritizer mode ----------
   Future<String?> getDiacritizerMode() async {
@@ -99,14 +98,14 @@ class UserSettingsService {
   }
 
   Future<String?> getCloudTtsApiKey() async {
-    return await _storage.read(key: _kTtsCloudApiKey);
+    return await _storage.readSecure(key: _kTtsCloudApiKey);
   }
 
   Future<void> setCloudTtsApiKey(String? key) async {
     if (key == null || key.isEmpty) {
       await _storage.delete(key: _kTtsCloudApiKey);
     } else {
-      await _storage.write(key: _kTtsCloudApiKey, value: key);
+      await _storage.writeSecure(key: _kTtsCloudApiKey, value: key);
     }
   }
 
@@ -124,22 +123,22 @@ class UserSettingsService {
 
   // -------- AWS Polly creds ----------
   Future<String?> getAwsAccessKey() async =>
-      await _storage.read(key: _kTtsAwsAccessKey);
+      await _storage.readSecure(key: _kTtsAwsAccessKey);
   Future<void> setAwsAccessKey(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsAwsAccessKey);
     } else {
-      await _storage.write(key: _kTtsAwsAccessKey, value: v);
+      await _storage.writeSecure(key: _kTtsAwsAccessKey, value: v);
     }
   }
 
   Future<String?> getAwsSecretKey() async =>
-      await _storage.read(key: _kTtsAwsSecretKey);
+      await _storage.readSecure(key: _kTtsAwsSecretKey);
   Future<void> setAwsSecretKey(String? v) async {
     if (v == null || v.isEmpty) {
       await _storage.delete(key: _kTtsAwsSecretKey);
     } else {
-      await _storage.write(key: _kTtsAwsSecretKey, value: v);
+      await _storage.writeSecure(key: _kTtsAwsSecretKey, value: v);
     }
   }
 

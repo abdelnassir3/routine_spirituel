@@ -2,7 +2,7 @@
 
 /// Script pour télécharger et formater le corpus complet du Coran
 /// Sources : Tanzil.net pour l'arabe, et traductions françaises
-/// 
+///
 /// Usage: dart run scripts/download_quran_corpus.dart
 
 import 'dart:convert';
@@ -12,7 +12,7 @@ import 'package:path/path.dart' as p;
 
 void main() async {
   print('📖 Téléchargement du corpus Coran...\n');
-  
+
   final dio = Dio();
   final outputDir = Directory('assets/corpus');
   if (!outputDir.existsSync()) {
@@ -26,27 +26,27 @@ void main() async {
     final arabicResponse = await dio.get(
       'https://api.alquran.cloud/v1/quran/ar.alafasy',
     );
-    
+
     print('Téléchargement de la traduction française...');
     final frenchResponse = await dio.get(
       'https://api.alquran.cloud/v1/quran/fr.hamidullah',
     );
-    
+
     if (arabicResponse.statusCode == 200 && frenchResponse.statusCode == 200) {
       final arabicData = arabicResponse.data['data']['surahs'] as List;
       final frenchData = frenchResponse.data['data']['surahs'] as List;
-      
+
       // Combiner les données
       final combinedVerses = <Map<String, dynamic>>[];
-      
+
       for (int i = 0; i < arabicData.length; i++) {
         final surahAr = arabicData[i];
         final surahFr = frenchData[i];
         final surahNumber = surahAr['number'];
-        
+
         final ayahsAr = surahAr['ayahs'] as List;
         final ayahsFr = surahFr['ayahs'] as List;
-        
+
         for (int j = 0; j < ayahsAr.length; j++) {
           combinedVerses.add({
             'surah': surahNumber,
@@ -56,17 +56,17 @@ void main() async {
           });
         }
       }
-      
+
       // Sauvegarder le fichier combiné
       final outputFile = File(p.join(outputDir.path, 'quran_full.json'));
       await outputFile.writeAsString(
         const JsonEncoder.withIndent('  ').convert(combinedVerses),
       );
-      
+
       print('\n✅ Corpus téléchargé avec succès !');
       print('📊 Total : ${combinedVerses.length} versets');
       print('📁 Fichier : ${outputFile.path}');
-      
+
       // Créer aussi un fichier de métadonnées des sourates
       final surahsInfo = <Map<String, dynamic>>[];
       for (final surah in arabicData) {
@@ -79,19 +79,17 @@ void main() async {
           'revelationType': surah['revelationType'],
         });
       }
-      
+
       final metaFile = File(p.join(outputDir.path, 'surahs_metadata.json'));
       await metaFile.writeAsString(
         const JsonEncoder.withIndent('  ').convert(surahsInfo),
       );
-      
+
       print('📁 Métadonnées : ${metaFile.path}');
-      
     } else {
       print('❌ Erreur lors du téléchargement');
       exit(1);
     }
-    
   } catch (e) {
     print('❌ Erreur : $e');
     print('\nAlternative : Téléchargez manuellement depuis :');

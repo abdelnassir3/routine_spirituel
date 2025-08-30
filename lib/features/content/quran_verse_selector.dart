@@ -424,14 +424,16 @@ class _QuranVerseSelectorState extends ConsumerState<QuranVerseSelector> {
           if (_selectedSurah != null &&
               _startVerse != null &&
               _endVerse != null) {
-            print('🔧 DEBUG: About to call getRange($_selectedSurah, $_startVerse, $_endVerse)');
+            print(
+                '🔧 DEBUG: About to call getRange($_selectedSurah, $_startVerse, $_endVerse)');
             final verses = await corpus.getRange(
                 _selectedSurah!, _startVerse!, _endVerse!);
             print('🔧 DEBUG: getRange returned ${verses.length} verses');
             _appendVersesToBuffer(verses, buffer);
             refs.write('$_selectedSurah:$_startVerse-$_endVerse');
           } else {
-            print('🔧 DEBUG: Range params missing - surah: $_selectedSurah, start: $_startVerse, end: $_endVerse');
+            print(
+                '🔧 DEBUG: Range params missing - surah: $_selectedSurah, start: $_startVerse, end: $_endVerse');
           }
           break;
 

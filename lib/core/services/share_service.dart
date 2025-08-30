@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:spiritual_routines/core/adapters/share.dart';
+import 'package:spiritual_routines/core/adapters/share_adapter.dart';
 import '../utils/app_logger.dart';
 import 'analytics_service.dart';
 
@@ -229,12 +229,8 @@ class ShareService {
   /// Partager une carte
   Future<bool> shareCard(ShareCard card) async {
     try {
-      final file = XFile(card.imagePath);
-
-      await Share.shareXFiles(
-        [file],
-        text: card.message,
-      );
+      final share = getShareAdapter();
+      await share.shareFiles([card.imagePath], text: card.message);
 
       AppLogger.logUserAction('card_shared', {
         'type': card.type.name,
@@ -253,10 +249,8 @@ class ShareService {
     String? subject,
   }) async {
     try {
-      await Share.share(
-        text,
-        subject: subject,
-      );
+      final share = getShareAdapter();
+      await share.shareText(text, subject: subject);
 
       AppLogger.logUserAction('text_shared');
 
@@ -273,16 +267,14 @@ class ShareService {
     const playStoreLink =
         'https://play.google.com/store/apps/details?id=com.spiritual.routines';
 
-    final platform = Platform.isIOS ? 'iOS' : 'Android';
-    final storeLink = Platform.isIOS ? appStoreLink : playStoreLink;
-
     final message = '🕌 Rejoins-moi sur Spiritual Routines !\n\n'
         'Une app pour maintenir tes routines spirituelles avec :\n'
         '• Compteur de dhikr intelligent\n'
         '• Suivi de progression\n'
         '• Rappels personnalisés\n'
         '• Mode hors-ligne complet\n\n'
-        'Télécharge sur $platform : $storeLink';
+        'Télécharger sur iOS: $appStoreLink\n'
+        'Télécharger sur Android: $playStoreLink';
 
     return shareText(
       text: message,

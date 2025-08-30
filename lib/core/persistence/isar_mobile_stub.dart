@@ -74,14 +74,17 @@ class _MemoryStorage {
     _contents.clear();
     _tasks.clear();
   }
-  
+
   // Debug method to check storage content
   void debugPrintStatus() {
-    print('🔍 DEBUG Storage Status: ${_verses.length} verses, ${_contents.length} contents, ${_tasks.length} tasks');
+    print(
+        '🔍 DEBUG Storage Status: ${_verses.length} verses, ${_contents.length} contents, ${_tasks.length} tasks');
     if (_verses.length > 0) {
-      print('🔍 DEBUG First verse: Surah ${_verses[0].surah}, Ayah ${_verses[0].ayah}');
-      print('🔍 DEBUG Last verse: Surah ${_verses.last.surah}, Ayah ${_verses.last.ayah}');
-      
+      print(
+          '🔍 DEBUG First verse: Surah ${_verses[0].surah}, Ayah ${_verses[0].ayah}');
+      print(
+          '🔍 DEBUG Last verse: Surah ${_verses.last.surah}, Ayah ${_verses.last.ayah}');
+
       // Check specific verses that user is looking for
       final surah3verses = _verses.where((v) => v.surah == 3).toList();
       print('🔍 DEBUG Surah 3 verses count: ${surah3verses.length}');
@@ -98,17 +101,20 @@ class _IsarCollectionStub {
   _IsarCollectionStub(this._collectionType);
 
   _IsarFilterStub filter() => _IsarFilterStub(_collectionType);
-  
+
   Future<void> put(dynamic doc) async {
     final storage = _MemoryStorage();
     if (_collectionType == 'verseDocs' && doc is VerseDoc) {
       // Remove existing doc with same surah/ayah
-      storage._verses.removeWhere((v) => v.surah == doc.surah && v.ayah == doc.ayah);
+      storage._verses
+          .removeWhere((v) => v.surah == doc.surah && v.ayah == doc.ayah);
       storage._verses.add(doc);
-      print('💾 DEBUG put: stored verse ${doc.surah}:${doc.ayah} (total: ${storage._verses.length})');
+      print(
+          '💾 DEBUG put: stored verse ${doc.surah}:${doc.ayah} (total: ${storage._verses.length})');
     } else if (_collectionType == 'contentDocs' && doc is ContentDoc) {
       // Remove existing doc with same taskId/locale
-      storage._contents.removeWhere((c) => c.taskId == doc.taskId && c.locale == doc.locale);
+      storage._contents
+          .removeWhere((c) => c.taskId == doc.taskId && c.locale == doc.locale);
       storage._contents.add(doc);
     } else if (_collectionType == 'taskContents' && doc is TaskContent) {
       // Remove existing doc with same id
@@ -116,7 +122,7 @@ class _IsarCollectionStub {
       storage._tasks.add(doc);
     }
   }
-  
+
   Future<void> putAll(List<dynamic> docs) async {
     for (final doc in docs) {
       await put(doc);
@@ -134,43 +140,45 @@ class _IsarFilterStub {
   bool _sortByAyahFlag = false;
 
   _IsarFilterStub(this._collectionType);
-  
+
   _IsarFilterStub taskIdEqualTo(String value) {
     _taskIdFilter = value;
     return this;
   }
-  
+
   _IsarFilterStub and() => this;
-  
+
   _IsarFilterStub localeEqualTo(String value) {
     _localeFilter = value;
     return this;
   }
-  
+
   _IsarFilterStub surahEqualTo(int value) {
     _surahFilter = value;
     return this;
   }
-  
+
   _IsarFilterStub ayahBetween(int start, int end) {
     _ayahStartFilter = start;
     _ayahEndFilter = end;
     return this;
   }
-  
+
   _IsarFilterStub sortByAyah() {
     _sortByAyahFlag = true;
     return this;
   }
-  
+
   Future<ContentDoc?> findFirst() async {
     final storage = _MemoryStorage();
     if (_collectionType == 'contentDocs') {
       ContentDoc? result;
       for (final doc in storage._contents) {
         bool matches = true;
-        if (_taskIdFilter != null && doc.taskId != _taskIdFilter) matches = false;
-        if (_localeFilter != null && doc.locale != _localeFilter) matches = false;
+        if (_taskIdFilter != null && doc.taskId != _taskIdFilter)
+          matches = false;
+        if (_localeFilter != null && doc.locale != _localeFilter)
+          matches = false;
         if (matches) {
           result = doc;
           break;
@@ -180,31 +188,36 @@ class _IsarFilterStub {
     }
     return null;
   }
-  
+
   Future<List<VerseDoc>> findAll() async {
     final storage = _MemoryStorage();
     print('🔍 DEBUG findAll: collectionType=$_collectionType');
-    print('🔍 DEBUG findAll: total verses in storage = ${storage._verses.length}');
-    print('🔍 DEBUG findAll: surahFilter=$_surahFilter, ayahStart=$_ayahStartFilter, ayahEnd=$_ayahEndFilter');
+    print(
+        '🔍 DEBUG findAll: total verses in storage = ${storage._verses.length}');
+    print(
+        '🔍 DEBUG findAll: surahFilter=$_surahFilter, ayahStart=$_ayahStartFilter, ayahEnd=$_ayahEndFilter');
     storage.debugPrintStatus();
-    
+
     if (_collectionType == 'verseDocs') {
       List<VerseDoc> result = [];
       for (final verse in storage._verses) {
         bool matches = true;
-        if (_surahFilter != null && verse.surah != _surahFilter) matches = false;
-        if (_ayahStartFilter != null && verse.ayah < _ayahStartFilter!) matches = false;
-        if (_ayahEndFilter != null && verse.ayah > _ayahEndFilter!) matches = false;
+        if (_surahFilter != null && verse.surah != _surahFilter)
+          matches = false;
+        if (_ayahStartFilter != null && verse.ayah < _ayahStartFilter!)
+          matches = false;
+        if (_ayahEndFilter != null && verse.ayah > _ayahEndFilter!)
+          matches = false;
         if (matches) {
           result.add(verse);
           print('🔍 DEBUG findAll: matched verse ${verse.surah}:${verse.ayah}');
         }
       }
-      
+
       if (_sortByAyahFlag) {
         result.sort((a, b) => a.ayah.compareTo(b.ayah));
       }
-      
+
       print('🔍 DEBUG findAll: returning ${result.length} results');
       return result;
     }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
 import 'package:spiritual_routines/design_system/components/modern_task_card.dart';
@@ -214,34 +216,36 @@ class ModernTaskRow extends StatelessWidget {
   }
 
   Widget _buildCheckbox(BuildContext context, Color categoryColor) {
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onComplete?.call(!isCompleted);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 28,
-        height: 28,
-        decoration: BoxDecoration(
-          color: isCompleted ? categoryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isCompleted
-                ? categoryColor
-                : Theme.of(context).colorScheme.outlineVariant,
-            width: 2,
+    return Consumer(builder: (context, ref, _) {
+      return GestureDetector(
+        onTap: () async {
+          await ref.hapticLightTap();
+          onComplete?.call(!isCompleted);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: isCompleted ? categoryColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isCompleted
+                  ? categoryColor
+                  : Theme.of(context).colorScheme.outlineVariant,
+              width: 2,
+            ),
           ),
+          child: isCompleted
+              ? const Icon(
+                  Icons.check_rounded,
+                  size: 18,
+                  color: Colors.white,
+                )
+              : null,
         ),
-        child: isCompleted
-            ? const Icon(
-                Icons.check_rounded,
-                size: 18,
-                color: Colors.white,
-              )
-            : null,
-      ),
-    );
+      );
+    });
   }
 }
 

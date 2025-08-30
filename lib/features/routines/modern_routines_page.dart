@@ -18,6 +18,7 @@ import 'package:spiritual_routines/design_system/components/modern_task_card.dar
 import 'package:spiritual_routines/design_system/components/modern_navigation.dart';
 import 'package:spiritual_routines/design_system/components/modern_layouts.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 // Period filter state
 final selectedPeriodFilterProvider = StateProvider<String>((ref) => 'all');
@@ -52,7 +53,10 @@ class ModernRoutinesPage extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    onPressed: () => _showNewRoutineDialog(context, ref),
+                    onPressed: () {
+                      ref.hapticLightTap();
+                      _showNewRoutineDialog(context, ref);
+                    },
                     icon: const Icon(Icons.add_rounded, color: Colors.white),
                     tooltip: 'Nouvelle routine',
                   ),
@@ -314,7 +318,7 @@ class ModernRoutinesPage extends ConsumerWidget {
               final isSelected = periodFilter == period;
               return MicroInteractionAnimation(
                 onTap: () async {
-                  HapticFeedback.lightImpact();
+                  await ref.hapticLightTap();
                   ref.read(selectedPeriodFilterProvider.notifier).state =
                       period;
                   await ref
@@ -551,10 +555,28 @@ class ModernRoutinesPage extends ConsumerWidget {
           _ => Theme.of(context).colorScheme.primary,
         };
 
+    final visiblePeriods =
+        periods.where((p) => periodFilter == 'all' || periodFilter == p);
+
+    // Si aucun groupe visible ne contient de routines, afficher un empty state avec CTA
+    final totalVisibleCount = visiblePeriods.fold<int>(0, (sum, period) {
+      final periodThemes = themes.where((t) => t.frequency == period).toList();
+      final count = routines
+          .where((r) => periodThemes.any((t) => t.id == r.themeId))
+          .length;
+      return sum + count;
+    });
+
+    if (totalVisibleCount == 0) {
+      // Aucun résultat pour le filtre courant
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: _buildEmptyState(context, ref),
+      );
+    }
+
     return Column(
-      children: periods
-          .where((period) => periodFilter == 'all' || periodFilter == period)
-          .map((period) {
+      children: visiblePeriods.map((period) {
         final periodThemes =
             themes.where((t) => t.frequency == period).toList();
         final routinesInPeriod = routines

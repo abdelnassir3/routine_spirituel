@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
+import 'dart:io' show Platform if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import '../../core/services/secure_storage_service.dart';
 import '../../core/services/biometric_service.dart';
 import '../../core/services/secure_logging_service.dart';

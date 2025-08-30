@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/haptic_service.dart';
+import 'haptic_adapter_provider.dart';
 
 /// Provider pour le service de feedback haptique
 final hapticServiceProvider = Provider<HapticService>((ref) {
@@ -85,11 +86,31 @@ extension HapticWidgetRef on WidgetRef {
   Future<void> hapticMilestone(int count) => haptic.milestone(count);
 
   // Méthodes UI
-  Future<void> hapticLightTap() => haptic.lightTap();
-  Future<void> hapticSelection() => haptic.selection();
-  Future<void> hapticImpact() => haptic.impact();
-  Future<void> hapticError() => haptic.error();
-  Future<void> hapticSuccess() => haptic.success();
+  Future<void> hapticLightTap() async {
+    // Utilise l'adaptateur cross‑plateforme (no‑op en Web)
+    final adapter = read(hapticAdapterProvider);
+    await adapter.lightImpact();
+  }
+
+  Future<void> hapticSelection() async {
+    final adapter = read(hapticAdapterProvider);
+    await adapter.selectionClick();
+  }
+
+  Future<void> hapticImpact() async {
+    final adapter = read(hapticAdapterProvider);
+    await adapter.mediumImpact();
+  }
+
+  Future<void> hapticError() async {
+    final adapter = read(hapticAdapterProvider);
+    await adapter.heavyImpact();
+  }
+
+  Future<void> hapticSuccess() async {
+    final adapter = read(hapticAdapterProvider);
+    await adapter.mediumImpact();
+  }
 
   // Méthodes gestures
   Future<void> hapticSwipe() => haptic.swipeGesture();

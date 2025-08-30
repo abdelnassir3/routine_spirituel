@@ -107,12 +107,16 @@ class AppLogger {
 
   static void logPerformance(String metric, double value, [String? unit]) {
     final level = value > 1000 ? LogLevel.warning : LogLevel.debug;
-
-    _logger.log(level, 'Performance metric', {
+    final data = {
       'metric': metric,
       'value': value,
       if (unit != null) 'unit': unit,
-    });
+    };
+    if (level == LogLevel.warning) {
+      _logger.warning('Performance metric', data);
+    } else {
+      _logger.debug('Performance metric', data);
+    }
   }
 
   static void logSlowOperation(String operation, Duration duration) {

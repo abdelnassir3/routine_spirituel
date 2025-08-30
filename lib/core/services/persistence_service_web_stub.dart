@@ -8,7 +8,7 @@ class WebStubPersistenceService implements PersistenceService {
       StreamController<SyncStatus>.broadcast();
 
   String? _currentSessionId;
-  
+
   void setCurrentSession(String sessionId) => _currentSessionId = sessionId;
   String? getCurrentSession() => _currentSessionId;
   void clearCurrentSession() => _currentSessionId = null;

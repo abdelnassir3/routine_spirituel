@@ -20,6 +20,7 @@ import 'package:spiritual_routines/design_system/components/modern_navigation.da
 import 'package:spiritual_routines/design_system/components/modern_layouts.dart';
 import 'package:spiritual_routines/design_system/components/modern_stats_card_compact.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 
 class ModernHomePage extends ConsumerStatefulWidget {
   const ModernHomePage({super.key});
@@ -380,7 +381,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                         icon: Icons.list_alt_rounded,
                                         color: ModernColors.categoryBlue,
                                         onTap: () {
-                                          HapticFeedback.lightImpact();
+                                          ref.hapticLightTap();
                                           context.go('/routines');
                                         },
                                       ),
@@ -394,7 +395,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                         progress: 0.6,
                                         showProgress: true,
                                         onTap: () {
-                                          HapticFeedback.lightImpact();
+                                          ref.hapticLightTap();
                                         },
                                       ),
                                       if (screenType != ScreenType.mobile) ...[
@@ -407,7 +408,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                               .local_fire_department_rounded,
                                           color: ModernColors.categoryOrange,
                                           onTap: () {
-                                            HapticFeedback.lightImpact();
+                                            ref.hapticLightTap();
                                           },
                                         ),
                                       ],
@@ -420,7 +421,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                           icon: Icons.insights_rounded,
                                           color: ModernColors.categoryPurple,
                                           onTap: () {
-                                            HapticFeedback.lightImpact();
+                                            ref.hapticLightTap();
                                           },
                                         ),
                                       ],
@@ -439,7 +440,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                         icon: Icons.list_alt_rounded,
                                         color: ModernColors.categoryBlue,
                                         onTap: () {
-                                          HapticFeedback.lightImpact();
+                                          ref.hapticLightTap();
                                           context.go('/routines');
                                         },
                                       ),
@@ -456,7 +457,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                         progress: 0.6,
                                         showProgress: true,
                                         onTap: () {
-                                          HapticFeedback.lightImpact();
+                                          ref.hapticLightTap();
                                         },
                                       ),
                                     ),
@@ -495,7 +496,7 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                             borderRadius: BorderRadius.circular(20),
                             child: InkWell(
                               onTap: () {
-                                HapticFeedback.mediumImpact();
+                                ref.hapticImpact();
                                 context.go('/routines');
                               },
                               borderRadius: BorderRadius.circular(20),
@@ -842,8 +843,8 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
               shadowColor: categoryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
               child: InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
+                onTap: () async {
+                  await ref.hapticLightTap();
                   onTap();
                 },
                 borderRadius: BorderRadius.circular(16),
@@ -912,7 +913,8 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                   Flexible(
                                     child: Text(
                                       time,
-                                      style: theme.textTheme.bodySmall?.copyWith(
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
                                         color: categoryColor,
                                         fontWeight: FontWeight.w600,
                                       ),

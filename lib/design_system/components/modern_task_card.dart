@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
 
 /// Modern Task Card inspired by the reference designs
 /// Features: Check circle, time display, category colors, smooth animations
-class ModernTaskCard extends StatefulWidget {
+class ModernTaskCard extends ConsumerStatefulWidget {
   const ModernTaskCard({
     super.key,
     required this.title,
@@ -34,10 +36,11 @@ class ModernTaskCard extends StatefulWidget {
   final TaskPriority? priority;
 
   @override
-  State<ModernTaskCard> createState() => _ModernTaskCardState();
+  @override
+  ConsumerState<ModernTaskCard> createState() => _ModernTaskCardState();
 }
 
-class _ModernTaskCardState extends State<ModernTaskCard>
+class _ModernTaskCardState extends ConsumerState<ModernTaskCard>
     with TickerProviderStateMixin {
   late AnimationController _checkController;
   late AnimationController _scaleController;
@@ -109,7 +112,7 @@ class _ModernTaskCardState extends State<ModernTaskCard>
 
   void _toggleComplete() {
     widget.onComplete?.call(!widget.isCompleted);
-    HapticFeedback.lightImpact();
+    ref.hapticLightTap();
   }
 
   @override

@@ -1,10 +1,9 @@
 import 'package:drift/drift.dart';
-import 'package:drift/web.dart';
+import 'drift_web_stub.dart';
 
 /// Ouvre une connexion Drift pour le web
+/// Utilise un stub pour éviter complètement sql.js
 LazyDatabase openConnection() {
-  return LazyDatabase(() async {
-    // Utilise une base de données IndexedDB pour le web
-    return WebDatabase('spiritual_routines_db');
-  });
+  // Utiliser notre stub qui ne dépend pas de sql.js
+  return openStubConnection();
 }

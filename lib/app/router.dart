@@ -12,7 +12,8 @@ import 'package:spiritual_routines/features/content/modern_content_editor_page.d
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/', // Start directly at home to avoid splash screen issues on web
+    initialLocation:
+        '/', // Start directly at home to avoid splash screen issues on web
     debugLogDiagnostics: true,
     routes: [
       GoRoute(

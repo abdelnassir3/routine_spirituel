@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/design_system/tokens/shadows.dart';
 import 'package:spiritual_routines/design_system/tokens/colors.dart';
 
 /// Premium Button Component System
 /// Sophisticated buttons with animations and premium aesthetics
-class PremiumButton extends StatefulWidget {
+class PremiumButton extends ConsumerStatefulWidget {
   const PremiumButton({
     super.key,
     required this.onPressed,
@@ -49,7 +51,7 @@ class PremiumButton extends StatefulWidget {
   State<PremiumButton> createState() => _PremiumButtonState();
 }
 
-class _PremiumButtonState extends State<PremiumButton>
+class _PremiumButtonState extends ConsumerState<PremiumButton>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _shimmerController;
@@ -94,7 +96,8 @@ class _PremiumButtonState extends State<PremiumButton>
       _scaleController.forward();
 
       if (widget.hapticFeedback) {
-        HapticFeedback.lightImpact();
+        // Adapter-based haptic (no-op on Web)
+        ref.hapticLightTap();
       }
     }
   }

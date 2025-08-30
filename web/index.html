@@ -296,14 +296,29 @@
       console.log('Loading screen removed (fallback timer)');
     }, 3000);
     
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('flutter_service_worker.js');
-      });
-    }
+    // Service worker bootstrapping is handled by flutter.js
   </script>
-  
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter.js" defer></script>
+  <!-- sql.js for Drift: DISABLED - Using IndexedDB instead -->
+  <!-- 
+  <script>
+    window.initSqlJsConfig = {
+      locateFile: (file) => 'assets/packages/drift/sqljs/' + file,
+    };
+  </script>
+  <script src="assets/packages/drift/sqljs/sql-wasm.js" defer></script>
+  -->
+  <script>
+    window.addEventListener('load', function () {
+      if (window._flutter && window._flutter.loader) {
+        window._flutter.loader
+          .loadEntrypoint({
+            serviceWorker: { serviceWorkerVersion: "{{flutter_service_worker_version}}" },
+          })
+          .then((engineInitializer) => engineInitializer.initializeEngine())
+          .then((appRunner) => appRunner.runApp());
+      }
+    });
+  </script>
 </body>
 </html>

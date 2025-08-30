@@ -13,6 +13,8 @@ import 'package:spiritual_routines/features/reader/reading_prefs.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
 import 'package:spiritual_routines/core/services/smart_tts_service.dart';
+import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/progress_service.dart';
 import 'package:spiritual_routines/core/services/task_audio_prefs.dart';
@@ -354,7 +356,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
               onPressed: () {
                 ref.read(enhancedReaderFocusModeProvider.notifier).state =
                     !focusMode;
-                HapticFeedback.lightImpact();
+                ref.hapticLightTap();
               },
               icon: Icon(
                 focusMode
@@ -1087,7 +1089,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
     ref.read(enhancedReaderTextScaleProvider.notifier).state = newScale;
 
     // Feedback haptique
-    HapticFeedback.selectionClick();
+    ref.hapticSelection();
 
     // Sauvegarder la préférence
     try {
@@ -1141,7 +1143,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
         );
       }
 
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
     } catch (e) {
       print('❌ DEBUG: Erreur _goToPrevious: $e');
       _showMessage('Erreur lors de la navigation: $e');
@@ -1189,7 +1191,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
         );
       }
 
-      HapticFeedback.lightImpact();
+      ref.hapticLightTap();
     } catch (e) {
       print('❌ DEBUG: Erreur _goToNext: $e');
       _showMessage('Erreur lors de la navigation: $e');
@@ -1326,8 +1328,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       final userSettings = ref.read(userSettingsServiceProvider);
       final configuredSpeed = await userSettings.getTtsSpeed();
 
-      // Utiliser le service TTS configuré (SmartTtsService avec Coqui)
-      final tts = ref.read(audioTtsServiceProvider);
+      // Utiliser l'adaptateur TTS (Web‑safe) pour la preview et mobile via impl. native
+      final tts = ref.read(ttsAdapterProvider);
       final languageCode = isActuallyArabic ? 'ar' : 'fr';
 
       print(
@@ -1349,12 +1351,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
 
       // Lancer la lecture avec gestion d'erreur améliorée
       try {
-        await tts.playText(
-          currentText,
-          voice: languageCode,
-          speed: configuredSpeed,
-          pitch: 1.0,
-        );
+        final voice =
+            isActuallyArabic ? 'ar-SA-HamedNeural' : 'fr-FR-DeniseNeural';
+        await tts.speak(currentText,
+            voice: voice, speed: configuredSpeed, pitch: 1.0);
 
         _showMessage('🆗 Lecture terminée');
       } catch (playError) {
@@ -1367,7 +1367,7 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
           '🔊 Lecture ${isActuallyArabic ? 'arabe' : 'française'} démarrée');
 
       // Feedback haptique
-      HapticFeedback.selectionClick();
+      ref.hapticSelection();
     } catch (e) {
       print('❌ DEBUG: Erreur lecture: $e');
       _showMessage('Erreur lors de la lecture: $e');
@@ -2136,7 +2136,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           onTap: () {
             ref.read(enhancedReaderThemeModeProvider.notifier).state =
                 themeMode;
-            HapticFeedback.selectionClick();
+            ref.hapticSelection();
           },
           child: Container(
             width: 80,
@@ -2198,7 +2198,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           displayValue: '${(textScale * 100).round()}%',
           onChanged: (value) {
             ref.read(enhancedReaderTextScaleProvider.notifier).state = value;
-            HapticFeedback.selectionClick();
+            ref.hapticSelection();
           },
         ),
 
@@ -2215,7 +2215,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           displayValue: '${lineHeight.toStringAsFixed(1)}x',
           onChanged: (value) {
             ref.read(enhancedReaderLineHeightProvider.notifier).state = value;
-            HapticFeedback.selectionClick();
+            ref.hapticSelection();
           },
         ),
 
@@ -2232,7 +2232,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           displayValue: '${sidePadding.round()}px',
           onChanged: (value) {
             ref.read(enhancedReaderSidePaddingProvider.notifier).state = value;
-            HapticFeedback.selectionClick();
+            ref.hapticSelection();
           },
         ),
 
@@ -2246,7 +2246,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           value: justify,
           onChanged: (value) {
             ref.read(enhancedReaderJustifyProvider.notifier).state = value;
-            HapticFeedback.selectionClick();
+            ref.hapticSelection();
           },
         ),
       ],
@@ -2265,7 +2265,7 @@ class EnhancedSettingsBottomSheet extends ConsumerWidget {
           value: focusMode,
           onChanged: (value) {
             ref.read(enhancedReaderFocusModeProvider.notifier).state = value;
-            HapticFeedback.lightImpact();
+            ref.hapticLightTap();
           },
         ),
       ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'dart:io' show Platform if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/progress_service.dart';
 import 'package:spiritual_routines/core/services/content_service.dart';
 import 'package:spiritual_routines/features/reader/current_progress.dart';
@@ -1303,11 +1304,11 @@ class _CounterBar extends ConsumerWidget {
                                 SnackBar(content: Text(msg)),
                               );
                               if (val == null) {
-                                HapticFeedback.selectionClick();
+                                ref.hapticSelection();
                               } else if (val > 0) {
-                                HapticFeedback.lightImpact();
+                                ref.hapticLightTap();
                               } else {
-                                HapticFeedback.mediumImpact();
+                                ref.hapticImpact();
                               }
                             }
                           },
@@ -1360,7 +1361,7 @@ class _CounterBar extends ConsumerWidget {
                             final val = await ref
                                 .read(progressServiceProvider)
                                 .incrementCurrent(sessionId);
-                            HapticFeedback.lightImpact();
+                            ref.hapticLightTap();
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).clearSnackBars();
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -1740,7 +1741,7 @@ class _CounterBar extends ConsumerWidget {
                                 language: ttsLang,
                                 speed: ttsSpeed,
                                 pitch: ttsPitch);
-                        HapticFeedback.lightImpact();
+                        ref.hapticLightTap();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -1752,7 +1753,7 @@ class _CounterBar extends ConsumerWidget {
                             .read(handsFreeControllerProvider.notifier)
                             .stop();
                         ref.read(highlightControllerProvider.notifier).stop();
-                        HapticFeedback.selectionClick();
+                        ref.hapticSelection();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -1821,7 +1822,7 @@ class _StopAndCompleteBar extends ConsumerWidget {
                             await ref
                                 .read(progressServiceProvider)
                                 .advanceToPrevious(sessionId);
-                            HapticFeedback.lightImpact();
+                            ref.hapticLightTap();
                           }
                         : null,
                     icon: const Icon(Icons.arrow_back_rounded),
@@ -1837,7 +1838,7 @@ class _StopAndCompleteBar extends ConsumerWidget {
                             await ref
                                 .read(progressServiceProvider)
                                 .advanceToNext(sessionId);
-                            HapticFeedback.lightImpact();
+                            ref.hapticLightTap();
                           }
                         : null,
                     icon: const Icon(Icons.arrow_forward_rounded),
@@ -1869,7 +1870,7 @@ class _StopAndCompleteBar extends ConsumerWidget {
                             .stop();
                       }
                       ref.read(highlightControllerProvider.notifier).stop();
-                      HapticFeedback.selectionClick();
+                      ref.hapticSelection();
                     },
                     icon: const Icon(Icons.stop_rounded),
                     label: const Text('Arrêter'),
@@ -1884,7 +1885,7 @@ class _StopAndCompleteBar extends ConsumerWidget {
                             await ref
                                 .read(progressServiceProvider)
                                 .completeCurrent(sessionId);
-                            HapticFeedback.mediumImpact();
+                            ref.hapticImpact();
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

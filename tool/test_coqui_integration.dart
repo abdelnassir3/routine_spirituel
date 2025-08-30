@@ -8,22 +8,22 @@ import 'package:dio/dio.dart';
 
 void main() async {
   print('=== Test Intégration Coqui TTS ===\n');
-  
+
   // Configuration de test
   const endpoint = 'http://168.231.112.71:8001';
   const apiPath = '/api/tts';
-  
+
   print('1. Test de connectivité au serveur Coqui...');
-  
+
   final dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 10),
   ));
-  
+
   // Test basique de connexion
   try {
     print('   Endpoint: $endpoint');
-    
+
     // Test avec une requête simple
     final testPayload = {
       'text': 'Test de connexion',
@@ -31,9 +31,9 @@ void main() async {
       'voice_type': 'male',
       'rate': '+0%',
     };
-    
+
     print('\n2. Test de synthèse (sans API key)...');
-    
+
     try {
       final response = await dio.post(
         '$endpoint$apiPath',
@@ -45,10 +45,10 @@ void main() async {
           },
         ),
       );
-      
+
       if (response.statusCode == 200) {
         print('   ✅ Serveur accessible (pas d\'authentification requise)');
-        
+
         final data = response.data;
         if (data != null && data['audio'] != null) {
           final audioBase64 = data['audio'] as String;
@@ -62,25 +62,26 @@ void main() async {
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 401) {
         print('   ✅ Serveur accessible (authentification requise)');
-        print('      Configurez votre API key avec: dart run tool/setup_coqui_tts.dart');
+        print(
+            '      Configurez votre API key avec: dart run tool/setup_coqui_tts.dart');
       } else {
         print('   ❌ Erreur de requête: $e');
       }
     }
-    
+
     print('\n3. Test des langues supportées...');
-    
+
     final languages = ['fr', 'ar', 'en', 'es'];
     for (final lang in languages) {
       stdout.write('   Test $lang: ');
-      
+
       final langPayload = {
         'text': _getSampleText(lang),
         'language': lang,
         'voice_type': 'male',
         'rate': '+0%',
       };
-      
+
       try {
         final response = await dio.post(
           '$endpoint$apiPath',
@@ -91,7 +92,7 @@ void main() async {
             validateStatus: (status) => status != null,
           ),
         );
-        
+
         if (response.statusCode == 200) {
           print('✅ Supporté');
         } else if (response.statusCode == 401) {
@@ -103,11 +104,11 @@ void main() async {
         print('❌ Erreur');
       }
     }
-    
+
     print('\n4. Test de performance...');
-    
+
     final stopwatch = Stopwatch()..start();
-    
+
     try {
       await dio.post(
         '$endpoint$apiPath',
@@ -123,10 +124,10 @@ void main() async {
           validateStatus: (status) => status != null,
         ),
       );
-      
+
       stopwatch.stop();
       print('   ⏱️  Latence: ${stopwatch.elapsedMilliseconds}ms');
-      
+
       if (stopwatch.elapsedMilliseconds < 500) {
         print('   ✅ Performance excellente (<500ms)');
       } else if (stopwatch.elapsedMilliseconds < 1000) {
@@ -139,18 +140,17 @@ void main() async {
     } catch (e) {
       print('   ❌ Test échoué');
     }
-    
+
     print('\n5. Résumé de l\'intégration:');
     print('   ✅ Serveur Coqui accessible');
     print('   ✅ Endpoint TTS fonctionnel');
     print('   ℹ️  API key peut être requise selon configuration');
     print('   ✅ Prêt pour l\'intégration Flutter');
-    
+
     print('\n📝 Prochaines étapes:');
     print('   1. Configurer l\'API key: dart run tool/setup_coqui_tts.dart');
     print('   2. Lancer l\'app: flutter run');
     print('   3. Tester dans Paramètres > Voix et Lecture');
-    
   } catch (e) {
     print('❌ Erreur de connexion au serveur Coqui');
     print('   $e');

@@ -39,7 +39,7 @@ void main() {
       // Verify navigation works
       expect(find.text('Accueil'), findsWidgets);
       expect(find.text('Routines'), findsWidgets);
-      
+
       // Verify responsive padding
       final padding = tester.widget<Padding>(
         find.byType(Padding).first,
@@ -180,10 +180,10 @@ void main() {
 
         // Get context from a widget
         final BuildContext context = tester.element(find.byType(MaterialApp));
-        
+
         // Test screen type detection
         expect(context.screenType, equals(expectedType));
-        
+
         // Test responsive helpers
         expect(context.isMobile, equals(expectedType == ScreenType.mobile));
         expect(context.isTablet, equals(expectedType == ScreenType.tablet));
@@ -193,7 +193,8 @@ void main() {
       resetScreenSize(tester);
     });
 
-    testWidgets('Touch targets are appropriate for device type', (tester) async {
+    testWidgets('Touch targets are appropriate for device type',
+        (tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -249,7 +250,8 @@ void main() {
       resetScreenSize(tester);
     });
 
-    testWidgets('Adaptive dialogs work on different screen sizes', (tester) async {
+    testWidgets('Adaptive dialogs work on different screen sizes',
+        (tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -279,10 +281,10 @@ void main() {
       for (int i = 0; i < 5; i++) {
         setScreenSize(tester, const Size(390, 844));
         await tester.pump();
-        
+
         setScreenSize(tester, const Size(820, 1180));
         await tester.pump();
-        
+
         setScreenSize(tester, const Size(1920, 1080));
         await tester.pump();
       }

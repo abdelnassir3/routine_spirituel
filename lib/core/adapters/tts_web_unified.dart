@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'dart:html' as html;
-import 'dart:async';
+import 'dart:js' as js;
 import '../services/audio/web_edge_tts_service.dart';
 import 'tts_adapter.dart';
 
-/// Adaptateur TTS Web avec MÊME architecture que mobile
-/// Hiérarchie: Edge-TTS → Web Speech API → Simulation
+/// Adaptateur TTS Web avec architecture IDENTIQUE au mobile
+/// Hiérarchie: Edge-TTS (168.231.112.71:8010) → Web Speech API → Simulation
 class WebTtsAdapter implements TtsAdapter {
   final WebEdgeTtsService _edgeTts = WebEdgeTtsService();
   final _WebSpeechFallback _webSpeechFallback = _WebSpeechFallback();
+  
   VoidCallback? _completionCallback;
   bool _isSpeaking = false;
   bool _isPaused = false;
@@ -37,27 +38,17 @@ class WebTtsAdapter implements TtsAdapter {
   }) async {
     _totalRequests++;
 
-    print('🌐 DEBUG: === WebTtsAdapter.playText DÉBUT ===');
-    print('🌐 DEBUG: Texte: "${text.substring(0, text.length > 100 ? 100 : text.length)}${text.length > 100 ? '...' : ''}"');
-    print('🌐 DEBUG: Voix: $voice, Speed: $speed, Pitch: $pitch');
-    print('🌐 DEBUG: Edge-TTS disponible: $_edgeTtsAvailable');
-    print('🌐 DEBUG: Web Speech disponible: ${_webSpeechFallback != null}');
-    print('🌐 DEBUG: AllowFallback: $allowFallback');
+    if (kDebugMode) {
+      debugPrint('🌐 Web TTS: Architecture unifiée - début synthèse');
+      debugPrint('📝 Texte: ${text.substring(0, text.length > 50 ? 50 : text.length)}...');
+      debugPrint('🎙️ Voix: $voice, Vitesse: $speed');
+    }
 
     try {
       await stop(); // Arrêter toute lecture en cours
       
       _isSpeaking = true;
       _isPaused = false;
-
-      // DÉTECTION CONTENU CORANIQUE (même logique que mobile)
-      if (_isQuranicText(text)) {
-        if (kDebugMode) {
-          debugPrint('📖 Contenu coranique détecté, routage vers APIs Quran...');
-        }
-        // TODO: Intégrer les APIs Quran pour récitation professionnelle
-        // Pour l'instant, continue avec Edge-TTS
-      }
 
       // STRATÉGIE 1: Edge-TTS (principal, comme sur mobile)
       if (_edgeTtsAvailable && _shouldRetryService(_edgeTtsLastFailure)) {
@@ -84,13 +75,17 @@ class WebTtsAdapter implements TtsAdapter {
           _edgeTtsAvailable = true;
           _edgeTtsLastFailure = null;
 
-          print('✅ DEBUG: Edge-TTS réussi (succès: $_edgeTtsSuccessCount)');
+          if (kDebugMode) {
+            debugPrint('✅ Edge-TTS réussi (succès: $_edgeTtsSuccessCount)');
+          }
           
           // Note: _isSpeaking sera mis à false par le callback
           return;
 
         } catch (edgeError) {
-          print('❌ DEBUG: Edge-TTS échec: $edgeError');
+          if (kDebugMode) {
+            debugPrint('❌ Edge-TTS échec: $edgeError');
+          }
           
           _edgeTtsLastFailure = DateTime.now();
           _edgeTtsAvailable = false;
@@ -156,8 +151,9 @@ class WebTtsAdapter implements TtsAdapter {
 
     } catch (e) {
       _isSpeaking = false;
-      print('❌ DEBUG: Erreur globale Web TTS: $e');
-      print('❌ DEBUG: Stack trace: ${StackTrace.current}');
+      if (kDebugMode) {
+        debugPrint('❌ Erreur globale Web TTS: $e');
+      }
       rethrow;
     }
   }
@@ -168,98 +164,50 @@ class WebTtsAdapter implements TtsAdapter {
     return DateTime.now().difference(lastFailure) > _circuitBreakerTimeout;
   }
 
-  /// Détecte si le texte contient du contenu coranique (même logique que mobile)
-  bool _isQuranicText(String text) {
-    // Mots-clés coraniques en arabe
-    final quranicKeywords = [
-      'بِسْمِ اللَّهِ', 'الْحَمْدُ لِلَّهِ', 'الرَّحْمَنِ', 'الرَّحِيمِ',
-      'مَالِكِ يَوْمِ', 'إِيَّاكَ نَعْبُدُ', 'اهْدِنَا', 'صِرَاطَ',
-      'قُلْ هُوَ اللَّهُ', 'أَحَدٌ', 'لَمْ يَلِدْ', 'لَمْ يُولَدْ',
-      'قُلْ أَعُوذُ', 'مِن شَرِّ', 'الْفَلَقِ', 'النَّاسِ',
-    ];
-
-    // Vérifier présence de mots-clés coraniques
-    for (final keyword in quranicKeywords) {
-      if (text.contains(keyword)) {
-        return true;
-      }
-    }
-
-    // Vérifier si le texte contient beaucoup d'arabe (>70% caractères arabes)
-    final arabicChars = text.split('').where((char) {
-      final codeUnit = char.codeUnitAt(0);
-      return (codeUnit >= 0x0600 && codeUnit <= 0x06FF) || // Arabic
-             (codeUnit >= 0x0750 && codeUnit <= 0x077F) || // Arabic Supplement
-             (codeUnit >= 0xFB50 && codeUnit <= 0xFDFF) || // Arabic Presentation Forms-A
-             (codeUnit >= 0xFE70 && codeUnit <= 0xFEFF);   // Arabic Presentation Forms-B
-    }).length;
-
-    final arabicRatio = arabicChars / text.length;
-    return arabicRatio > 0.7;
-  }
-
   @override
   Future<void> stop() async {
+    if (kDebugMode) {
+      debugPrint('🛑 Web TTS: Arrêt de tous les services');
+    }
+
     _isSpeaking = false;
     _isPaused = false;
 
-    try {
-      // Arrêter Edge-TTS
-      await _edgeTts.stop().catchError((_) {});
-      
-      // Arrêter Web Speech API
-      await _webSpeechFallback.stop().catchError((_) {});
-
-      if (kDebugMode) {
-        debugPrint('⏹️ Web TTS: Stopped');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Error stopping Web TTS: $e');
-      }
-    }
+    // Arrêter tous les services en parallèle
+    await Future.wait([
+      _edgeTts.stop().catchError((_) {}),
+      _webSpeechFallback.stop().catchError((_) {}),
+    ]);
   }
 
   @override
   Future<void> pause() async {
-    _isPaused = true;
-
-    try {
-      // Pause Edge-TTS si disponible
-      await _edgeTts.pause().catchError((_) {});
-      
-      // Pause Web Speech API si disponible
-      await _webSpeechFallback.pause().catchError((_) {});
-
-      if (kDebugMode) {
-        debugPrint('⏸️ Web TTS: Paused');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Error pausing Web TTS: $e');
-      }
+    if (kDebugMode) {
+      debugPrint('⏸️ Web TTS: Pause');
     }
+    
+    _isPaused = true;
+    
+    // Tenter de pauser tous les services
+    await Future.wait([
+      _edgeTts.pause().catchError((_) {}),
+      _webSpeechFallback.pause().catchError((_) {}),
+    ]);
   }
 
   @override
   Future<void> resume() async {
-    _isPaused = false;
-
-    try {
-      // Resume Edge-TTS si disponible
-      await _edgeTts.resume().catchError((_) {});
-      
-      // Resume Web Speech API si disponible
-      await _webSpeechFallback.resume().catchError((_) {});
-
-      if (kDebugMode) {
-        debugPrint('▶️ Web TTS: Resumed');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Error resuming Web TTS: $e');
-      }
+    if (kDebugMode) {
+      debugPrint('▶️ Web TTS: Resume');
     }
+    
+    _isPaused = false;
+    
+    // Tenter de reprendre tous les services
+    await Future.wait([
+      _edgeTts.resume().catchError((_) {}),
+      _webSpeechFallback.resume().catchError((_) {}),
+    ]);
   }
 
   @override
@@ -270,34 +218,23 @@ class WebTtsAdapter implements TtsAdapter {
 
   @override
   Future<List<String>> getAvailableVoices() async {
+    // Combiner les voix de tous les services
     try {
-      // Essayer d'abord les voix Edge-TTS
       final edgeVoices = await _edgeTts.getAvailableVoices();
-      if (edgeVoices.isNotEmpty) {
-        return edgeVoices;
-      }
-
-      // Fallback vers Web Speech API
-      final webSpeechVoices = await _webSpeechFallback.getAvailableVoices();
-      if (webSpeechVoices.isNotEmpty) {
-        return webSpeechVoices;
-      }
-
-      // Fallback vers voix par défaut
-      return [
-        'fr-FR-DeniseNeural',
-        'ar-SA-HamedNeural',
-        'en-US-AriaNeural',
-      ];
+      final webVoices = await _webSpeechFallback.getAvailableVoices();
+      
+      // Fusionner et dédupliquer
+      final allVoices = <String>{};
+      allVoices.addAll(edgeVoices);
+      allVoices.addAll(webVoices);
+      
+      return allVoices.toList();
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ Error getting voices: $e');
+        debugPrint('❌ Erreur récupération voix: $e');
       }
-      return [
-        'fr-FR-DeniseNeural',
-        'ar-SA-HamedNeural',
-        'en-US-AriaNeural',
-      ];
+      // Voix par défaut en cas d'erreur
+      return ['fr-FR-DeniseNeural', 'ar-SA-HamedNeural', 'en-US-AriaNeural'];
     }
   }
 
@@ -310,41 +247,49 @@ class WebTtsAdapter implements TtsAdapter {
   @override
   void setCompletionCallback(VoidCallback? callback) {
     _completionCallback = callback;
+    
+    // Propager aux services
+    _edgeTts.setCompletionCallback(callback);
+    _webSpeechFallback.setCompletionCallback(callback);
   }
 
   @override
   Future<void> dispose() async {
-    try {
-      await stop();
-      
-      // Disposer Edge-TTS
-      await _edgeTts.dispose().catchError((_) {});
-      
-      // Disposer Web Speech API
-      await _webSpeechFallback.dispose().catchError((_) {});
-      
-      _completionCallback = null;
-      _isSpeaking = false;
-      _isPaused = false;
-
-      if (kDebugMode) {
-        debugPrint('🗑️ Web TTS: Disposed');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Error disposing Web TTS: $e');
-      }
+    if (kDebugMode) {
+      debugPrint('🗑️ Web TTS: Nettoyage');
     }
+
+    await stop();
+    _completionCallback = null;
+
+    // Disposer tous les services
+    await Future.wait([
+      _edgeTts.dispose().catchError((_) {}),
+      _webSpeechFallback.dispose().catchError((_) {}),
+    ]);
+  }
+
+  /// Méthode pour obtenir les statistiques d'utilisation (debug)
+  Map<String, dynamic> getUsageStats() {
+    return {
+      'totalRequests': _totalRequests,
+      'edgeTtsSuccess': _edgeTtsSuccessCount,
+      'webSpeechFallback': _webSpeechFallbackCount,
+      'edgeTtsAvailable': _edgeTtsAvailable,
+      'successRate': _totalRequests > 0 
+          ? ((_edgeTtsSuccessCount + _webSpeechFallbackCount) / _totalRequests * 100).toStringAsFixed(1)
+          : '0',
+    };
   }
 }
 
-/// Classe fallback pour Web Speech API
+/// Classe de fallback Web Speech API - Copie de WebTtsStub original
 class _WebSpeechFallback implements TtsAdapter {
-  html.SpeechSynthesis? _synth;
-  html.SpeechSynthesisUtterance? _currentUtterance;
-  VoidCallback? _completionCallback;
   bool _isSpeaking = false;
   bool _isPaused = false;
+  VoidCallback? _completionCallback;
+  html.SpeechSynthesis? _synth;
+  html.SpeechSynthesisUtterance? _currentUtterance;
 
   void _initializeSpeechSynthesis() {
     try {
@@ -384,95 +329,95 @@ class _WebSpeechFallback implements TtsAdapter {
     double pitch = 1.0,
     bool allowFallback = true,
   }) async {
+    if (kDebugMode) {
+      debugPrint('🎤 Web Speech: speak() called with voice: $voice, speed: $speed');
+      debugPrint('🎤 Web Speech: text length: ${text.length} characters');
+    }
+    
     if (_synth == null) {
-      if (allowFallback) {
-        await _simulateSpeak(text, speed);
-        return;
+      if (kDebugMode) {
+        debugPrint('⚠️ Web Speech API not available, falling back to simulation');
       }
-      throw Exception('Web Speech API not available');
+      return _simulateSpeak(text, speed);
     }
 
     try {
-      await stop(); // Arrêter toute lecture en cours
-      
-      _isSpeaking = true;
-      _isPaused = false;
+      // Arrêter toute synthèse en cours
+      await stop();
 
       _currentUtterance = html.SpeechSynthesisUtterance(text);
-      
-      // Configurer la voix
-      final selectedVoice = await _findBestVoice(voice);
-      if (selectedVoice != null) {
-        _currentUtterance!.voice = selectedVoice;
+
+      // Configuration de la synthèse
+      _currentUtterance!.rate = speed.clamp(0.1, 10.0);
+      _currentUtterance!.pitch = pitch.clamp(0.0, 2.0);
+      _currentUtterance!.volume = 1.0;
+
+      // Essayer de définir la voix demandée
+      final targetVoice = await _findBestVoice(voice);
+      if (targetVoice != null) {
+        _currentUtterance!.voice = targetVoice;
       }
-      
-      // Configurer vitesse et pitch
-      _currentUtterance!.rate = speed;
-      _currentUtterance!.pitch = pitch;
 
       // Configurer les callbacks
-      final completer = Completer<void>();
       _currentUtterance!.onStart.listen((_) {
+        _isSpeaking = true;
+        _isPaused = false;
         if (kDebugMode) {
-          debugPrint('🎤 Web Speech API: Started speaking');
+          debugPrint('🎤 Web Speech: Started speaking "${text.length > 50 ? text.substring(0, 50) + '...' : text}"');
         }
       });
 
       _currentUtterance!.onEnd.listen((_) {
         _isSpeaking = false;
+        _isPaused = false;
         _completionCallback?.call();
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
         if (kDebugMode) {
-          debugPrint('✅ Web Speech API: Finished speaking');
+          debugPrint('✅ Web Speech: Finished speaking');
         }
       });
 
-      _currentUtterance!.onError.listen((error) {
+      _currentUtterance!.onError.listen((event) {
         _isSpeaking = false;
-        String errorMessage = 'Unknown error';
-        try {
-          // Essayer d'extraire l'erreur si possible
-          errorMessage = error.toString();
-        } catch (_) {
-          errorMessage = 'Speech synthesis failed';
-        }
-        
-        if (!completer.isCompleted) {
-          completer.completeError(Exception('Web Speech API error: $errorMessage'));
-        }
+        _isPaused = false;
         if (kDebugMode) {
-          debugPrint('❌ Web Speech API error: $errorMessage');
+          debugPrint('❌ Web Speech Error event');
+        }
+        // Fallback vers simulation en cas d'erreur
+        _simulateSpeak(text, speed);
+      });
+
+      _currentUtterance!.onPause.listen((_) {
+        _isPaused = true;
+        if (kDebugMode) {
+          debugPrint('⏸️ Web Speech: Paused');
         }
       });
 
-      // Lancer la synthèse
+      _currentUtterance!.onResume.listen((_) {
+        _isPaused = false;
+        if (kDebugMode) {
+          debugPrint('▶️ Web Speech: Resumed');
+        }
+      });
+
+      // Démarrer la synthèse
       _synth!.speak(_currentUtterance!);
-      await completer.future;
-      
     } catch (e) {
-      _isSpeaking = false;
       if (kDebugMode) {
-        debugPrint('❌ Web Speech API Error: $e');
+        debugPrint('❌ Web Speech Error: $e');
       }
-      
-      if (allowFallback) {
-        await _simulateSpeak(text, speed);
-      } else {
-        rethrow;
-      }
+      // Fallback vers simulation
+      await _simulateSpeak(text, speed);
     }
   }
 
-  /// Simulation pour navigateurs sans Web Speech API
+  /// Fallback simulation pour navigateurs sans Web Speech API
   Future<void> _simulateSpeak(String text, double speed) async {
     _isSpeaking = true;
     _isPaused = false;
 
     if (kDebugMode) {
-      debugPrint(
-          '🔇 Web Speech API Simulation: "${text.length > 50 ? text.substring(0, 50) + '...' : text}"');
+      debugPrint('🔇 Web Speech Simulation: "${text.length > 50 ? text.substring(0, 50) + '...' : text}"');
     }
 
     // Estimation durée basée sur longueur et vitesse
@@ -487,8 +432,7 @@ class _WebSpeechFallback implements TtsAdapter {
   }
 
   /// Trouve la meilleure voix disponible pour la langue demandée
-  Future<html.SpeechSynthesisVoice?> _findBestVoice(
-      String requestedVoice) async {
+  Future<html.SpeechSynthesisVoice?> _findBestVoice(String requestedVoice) async {
     if (_synth == null) return null;
 
     try {
@@ -545,12 +489,12 @@ class _WebSpeechFallback implements TtsAdapter {
       if (_synth != null) {
         _synth!.cancel();
         if (kDebugMode) {
-          debugPrint('⏹️ Web Speech API: Stopped');
+          debugPrint('⏹️ Web Speech: Stopped');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ Error stopping Web Speech API: $e');
+        debugPrint('❌ Error stopping Web Speech: $e');
       }
     }
 
@@ -565,12 +509,12 @@ class _WebSpeechFallback implements TtsAdapter {
       if (_synth != null && _isSpeaking) {
         _synth!.pause();
         if (kDebugMode) {
-          debugPrint('⏸️ Web Speech API: Paused');
+          debugPrint('⏸️ Web Speech: Paused');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ Error pausing Web Speech API: $e');
+        debugPrint('❌ Error pausing Web Speech: $e');
       }
     }
     _isPaused = true;
@@ -582,12 +526,12 @@ class _WebSpeechFallback implements TtsAdapter {
       if (_synth != null && _isPaused) {
         _synth!.resume();
         if (kDebugMode) {
-          debugPrint('▶️ Web Speech API: Resumed');
+          debugPrint('▶️ Web Speech: Resumed');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ Error resuming Web Speech API: $e');
+        debugPrint('❌ Error resuming Web Speech: $e');
       }
     }
     _isPaused = false;
@@ -602,6 +546,7 @@ class _WebSpeechFallback implements TtsAdapter {
   @override
   Future<List<String>> getAvailableVoices() async {
     if (_synth == null) {
+      // Fallback vers voix par défaut si Speech API indisponible
       return [
         'fr-FR-DeniseNeural',
         'ar-SA-HamedNeural',
@@ -612,6 +557,7 @@ class _WebSpeechFallback implements TtsAdapter {
     try {
       final voices = _synth!.getVoices();
       if (voices.isEmpty) {
+        // Attendre le chargement des voix
         await Future.delayed(const Duration(milliseconds: 100));
         final voicesRetry = _synth!.getVoices();
         if (voicesRetry.isEmpty) {
@@ -627,9 +573,8 @@ class _WebSpeechFallback implements TtsAdapter {
       final voiceList = voices.map((v) => '${v.lang}-${v.name}').toList();
 
       if (kDebugMode) {
-        debugPrint('🎤 Web Speech API: Found ${voiceList.length} voices');
-        debugPrint(
-            '🎤 Available languages: ${voices.map((v) => v.lang).toSet().join(', ')}');
+        debugPrint('🎤 Web Speech: Found ${voiceList.length} voices');
+        debugPrint('🎤 Available languages: ${voices.map((v) => v.lang).toSet().join(', ')}');
       }
 
       return voiceList;
@@ -666,11 +611,11 @@ class _WebSpeechFallback implements TtsAdapter {
       _currentUtterance = null;
 
       if (kDebugMode) {
-        debugPrint('🗑️ Web Speech API: Disposed');
+        debugPrint('🗑️ Web Speech: Disposed');
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ Error disposing Web Speech API: $e');
+        debugPrint('❌ Error disposing Web Speech: $e');
       }
     }
   }

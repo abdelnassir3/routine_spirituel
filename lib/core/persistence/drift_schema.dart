@@ -274,10 +274,13 @@ class SessionDao extends DatabaseAccessor<AppDatabase> with _$SessionDaoMixin {
       (select(sessions)..where((s) => s.id.equals(id))).getSingleOrNull();
 
   /// Récupère toutes les sessions complétées pour une routine donnée
+  /// IMPORTANT: Filtre les sessions avec endedAt non-null pour éviter les erreurs null
   Future<List<SessionRow>> getCompletedSessionsForRoutine(String routineId) {
     final q = (select(sessions)
-      ..where(
-          (s) => s.routineId.equals(routineId) & s.state.equals('completed'))
+      ..where((s) => 
+          s.routineId.equals(routineId) & 
+          s.state.equals('completed') &
+          s.endedAt.isNotNull())
       ..orderBy([(s) => OrderingTerm.desc(s.endedAt)]));
     return q.get();
   }

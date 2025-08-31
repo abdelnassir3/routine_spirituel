@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/haptic_service.dart';
+import '../services/haptic_service_interface.dart';
 import 'haptic_adapter_provider.dart';
 
 /// Provider pour le service de feedback haptique

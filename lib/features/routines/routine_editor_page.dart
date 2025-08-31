@@ -1764,6 +1764,8 @@ Future<void> _showTaskDialog(
                             defaultReps: drift.Value(defaultReps), // ✅
                             orderIndex: const drift.Value(9999), // ✅
                             notesFr: drift.Value(notesCtrl.text.trim()), // ✅
+                            audioSettings: const drift.Value('{}'), // ✅ Fix: Valeur par défaut pour audio_settings
+                            displaySettings: const drift.Value('{}'), // ✅ Fix: Valeur par défaut pour display_settings
                           ));
                         } else {
                           taskId = existing.id;

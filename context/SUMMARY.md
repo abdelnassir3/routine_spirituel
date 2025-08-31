@@ -1,42 +1,52 @@
-# Projet_sprit | memo | 2025-08-27 02:15
+# Résumé Projet - Spiritual Routines (RISAQ)
 
-## CONTEXTE
-App Flutter "Spiritual Routines (RISAQ)" multiplateforme pour routines spirituelles musulmanes. Bilingue FR/AR avec TTS hybride et mode offline complet. Architecture: Flutter 3.x + Riverpod 2.5 + Drift/Isar + just_audio. 110+ fichiers Dart, 28 services modulaires.
+**Dernière mise à jour: 2025-08-30**
 
-## CONTRAINTES
-- Perf: latence UI <200ms, TTI <2s, mémoire <150MB, bundle <35MB
-- Sécu: AES-256, auth biométrique, OWASP Grade B (85/100)
-- Multi: RTL/LTR natif, polices Noto/Inter
-- Plateformes: iOS/Android 95%, macOS 60%, Web 40%
-- Tests: coverage 60% min (actuellement ~30%)
+## Vue d'ensemble
+• **Application Flutter** de routines spirituelles bilingue français-arabe
+• **Cible**: Pratiquants musulmans francophones et arabophones
+• **Mission**: Moderniser pratiques spirituelles avec technologie mobile
 
-## DÉCISIONS
-- TTS hybride: Edge-TTS primaire → Coqui fallback → Flutter local
-- Détection coranique confidence >85% → APIs Quran dédiées
-- Persistance triple: Drift SQL + Isar NoSQL + secure_storage
-- Scripts protection: cc-save.sh, cc-guard.sh pour savepoints Git
-- Material Design 3 avec thème InspiredTheme unifié
+## Architecture Technique
+• **Framework**: Flutter 3.x avec Dart 3.x, null safety strict
+• **State Management**: Riverpod 2.5+ obligatoire
+• **Persistance**: Drift (SQL) + Isar (NoSQL) pour stockage hybride
+• **Audio**: just_audio + audio_service pour background
+• **Localisation**: Support RTL/LTR natif avec polices optimisées
 
-## TODO
-1. 🚨 Import corpus Coran vide (assets/corpus/quran_combined.json)
-2. 🔴 Fix TabController crash (modern_settings_page.dart)
-3. 🟡 Refactoring duplication 40% (3 readers, 6 thèmes)
-4. 🟢 Coverage tests 30% → 60%
-5. ⚪ Config Supabase + RLS pour sync cloud
+## Fonctionnalités Clés
+• **Compteur persistant**: Décrémenteur avec haptic feedback et reprise après interruption
+• **Lecteur bilingue**: Affichage RTL/LTR simultané avec surlignage audio synchronisé
+• **TTS intelligent**: Détection automatique contenu coranique → routage API spécialisée
+• **Mode mains-libres**: Auto-avance pour pratique pendant autres activités
+• **Mode offline-first**: Fonctionnement complet sans connexion
 
-## ERREURS RÉSOLUES
-- Edge-TTS timeout → circuit breaker 5 échecs
-- Détection coranique → threshold confidence 85%
-- RTL/LTR → Directionality widgets auto
-- Cache TTS → 100MB/7j avec hit rate 85%
+## Infrastructure Serveur
+• **Edge-TTS**: 168.231.112.71:8010 (principal, synthèse FR/AR)
+• **Coqui XTTS-v2**: 168.231.112.71:8001 (haute qualité)
+• **APIs Quran**: AlQuran.cloud, Everyayah.com (récitations coraniques)
+• **Fallback**: Edge-TTS → Coqui → Flutter TTS → Mode silencieux
+• **Cache**: 7j/100MB TTS, 30j Quran, objectif hit rate 85%
 
-## PARAMS CRITIQUES
-- Edge-TTS: http://168.231.112.71:8010/api/tts (timeout 15s)
-- Coqui: http://168.231.112.71:8001/api/xtts (timeout 15s)
-- Corpus: assets/corpus/quran_combined.json (6236 versets)
-- Build: dart run build_runner build --delete-conflicting-outputs
-- Tests: flutter test --coverage
-- Scripts: scripts/cc-save.sh, cc-guard.sh, cc-restore.sh
+## Contraintes Performance
+• **Latence UI**: <200ms pour toutes interactions
+• **Time to Interactive**: <2s au démarrage à froid
+• **Utilisation mémoire**: <150MB en fonctionnement
+• **Bundle size**: <35MB pour déploiement stores
+• **Crash rate**: <0.1% objectif production
 
----
-Tags: [Projet_sprit, TTS, Edge, XTTS, Flutter]
+## Support Plateformes
+• **iOS/Android**: Support production complet (95%)
+• **macOS**: Beta avec limitations background audio (60%)
+• **Web**: Expérimental avec stubs requis (40%)
+
+## État Actuel & Problème
+• **Infrastructure qualité**: ✅ 45 tests, CI/CD déployé, 72 dépendances mises à jour
+• **Problème Web actuel**: Boutons "Écouter"/"Mains libres" ne fonctionnent pas
+• **Erreur identifiée**: "Unexpected null value" dans UserSettings (drift_schema.g.dart:2471:73)
+• **Fix en cours**: Correction mapping user_settings dans drift_web_stub.dart
+
+## Serveurs & APIs
+• **Timeout**: 15s par serveur avec circuit breaker (5 échecs)
+• **Sécurité**: AES-256 local, HTTPS production, pas de secrets en dur
+• **Environnement**: HTTP dev autorisé, HTTPS obligatoire production

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,12 +103,20 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
   }
 
   void _checkRecoveryOptions() async {
-    final recovery = await ref.read(recoveryOptionsProvider.future);
-    if (recovery.hasSnapshot && recovery.snapshot != null) {
-      final sessionId = recovery.snapshot!.payload['sessionId'] as String?;
-      if (sessionId != null && mounted && !Navigator.of(context).canPop()) {
-        await _showRecoveryDialog(context, ref, sessionId);
+    try {
+      final recovery = await ref.read(recoveryOptionsProvider.future);
+      if (recovery.hasSnapshot && recovery.snapshot != null) {
+        final sessionId = recovery.snapshot!.payload['sessionId'] as String?;
+        if (sessionId != null && mounted && !Navigator.of(context).canPop()) {
+          await _showRecoveryDialog(context, ref, sessionId);
+        }
       }
+    } catch (e) {
+      // Échec silencieux pour maintenir la compatibilité web
+      if (kDebugMode) {
+        print('⚠️ _checkRecoveryOptions: Erreur récupération session: $e');
+      }
+      // Continue le chargement normal de l'UI
     }
   }
 

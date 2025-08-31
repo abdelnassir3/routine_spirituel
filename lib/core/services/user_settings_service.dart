@@ -17,8 +17,26 @@ class UserSettingsService {
     final dao = _ref.read(userSettingsDaoProvider);
     final existing = await dao.getById(_defaultId);
     if (existing != null) return existing;
+    
+    // Create new user settings with default values
     await dao.upsert(UserSettingsCompanion.insert(id: _defaultId));
-    return (await dao.getById(_defaultId))!;
+    
+    // Try to retrieve the newly created settings
+    final created = await dao.getById(_defaultId);
+    if (created != null) return created;
+    
+    // If still null (e.g., in web stub), return a default instance
+    return UserSettingsRow(
+      id: _defaultId,
+      userId: null,
+      language: 'fr',
+      rtlPref: false,
+      fontPrefs: '{}',
+      ttsVoice: null,
+      speed: 0.9,
+      haptics: true,
+      notifications: true,
+    );
   }
 
   Future<BilingualDisplay> getDisplayPreference() async {

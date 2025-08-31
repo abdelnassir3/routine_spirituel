@@ -326,27 +326,32 @@ class AudioServiceHybridWrapper implements AudioTtsService {
             'Erreur activation session audio', {'error': e.toString()});
       }
 
-      // Créer un fichier temporaire
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File(
-          '${tempDir.path}/${prefix}_${DateTime.now().millisecondsSinceEpoch}.mp3');
-
-      await tempFile.writeAsBytes(audioBytes);
-
-      TtsLogger.info('📁 Fichier audio créé', {
-        'path': tempFile.path,
-        'size': audioBytes.length,
-        'exists': await tempFile.exists(),
-      });
-
-      // Vérifier si le fichier est valide
-      final fileInfo = await tempFile.stat();
-      if (fileInfo.size == 0) {
-        throw Exception('Fichier audio vide');
+      // Charger la source selon la plateforme
+      File? tempFile;
+      if (kIsWeb) {
+        // Web: utiliser une Data URI (sans I/O)
+        final dataUri = Uri.dataFromBytes(
+          audioBytes,
+          mimeType: 'audio/mpeg',
+        );
+        await _audioPlayer.setUrl(dataUri.toString());
+      } else {
+        // Mobile/Desktop: créer un fichier temporaire
+        final tempDir = await getTemporaryDirectory();
+        tempFile = File(
+            '${tempDir.path}/${prefix}_${DateTime.now().millisecondsSinceEpoch}.mp3');
+        await tempFile.writeAsBytes(audioBytes);
+        TtsLogger.info('📁 Fichier audio créé', {
+          'path': tempFile.path,
+          'size': audioBytes.length,
+          'exists': await tempFile.exists(),
+        });
+        final fileInfo = await tempFile.stat();
+        if (fileInfo.size == 0) {
+          throw Exception('Fichier audio vide');
+        }
+        await _audioPlayer.setFilePath(tempFile.path);
       }
-
-      // Charger et jouer avec just_audio
-      await _audioPlayer.setFilePath(tempFile.path);
 
       // Attendre que l'audio soit complètement chargé
       await _audioPlayer.load();
@@ -356,7 +361,7 @@ class AudioServiceHybridWrapper implements AudioTtsService {
       TtsLogger.info('🎵 Audio chargé', {
         'duration': duration?.inMilliseconds,
         'hasValidDuration': duration != null && duration.inMilliseconds > 0,
-        'fileSize': fileInfo.size,
+        'bufferSize': audioBytes.length,
       });
 
       // Configuration du volume pour s'assurer qu'il soit audible
@@ -412,17 +417,20 @@ class AudioServiceHybridWrapper implements AudioTtsService {
             'Audio MP3 d\'Edge-TTS incompatible avec AudioPlayer iOS - fallback requis');
       }
 
-      // Nettoyer après un délai
-      Future.delayed(Duration(seconds: 30), () async {
-        try {
-          if (await tempFile.exists()) {
-            await tempFile.delete();
+      // Nettoyer après un délai (fichiers locaux uniquement)
+      if (!kIsWeb && tempFile != null) {
+        final f = tempFile; // capture non-null for async closure
+        Future.delayed(Duration(seconds: 30), () async {
+          try {
+            if (f != null && await f.exists()) {
+              await f.delete();
+            }
+          } catch (e) {
+            TtsLogger.debug(
+                'Erreur nettoyage fichier temp', {'error': e.toString()});
           }
-        } catch (e) {
-          TtsLogger.debug(
-              'Erreur nettoyage fichier temp', {'error': e.toString()});
-        }
-      });
+        });
+      }
 
       TtsLogger.info('Audio joué avec succès', {
         'size': audioBytes.length,

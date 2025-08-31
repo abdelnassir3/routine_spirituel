@@ -11,8 +11,6 @@ import 'package:spiritual_routines/features/session/session_state.dart';
 import 'package:spiritual_routines/features/counter/hands_free_controller.dart';
 import 'package:spiritual_routines/features/reader/reading_prefs.dart';
 import 'package:spiritual_routines/design_system/inspired_theme.dart';
-import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
-import 'package:spiritual_routines/core/services/smart_tts_service.dart';
 import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
 import 'package:spiritual_routines/core/providers/haptic_provider.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
@@ -60,9 +58,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
     if (handsFreeMode) {
       // Écouter les changements du provider global
       final globalTask = ref.watch(readerCurrentTaskProvider);
-      return globalTask ?? widget.task;
+      if (globalTask != null) return globalTask;
     }
     // En mode normal, utiliser la tâche passée en paramètre
+    // Si widget.task est null, créer une tâche par défaut pour éviter les erreurs
     return widget.task;
   }
 
@@ -96,9 +95,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
     try {
       // Utiliser les providers de manière sécurisée
       Future.microtask(() async {
+        // Arrêter l'adaptateur TTS (compatible web et mobile)
         try {
-          final tts = ref.read(audioTtsServiceProvider);
-          await tts.stop();
+          final adapter = ref.read(ttsAdapterProvider);
+          await adapter.stop();
         } catch (_) {}
 
         try {
@@ -929,7 +929,10 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                   : _buildMinimalButton(
                       icon: Icons.volume_up_rounded,
                       label: 'Écouter',
-                      onPressed: () => _playCurrentText(),
+                      onPressed: () {
+                        print('🔘 DEBUG: Bouton "Écouter" cliqué');
+                        _playCurrentText();
+                      },
                       isPrimary: false,
                     ),
             ),
@@ -944,9 +947,12 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
                     : Icons.play_arrow_rounded,
                 label: handsFreeMode ? 'Arrêter' : 'Mains libres',
                 onPressed: () {
+                  print('🔘 DEBUG: Bouton "Mains libres" cliqué - Mode actuel: $handsFreeMode');
                   if (handsFreeMode) {
+                    print('🔘 DEBUG: Arrêt du mode mains libres');
                     ref.read(handsFreeControllerProvider.notifier).stop();
                   } else {
+                    print('🔘 DEBUG: Démarrage du mode mains libres avec session: ${widget.sessionId}');
                     ref
                         .read(handsFreeControllerProvider.notifier)
                         .start(widget.sessionId, interfaceLanguage: language);
@@ -1234,15 +1240,15 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
         print('⚠️ DEBUG: Erreur arrêt mains libres: $e');
       }
 
-      // 2. Arrêter le TTS direct si actif (plusieurs fois pour être sûr)
+      // 2. Arrêter le TTS (adaptateur compatible web et mobile)
       try {
-        final tts = ref.read(audioTtsServiceProvider);
-        await tts.stop();
+        final adapter = ref.read(ttsAdapterProvider);
+        await adapter.stop();
         await Future.delayed(Duration(milliseconds: 100));
-        await tts.stop(); // Double stop pour être sûr
+        await adapter.stop(); // Double stop pour être sûr
         print('🛑 DEBUG: TTS arrêté');
       } catch (e) {
-        print('⚠️ DEBUG: Erreur arrêt TTS: $e');
+        print('⚠️ DEBUG: Erreur arrêt TTS adapter: $e');
       }
 
       // 3. NE PAS invalider les providers car cela recrée le service SANS Coqui
@@ -1256,7 +1262,20 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
 
   /// Lire le texte actuel
   Future<void> _playCurrentText() async {
+    print('🎧 DEBUG: === DÉBUT _playCurrentText ===');
+    
     try {
+      // Vérifier que _currentTask n'est pas null
+      if (_currentTask == null) {
+        print('❌ DEBUG: _currentTask est null, impossible de continuer');
+        _showMessage('Erreur: Aucune tâche sélectionnée');
+        return;
+      }
+      
+      print('🎧 DEBUG: _playCurrentText appelé pour tâche ${_currentTask.id}');
+      print('🎧 DEBUG: Catégorie de la tâche: ${_currentTask.category}');
+      print('🎧 DEBUG: Type de la tâche: ${_currentTask.type}');
+      
       // Afficher l'indicateur de chargement
       setState(() {
         _isLoadingAudio = true;
@@ -1271,9 +1290,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
 
       // Utiliser directement _currentTask pour être sûr d'avoir la bonne tâche
       final interfaceLanguage = ref.read(readerLanguageProvider);
-
-      print('🎧 DEBUG: _playCurrentText appelé pour tâche ${_currentTask.id}');
-      print('🎧 DEBUG: Catégorie de la tâche: ${_currentTask.category}');
+      
+      print('🎧 DEBUG: Interface language: $interfaceLanguage');
 
       // Vérifier la configuration audio pour cette tâche
       final audioPrefs = await ref
@@ -1291,9 +1309,9 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       print('  - API Key longueur: ${ttsConfig.coquiApiKey.length}');
       print('  - Endpoint: ${ttsConfig.coquiEndpoint}');
 
-      // Vérifier que le service SmartTTS est bien configuré
-      final smartTts = ref.read(audioTtsServiceProvider);
-      print('🎧 DEBUG: Service TTS actuel: ${smartTts.runtimeType}');
+      // Vérifier que l'adaptateur TTS est bien configuré
+      final ttsAdapter = ref.read(ttsAdapterProvider);
+      print('🎧 DEBUG: Adaptateur TTS actuel: ${ttsAdapter.runtimeType}');
 
       // Si c'est un fichier audio personnalisé, ne pas utiliser TTS
       if (audioPrefs.source == 'file' && audioPrefs.hasLocalFile) {
@@ -1302,7 +1320,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
       }
 
       // Récupérer le contenu textuel des deux langues POUR _currentTask
-      final (textFr, textAr) = await ref
+      // getBuiltTextsForTask retourne (arText, frText)
+      final (textAr, textFr) = await ref
           .read(contentServiceProvider)
           .getBuiltTextsForTask(_currentTask.id);
       print(
@@ -1314,7 +1333,8 @@ class _ReadingSessionPageState extends ConsumerState<ReadingSessionPage> {
           '🎧 DEBUG: Texte AR récupéré: ${textAr?.substring(0, textAr.length > 50 ? 50 : textAr.length) ?? "null"}...');
 
       // Déterminer quel texte utiliser selon l'interface
-      final currentText = interfaceLanguage == 'ar' ? textAr : textFr;
+      final lang = (interfaceLanguage.isNotEmpty ? interfaceLanguage : 'fr');
+      final currentText = lang == 'ar' ? textAr : textFr;
 
       if (currentText == null || currentText.trim().isEmpty) {
         _showMessage('Aucun contenu à lire');

@@ -80,6 +80,8 @@ RoutineCompletionStatus _calculateCompletionStatus(
     case 'daily':
       // Vérifier s'il y a une session complétée aujourd'hui
       final todaySessions = completedSessions.where((session) {
+        // Protection supplémentaire contre les valeurs null
+        if (session.endedAt == null) return false;
         final sessionDate = DateTime(
           session.endedAt!.year,
           session.endedAt!.month,
@@ -105,6 +107,8 @@ RoutineCompletionStatus _calculateCompletionStatus(
       final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
       final weekSessions = completedSessions.where((session) {
+        // Protection supplémentaire contre les valeurs null
+        if (session.endedAt == null) return false;
         final sessionDate = DateTime(
           session.endedAt!.year,
           session.endedAt!.month,
@@ -132,6 +136,8 @@ RoutineCompletionStatus _calculateCompletionStatus(
       final endOfMonth = DateTime(today.year, today.month + 1, 0);
 
       final monthSessions = completedSessions.where((session) {
+        // Protection supplémentaire contre les valeurs null
+        if (session.endedAt == null) return false;
         final sessionDate = DateTime(
           session.endedAt!.year,
           session.endedAt!.month,

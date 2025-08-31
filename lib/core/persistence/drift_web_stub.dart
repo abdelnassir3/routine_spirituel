@@ -12,6 +12,7 @@ class WebStubExecutor extends QueryExecutor {
     'session_completions': [],
     'user_settings': [],
     'aya_verses': [],
+    'task_progress': [],
   };
   
   // Compteur pour générer des IDs uniques - utilise un compteur simple pour éviter l'overflow DateTime
@@ -43,8 +44,8 @@ class WebStubExecutor extends QueryExecutor {
   
   // Helper pour extraire les colonnes depuis une requête INSERT
   List<String> _extractInsertColumns(String sql) {
-    // Pattern: INSERT INTO table (col1, col2, ...) VALUES
-    final match = RegExp(r'INSERT INTO\s+\w+\s*\(([^)]+)\)', caseSensitive: false).firstMatch(sql);
+    // Pattern: INSERT INTO "table" ("col1", "col2", ...) VALUES
+    final match = RegExp(r'INSERT\s+INTO\s+["`]?\w+["`]?\s*\(([^)]+)\)', caseSensitive: false, dotAll: true).firstMatch(sql);
     if (match != null) {
       final columnsStr = match.group(1)!;
       return columnsStr
@@ -75,6 +76,23 @@ class WebStubExecutor extends QueryExecutor {
       record['started_at'] ??= DateTime.now().millisecondsSinceEpoch;
       record['ended_at'] ??= null;
       record['snapshot_ref'] ??= null;
+    } else if (tableName == 'user_settings') {
+      // Valeurs par défaut alignées avec le schéma Drift
+      record['language'] ??= 'fr';
+      record['rtl_pref'] ??= false;
+      record['font_prefs'] ??= '{}';
+      record['tts_voice'] ??= null;
+      record['speed'] ??= 0.9;
+      record['haptics'] ??= true;
+      record['notifications'] ??= true;
+    } else if (tableName == 'task_progress') {
+      // Champs attendus par le schéma actuel (voir drift_schema.dart)
+      record['remaining_reps'] ??= 1;
+      record['elapsed_ms'] ??= 0;
+      record['word_index'] ??= 0;
+      record['verse_index'] ??= 0;
+      // last_update attendu en entier (ms epoch)
+      record['last_update'] ??= DateTime.now().millisecondsSinceEpoch;
     }
     
     // Ajouter les timestamps si non présents avec milliseconds
@@ -171,6 +189,11 @@ class WebStubExecutor extends QueryExecutor {
         record = _createRecordPositional(tableName, args);
       }
       
+      // Enforce uniqueness by id (simple upsert behavior)
+      final idStr = record['id']?.toString();
+      if (idStr != null) {
+        _tables[tableName]!.removeWhere((row) => row['id']?.toString() == idStr);
+      }
       _tables[tableName]!.add(record);
       print('✅ WebStub: Inserted into $tableName. Total records: ${_tables[tableName]!.length}');
       
@@ -233,6 +256,24 @@ class WebStubExecutor extends QueryExecutor {
       record['ended_at'] = null;
       // snapshot_ref est nullable donc pas requis  
       record['snapshot_ref'] = null;
+    } else if (tableName == 'user_settings') {
+      // Mapping minimal + défauts solides
+      if (args.length > 1) record['user_id'] = args[1];
+      record['language'] = 'fr';
+      record['rtl_pref'] = false;
+      record['font_prefs'] = '{}';
+      record['tts_voice'] = null;
+      record['speed'] = 0.9;
+      record['haptics'] = true;
+      record['notifications'] = true;
+    } else if (tableName == 'task_progress') {
+      if (args.length > 1) record['session_id'] = args[1];
+      if (args.length > 2) record['task_id'] = args[2];
+      if (args.length > 3) record['remaining_reps'] = args[3];
+      record['elapsed_ms'] = 0;
+      record['word_index'] = 0;
+      record['verse_index'] = 0;
+      record['last_update'] = DateTime.now().millisecondsSinceEpoch;
     }
     
     // Timestamps par défaut avec milliseconds
@@ -282,6 +323,57 @@ class WebStubExecutor extends QueryExecutor {
         }
       }
       
+      // Dédupliquer par id pour certaines tables (sécurité)
+      if (tableName == 'sessions' && results.length > 1) {
+        final byId = <String, Map<String, Object?>>{};
+        for (final row in results) {
+          final id = row['id']?.toString();
+          if (id == null) continue;
+          final prev = byId[id];
+          if (prev == null) {
+            byId[id] = row;
+          } else {
+            final prevTs = (prev['updated_at'] ?? prev['started_at'] ?? 0) as int;
+            final curTs = (row['updated_at'] ?? row['started_at'] ?? 0) as int;
+            if (curTs >= prevTs) byId[id] = row;
+          }
+        }
+        results = byId.values.toList();
+      }
+
+      // Normaliser les enregistrements retournés pour éviter les nulls inattendus
+      if (tableName == 'user_settings') {
+        for (final row in results) {
+          row['language'] ??= 'fr';
+          row['rtl_pref'] ??= false;
+          row['font_prefs'] ??= '{}';
+          row['speed'] ??= 0.9;
+          row['haptics'] ??= true;
+          row['notifications'] ??= true;
+        }
+      }
+
+      if (tableName == 'task_progress') {
+        for (final row in results) {
+          row['remaining_reps'] ??= 1;
+          row['elapsed_ms'] ??= 0;
+          row['word_index'] ??= 0;
+          row['verse_index'] ??= 0;
+          // Convertir last_update en int ms epoch
+          final lu = row['last_update'];
+          if (lu == null) {
+            row['last_update'] = DateTime.now().millisecondsSinceEpoch;
+          } else if (lu is int) {
+            // ok
+          } else if (lu is String) {
+            // Tenter de parser un entier si fourni en chaîne
+            final parsed = int.tryParse(lu);
+            row['last_update'] =
+                parsed ?? DateTime.now().millisecondsSinceEpoch;
+          }
+        }
+      }
+
       print('📊 WebStub: Found ${results.length} records in $tableName');
       return results;
     }

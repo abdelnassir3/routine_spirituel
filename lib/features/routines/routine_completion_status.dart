@@ -52,6 +52,12 @@ final routineCompletionStatusProvider =
       return RoutineCompletionStatus.pending;
     }
 
+    // ✅ FIX: Vérification supplémentaire de la fréquence du thème
+    if (theme.frequency.isEmpty) {
+      print('❌ Fréquence du thème vide pour routine: $routineId');
+      return RoutineCompletionStatus.pending;
+    }
+
     // Récupérer les sessions complétées
     final completedSessions =
         await sessionDao.getCompletedSessionsForRoutine(routineId);

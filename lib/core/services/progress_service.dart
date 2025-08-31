@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' as drift; // ✅
 
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
 import 'package:spiritual_routines/core/persistence/drift_schema.dart';
+import 'package:spiritual_routines/core/utils/id.dart';
 
 class ProgressService {
   ProgressService(this._ref);
@@ -61,7 +62,7 @@ class ProgressService {
       }
 
       await progressDao.upsertProgress(TaskProgressCompanion.insert(
-        id: _genId(),
+        id: newId(),
         sessionId: sessionId,
         taskId: t.id,
         remainingReps: reps,
@@ -197,7 +198,7 @@ class ProgressService {
       // Réinitialiser la tâche précédente
       final previousTask = tasks[currentIndex - 1];
       await progressDao.upsertProgress(TaskProgressCompanion(
-        id: drift.Value(progressMap[previousTask.id]?.id ?? _genId()),
+        id: drift.Value(progressMap[previousTask.id]?.id ?? newId()),
         sessionId: drift.Value(sessionId),
         taskId: drift.Value(previousTask.id),
         remainingReps: drift.Value(previousTask.defaultReps),
@@ -218,7 +219,7 @@ class ProgressService {
         .get();
     for (final t in tasks) {
       await progressDao.upsertProgress(TaskProgressCompanion(
-        id: drift.Value(_genId()),
+        id: drift.Value(newId()),
         sessionId: drift.Value(sessionId),
         taskId: drift.Value(t.id),
         remainingReps: drift.Value(t.defaultReps),
@@ -233,7 +234,6 @@ class ProgressService {
     await progressDao.deleteBySession(sessionId);
   }
 
-  String _genId() => DateTime.now().microsecondsSinceEpoch.toString();
 }
 
 final progressServiceProvider =

@@ -22,6 +22,23 @@ class WebStubExecutor extends QueryExecutor {
     return ++_idCounter;
   }
   
+  // ✅ FIX: Fonction sûre pour générer des timestamps sur le Web
+  static int _generateTimestamp() {
+    try {
+      final now = DateTime.now();
+      final timestamp = now.millisecondsSinceEpoch;
+      if (timestamp == 0 || timestamp < 0) {
+        // Fallback: utiliser un timestamp basé sur une époque fixe + compteur
+        return 1640995200000 + (++_idCounter); // 1er janvier 2022 + compteur
+      }
+      return timestamp;
+    } catch (e) {
+      print('⚠️ Erreur lors de la génération du timestamp: $e');
+      // Fallback: utiliser un timestamp basé sur une époque fixe + compteur
+      return 1640995200000 + (++_idCounter); // 1er janvier 2022 + compteur
+    }
+  }
+  
   // Helper pour parser le nom de la table depuis une requête SQL
   String? _extractTableName(String sql) {
     final upperSql = sql.toUpperCase().replaceAll('\n', ' ').replaceAll(RegExp(r'\s+'), ' ');
@@ -72,8 +89,8 @@ class WebStubExecutor extends QueryExecutor {
     
     // Ajouter les champs obligatoires selon la table
     if (tableName == 'sessions') {
-      // Ajouter les champs requis pour la table sessions avec milliseconds
-      record['started_at'] ??= DateTime.now().millisecondsSinceEpoch;
+      // ✅ FIX: Stocker comme int (millisecondes) pour compatibilité Drift
+      record['started_at'] ??= _generateTimestamp();
       record['ended_at'] ??= null;
       record['snapshot_ref'] ??= null;
     } else if (tableName == 'user_settings') {
@@ -92,12 +109,12 @@ class WebStubExecutor extends QueryExecutor {
       record['word_index'] ??= 0;
       record['verse_index'] ??= 0;
       // last_update attendu en entier (ms epoch)
-      record['last_update'] ??= DateTime.now().millisecondsSinceEpoch;
+      record['last_update'] ??= _generateTimestamp();
     }
     
-    // Ajouter les timestamps si non présents avec milliseconds
-    record['created_at'] ??= DateTime.now().millisecondsSinceEpoch;
-    record['updated_at'] ??= DateTime.now().millisecondsSinceEpoch;
+    // ✅ FIX: Timestamps comme int (millisecondes) pour compatibilité Drift
+    record['created_at'] ??= _generateTimestamp();
+    record['updated_at'] ??= _generateTimestamp();
     
     // Log pour déboguer
     print('📝 WebStub: Created record for $tableName: $record');
@@ -250,8 +267,8 @@ class WebStubExecutor extends QueryExecutor {
     } else if (tableName == 'sessions') {
       if (args.length > 1) record['routine_id'] = args[1];
       if (args.length > 2) record['state'] = args[2];
-      // Ajouter le timestamp started_at requis par le schéma Drift avec milliseconds
-      record['started_at'] = DateTime.now().millisecondsSinceEpoch;
+      // ✅ FIX: Stocker comme int (millisecondes) pour compatibilité Drift
+      record['started_at'] = _generateTimestamp();
       // ended_at est nullable donc pas requis
       record['ended_at'] = null;
       // snapshot_ref est nullable donc pas requis  
@@ -273,12 +290,12 @@ class WebStubExecutor extends QueryExecutor {
       record['elapsed_ms'] = 0;
       record['word_index'] = 0;
       record['verse_index'] = 0;
-      record['last_update'] = DateTime.now().millisecondsSinceEpoch;
+      record['last_update'] = _generateTimestamp();
     }
     
-    // Timestamps par défaut avec milliseconds
-    record['created_at'] ??= DateTime.now().millisecondsSinceEpoch;
-    record['updated_at'] ??= DateTime.now().millisecondsSinceEpoch;
+    // ✅ FIX: Timestamps comme int (millisecondes) pour compatibilité Drift
+    record['created_at'] ??= _generateTimestamp();
+    record['updated_at'] ??= _generateTimestamp();
     
     return record;
   }
@@ -323,6 +340,21 @@ class WebStubExecutor extends QueryExecutor {
         }
       }
       
+      // ✅ FIX: Filter for completed sessions with non-null ended_at
+      // This matches the getCompletedSessionsForRoutine query from drift_schema.dart
+      if (tableName == 'sessions' && 
+          statement.contains('state') && 
+          statement.contains('ended_at')) {
+        print('🔍 WebStub: Applying completed sessions filter (state=completed AND ended_at IS NOT NULL)');
+        results = results.where((row) {
+          final state = row['state']?.toString();
+          final endedAt = row['ended_at'];
+          final isCompleted = state == 'completed';
+          final hasEndedAt = endedAt != null;
+          return isCompleted && hasEndedAt;
+        }).toList();
+      }
+      
       // Dédupliquer par id pour certaines tables (sécurité)
       if (tableName == 'sessions' && results.length > 1) {
         final byId = <String, Map<String, Object?>>{};
@@ -353,24 +385,51 @@ class WebStubExecutor extends QueryExecutor {
         }
       }
 
+      // ✅ FIX: Les timestamps doivent rester en int (millisecondes) pour Drift
+      // Drift convertira lui-même les int en DateTime via son TypeConverter
+      if (tableName == 'sessions') {
+        for (final row in results) {
+          // S'assurer que started_at est un int
+          final startedAt = row['started_at'];
+          if (startedAt is DateTime) {
+            row['started_at'] = startedAt.millisecondsSinceEpoch;
+          } else if (startedAt is String) {
+            final parsed = int.tryParse(startedAt);
+            row['started_at'] = parsed ?? _generateTimestamp();
+          } else if (startedAt == null) {
+            row['started_at'] = _generateTimestamp();
+          }
+          
+          // S'assurer que ended_at est un int ou null
+          final endedAt = row['ended_at'];
+          if (endedAt is DateTime) {
+            row['ended_at'] = endedAt.millisecondsSinceEpoch;
+          } else if (endedAt is String) {
+            final parsed = int.tryParse(endedAt);
+            row['ended_at'] = parsed; // Peut être null
+          }
+          
+          print('📅 WebStub: Session ${row['id']}: started_at=${row['started_at']} (int), ended_at=${row['ended_at']} (int/null)');
+        }
+      }
+
       if (tableName == 'task_progress') {
         for (final row in results) {
           row['remaining_reps'] ??= 1;
           row['elapsed_ms'] ??= 0;
           row['word_index'] ??= 0;
           row['verse_index'] ??= 0;
-          // Convertir last_update en int ms epoch
+          // ✅ FIX: S'assurer que last_update est un int (millisecondes)
           final lu = row['last_update'];
           if (lu == null) {
-            row['last_update'] = DateTime.now().millisecondsSinceEpoch;
-          } else if (lu is int) {
-            // ok
+            row['last_update'] = _generateTimestamp();
+          } else if (lu is DateTime) {
+            row['last_update'] = lu.millisecondsSinceEpoch;
           } else if (lu is String) {
-            // Tenter de parser un entier si fourni en chaîne
             final parsed = int.tryParse(lu);
-            row['last_update'] =
-                parsed ?? DateTime.now().millisecondsSinceEpoch;
+            row['last_update'] = parsed ?? _generateTimestamp();
           }
+          // lu est déjà un int, on ne change rien
         }
       }
 
@@ -413,7 +472,7 @@ class WebStubExecutor extends QueryExecutor {
             updates.forEach((key, value) {
               row[key] = value;
             });
-            row['updated_at'] = DateTime.now().millisecondsSinceEpoch;
+            row['updated_at'] = _generateTimestamp();
             updateCount++;
             print('✅ WebStub: Updated record $id in $tableName');
           }

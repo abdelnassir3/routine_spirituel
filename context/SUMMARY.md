@@ -1,6 +1,6 @@
 # Résumé Projet - Spiritual Routines (RISAQ)
 
-**Dernière mise à jour: 2025-08-30**
+**Dernière mise à jour: 2025-08-31**
 
 ## Vue d'ensemble
 • **Application Flutter** de routines spirituelles bilingue français-arabe
@@ -40,11 +40,11 @@
 • **macOS**: Beta avec limitations background audio (60%)
 • **Web**: Expérimental avec stubs requis (40%)
 
-## État Actuel & Problème
+## État Actuel & Résolution Récente
 • **Infrastructure qualité**: ✅ 45 tests, CI/CD déployé, 72 dépendances mises à jour
-• **Problème Web actuel**: Boutons "Écouter"/"Mains libres" ne fonctionnent pas
-• **Erreur identifiée**: "Unexpected null value" dans UserSettings (drift_schema.g.dart:2471:73)
-• **Fix en cours**: Correction mapping user_settings dans drift_web_stub.dart
+• **Problème Web résolu**: Boutons "Écouter"/"Mains libres" maintenant fonctionnels
+• **Correction appliquée**: Erreur "Unexpected null value" dans UserSettings corrigée via drift_web_stub.dart
+• **Navigation Web**: Transition enhanced_modern_reader_page → reading_session_page opérationnelle
 
 ## Serveurs & APIs
 • **Timeout**: 15s par serveur avec circuit breaker (5 échecs)

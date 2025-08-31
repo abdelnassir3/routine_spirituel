@@ -22,6 +22,7 @@ import 'package:spiritual_routines/design_system/components/modern_layouts.dart'
 import 'package:spiritual_routines/design_system/components/modern_stats_card_compact.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
 import 'package:spiritual_routines/core/providers/haptic_provider.dart';
+import 'package:spiritual_routines/core/providers/routine_stats_providers.dart';
 
 class ModernHomePage extends ConsumerStatefulWidget {
   const ModernHomePage({super.key});
@@ -130,16 +131,16 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
 
     return AdaptiveNavigationScaffold(
       selectedIndex: _selectedIndex,
-      onDestinationSelected: (index) {
+      onDestinationSelected: (index) async {
         setState(() => _selectedIndex = index);
         switch (index) {
           case 0:
             break; // Already on home
           case 1:
-            context.go('/routines');
+            await _navigateToRoutines(context, ref);
             break;
           case 2:
-            context.go('/reader');
+            await _navigateToReader(context, ref);
             break;
           case 3:
             context.go('/settings');
@@ -382,55 +383,154 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                       desktop: 1.4,
                                     ),
                                     children: [
-                                      _buildStatsCard(
-                                        context,
-                                        title: 'Routines',
-                                        value: '5',
-                                        subtitle: 'Disponibles',
-                                        icon: Icons.list_alt_rounded,
-                                        color: ModernColors.categoryBlue,
-                                        onTap: () {
-                                          ref.hapticLightTap();
-                                          context.go('/routines');
+                                      Consumer(
+                                        builder: (context, ref, child) {
+                                          final statsAsync = ref.watch(routineStatsProvider);
+                                          return statsAsync.when(
+                                            data: (stats) => _buildStatsCard(
+                                              context,
+                                              title: 'Routines',
+                                              value: stats.totalRoutines.toString(),
+                                              subtitle: 'Disponibles',
+                                              icon: Icons.list_alt_rounded,
+                                              color: ModernColors.categoryBlue,
+                                              onTap: () {
+                                                ref.hapticLightTap();
+                                                context.go('/routines');
+                                              },
+                                            ),
+                                            loading: () => _buildStatsCard(
+                                              context,
+                                              title: 'Routines',
+                                              value: '...',
+                                              subtitle: 'Chargement',
+                                              icon: Icons.list_alt_rounded,
+                                              color: ModernColors.categoryBlue,
+                                              onTap: () {},
+                                            ),
+                                            error: (_, __) => _buildStatsCard(
+                                              context,
+                                              title: 'Routines',
+                                              value: '!',
+                                              subtitle: 'Erreur',
+                                              icon: Icons.error_outline,
+                                              color: Colors.red,
+                                              onTap: () {},
+                                            ),
+                                          );
                                         },
                                       ),
-                                      _buildStatsCard(
-                                        context,
-                                        title: 'Aujourd\'hui',
-                                        value: '3',
-                                        subtitle: 'Complétées',
-                                        icon: Icons.check_circle_rounded,
-                                        color: ModernColors.categoryGreen,
-                                        progress: 0.6,
-                                        showProgress: true,
-                                        onTap: () {
-                                          ref.hapticLightTap();
+                                      Consumer(
+                                        builder: (context, ref, child) {
+                                          final statsAsync = ref.watch(routineStatsProvider);
+                                          return statsAsync.when(
+                                            data: (stats) => _buildStatsCard(
+                                              context,
+                                              title: 'Aujourd\'hui',
+                                              value: stats.completedToday.toString(),
+                                              subtitle: 'Complétées',
+                                              icon: Icons.check_circle_rounded,
+                                              color: ModernColors.categoryGreen,
+                                              progress: stats.completionPercentage,
+                                              showProgress: true,
+                                              onTap: () {
+                                                ref.hapticLightTap();
+                                              },
+                                            ),
+                                            loading: () => _buildStatsCard(
+                                              context,
+                                              title: 'Aujourd\'hui',
+                                              value: '...',
+                                              subtitle: 'Chargement',
+                                              icon: Icons.check_circle_rounded,
+                                              color: ModernColors.categoryGreen,
+                                              onTap: () {},
+                                            ),
+                                            error: (_, __) => _buildStatsCard(
+                                              context,
+                                              title: 'Aujourd\'hui',
+                                              value: '!',
+                                              subtitle: 'Erreur',
+                                              icon: Icons.error_outline,
+                                              color: Colors.red,
+                                              onTap: () {},
+                                            ),
+                                          );
                                         },
                                       ),
                                       if (screenType != ScreenType.mobile) ...[
-                                        _buildStatsCard(
-                                          context,
-                                          title: 'Série',
-                                          value: '7',
-                                          subtitle: 'Jours',
-                                          icon: Icons
-                                              .local_fire_department_rounded,
-                                          color: ModernColors.categoryOrange,
-                                          onTap: () {
-                                            ref.hapticLightTap();
+                                        Consumer(
+                                          builder: (context, ref, child) {
+                                            final statsAsync = ref.watch(routineStatsProvider);
+                                            return statsAsync.when(
+                                              data: (stats) => _buildStatsCard(
+                                                context,
+                                                title: 'Série',
+                                                value: stats.currentStreak.toString(),
+                                                subtitle: 'Jours',
+                                                icon: Icons.local_fire_department_rounded,
+                                                color: ModernColors.categoryOrange,
+                                                onTap: () {
+                                                  ref.hapticLightTap();
+                                                },
+                                              ),
+                                              loading: () => _buildStatsCard(
+                                                context,
+                                                title: 'Série',
+                                                value: '...',
+                                                subtitle: 'Chargement',
+                                                icon: Icons.local_fire_department_rounded,
+                                                color: ModernColors.categoryOrange,
+                                                onTap: () {},
+                                              ),
+                                              error: (_, __) => _buildStatsCard(
+                                                context,
+                                                title: 'Série',
+                                                value: '0',
+                                                subtitle: 'Erreur',
+                                                icon: Icons.local_fire_department_rounded,
+                                                color: ModernColors.categoryOrange,
+                                                onTap: () {},
+                                              ),
+                                            );
                                           },
                                         ),
                                       ],
                                       if (screenType == ScreenType.desktop) ...[
-                                        _buildStatsCard(
-                                          context,
-                                          title: 'Total',
-                                          value: '42',
-                                          subtitle: 'Sessions',
-                                          icon: Icons.insights_rounded,
-                                          color: ModernColors.categoryPurple,
-                                          onTap: () {
-                                            ref.hapticLightTap();
+                                        Consumer(
+                                          builder: (context, ref, child) {
+                                            final statsAsync = ref.watch(routineStatsProvider);
+                                            return statsAsync.when(
+                                              data: (stats) => _buildStatsCard(
+                                                context,
+                                                title: 'Total',
+                                                value: stats.totalSessions.toString(),
+                                                subtitle: 'Sessions',
+                                                icon: Icons.insights_rounded,
+                                                color: ModernColors.categoryPurple,
+                                                onTap: () {
+                                                  ref.hapticLightTap();
+                                                },
+                                              ),
+                                              loading: () => _buildStatsCard(
+                                                context,
+                                                title: 'Total',
+                                                value: '...',
+                                                subtitle: 'Chargement',
+                                                icon: Icons.insights_rounded,
+                                                color: ModernColors.categoryPurple,
+                                                onTap: () {},
+                                              ),
+                                              error: (_, __) => _buildStatsCard(
+                                                context,
+                                                title: 'Total',
+                                                value: '0',
+                                                subtitle: 'Erreur',
+                                                icon: Icons.insights_rounded,
+                                                color: ModernColors.categoryPurple,
+                                                onTap: () {},
+                                              ),
+                                            );
                                           },
                                         ),
                                       ],
@@ -438,39 +538,86 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                   );
                                 }
                                 // Mobile: keep the row layout
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildStatsCard(
-                                        context,
-                                        title: 'Routines',
-                                        value: '5',
-                                        subtitle: 'Disponibles',
-                                        icon: Icons.list_alt_rounded,
-                                        color: ModernColors.categoryBlue,
-                                        onTap: () {
-                                          ref.hapticLightTap();
-                                          context.go('/routines');
-                                        },
+                                // Utiliser StreamBuilder pour les statistiques dynamiques
+                                final statsAsync = ref.watch(routineStatsProvider);
+                                
+                                return statsAsync.when(
+                                  data: (stats) => Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          context,
+                                          title: 'Routines',
+                                          value: stats.totalRoutines.toString(),
+                                          subtitle: 'Disponibles',
+                                          icon: Icons.list_alt_rounded,
+                                          color: ModernColors.categoryBlue,
+                                          onTap: () {
+                                            ref.hapticLightTap();
+                                            context.go('/routines');
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: _buildStatsCard(
-                                        context,
-                                        title: 'Aujourd\'hui',
-                                        value: '3',
-                                        subtitle: 'Complétées',
-                                        icon: Icons.check_circle_rounded,
-                                        color: ModernColors.categoryGreen,
-                                        progress: 0.6,
-                                        showProgress: true,
-                                        onTap: () {
-                                          ref.hapticLightTap();
-                                        },
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          context,
+                                          title: 'Aujourd\'hui',
+                                          value: stats.completedToday.toString(),
+                                          subtitle: 'Complétées',
+                                          icon: Icons.check_circle_rounded,
+                                          color: ModernColors.categoryGreen,
+                                          progress: stats.completionPercentage,
+                                          showProgress: true,
+                                          onTap: () {
+                                            ref.hapticLightTap();
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                  loading: () => Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          context,
+                                          title: 'Routines',
+                                          value: '...',
+                                          subtitle: 'Chargement',
+                                          icon: Icons.list_alt_rounded,
+                                          color: ModernColors.categoryBlue,
+                                          onTap: () {},
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          context,
+                                          title: 'Aujourd\'hui',
+                                          value: '...',
+                                          subtitle: 'Chargement',
+                                          icon: Icons.check_circle_rounded,
+                                          color: ModernColors.categoryGreen,
+                                          onTap: () {},
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  error: (error, stack) => Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          context,
+                                          title: 'Erreur',
+                                          value: '!',
+                                          subtitle: 'Données',
+                                          icon: Icons.error_outline,
+                                          color: Colors.red,
+                                          onTap: () {},
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
                             ),
@@ -622,79 +769,173 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
               ),
 
               // Liste des routines avec animation et responsive layout
-              SliverLayoutBuilder(
-                builder: (context, constraints) {
-                  final screenType = context.screenType;
-                  final routineCards = [
-                    _buildRoutineCard(
-                      context,
-                      title: 'Prière du matin',
-                      subtitle: 'Al-Fajr - 5 invocations',
-                      time: '05:30',
-                      category: 'prayer',
-                      delay: 0,
-                      onTap: () => _startRoutine(context, ref, 'morning'),
-                    ),
-                    _buildRoutineCard(
-                      context,
-                      title: 'Protection quotidienne',
-                      subtitle: 'Ayat al-Kursi + Adhkar',
-                      time: '06:00',
-                      category: 'protection',
-                      delay: 100,
-                      onTap: () => _startRoutine(context, ref, 'protection'),
-                    ),
-                    _buildRoutineCard(
-                      context,
-                      title: 'Gratitude du soir',
-                      subtitle: 'Remerciements et méditation',
-                      time: '20:00',
-                      category: 'gratitude',
-                      delay: 200,
-                      onTap: () => _startRoutine(context, ref, 'evening'),
-                    ),
-                  ];
-
-                  // Desktop/Tablet: Grid layout avec padding
-                  if (screenType != ScreenType.mobile) {
-                    return SliverPadding(
-                      padding: context.responsivePadding,
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: context.responsive(
-                            mobile: 1,
-                            tablet: 2,
-                            desktop: 3,
-                          ),
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: context.responsive(
-                            mobile: 3.5,
-                            tablet: 2.8,
-                            desktop: 3.0,
+              StreamBuilder<List<RoutineRow>>(
+                stream: ref.watch(recentRoutinesProvider.stream),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: context.responsivePadding,
+                        child: Column(
+                          children: List.generate(3, (index) => 
+                            Container(
+                              height: 80,
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
                           ),
                         ),
-                        delegate: SliverChildListDelegate([
-                          ...routineCards,
-                          const SizedBox(height: 100),
-                        ]),
                       ),
                     );
                   }
 
-                  // Mobile: List layout avec padding
-                  return SliverPadding(
-                    padding: context.responsivePadding,
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        routineCards[0],
-                        const SizedBox(height: 10),
-                        routineCards[1],
-                        const SizedBox(height: 10),
-                        routineCards[2],
-                        const SizedBox(height: 100),
-                      ]),
-                    ),
+                  if (snapshot.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: context.responsivePadding,
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 48,
+                                color: theme.colorScheme.error,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Erreur lors du chargement des routines',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final routines = snapshot.data ?? [];
+                  
+                  if (routines.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: context.responsivePadding,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.playlist_add_rounded,
+                                  size: 48,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Aucune routine créée',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Créez votre première routine pour commencer',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
+                              FilledButton.icon(
+                                onPressed: () {
+                                  ref.hapticImpact();
+                                  context.go('/routines');
+                                },
+                                icon: const Icon(Icons.add_rounded),
+                                label: const Text('Créer une routine'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.primary,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverLayoutBuilder(
+                    builder: (context, constraints) {
+                      final screenType = context.screenType;
+                      final routineCards = routines.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final routine = entry.value;
+                        return _buildRoutineCard(
+                          context,
+                          title: routine.nameFr.isNotEmpty ? routine.nameFr : routine.nameAr,
+                          subtitle: _getRoutineSubtitle(routine),
+                          time: _getRoutineTime(routine),
+                          category: _getRoutineCategory(routine),
+                          delay: index * 100,
+                          onTap: () => _startRoutineById(context, ref, routine.id),
+                        );
+                      }).toList();
+
+                      // Desktop/Tablet: Grid layout avec padding
+                      if (screenType != ScreenType.mobile) {
+                        return SliverPadding(
+                          padding: context.responsivePadding,
+                          sliver: SliverGrid(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: context.responsive(
+                                mobile: 1,
+                                tablet: 2,
+                                desktop: 3,
+                              ),
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: context.responsive(
+                                mobile: 3.5,
+                                tablet: 2.8,
+                                desktop: 3.0,
+                              ),
+                            ),
+                            delegate: SliverChildListDelegate([
+                              ...routineCards,
+                              const SizedBox(height: 100),
+                            ]),
+                          ),
+                        );
+                      }
+
+                      // Mobile: List layout avec padding
+                      return SliverPadding(
+                        padding: context.responsivePadding,
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            ...routineCards.map((card) => Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: card,
+                            )),
+                            const SizedBox(height: 100),
+                          ]),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -1127,6 +1368,155 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
         return 'du soir';
       default:
         return '';
+    }
+  }
+
+  /// Nouvelle fonction pour démarrer une routine par son ID
+  Future<void> _startRoutineById(BuildContext context, WidgetRef ref, String routineId) async {
+    try {
+      // Naviguer directement vers la routine
+      context.go('/routines/$routineId');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors du démarrage de la routine: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Obtient le sous-titre d'une routine
+  String _getRoutineSubtitle(RoutineRow routine) {
+    // TODO: Récupérer le nombre de tâches depuis TaskDao
+    return 'Routine spirituelle';
+  }
+
+  /// Obtient l'heure d'une routine (simulée pour l'instant)
+  String _getRoutineTime(RoutineRow routine) {
+    // TODO: Implémenter système d'horaires pour routines
+    switch (routine.nameFr.toLowerCase()) {
+      case String name when name.contains('matin'):
+        return '06:00';
+      case String name when name.contains('soir'):
+        return '20:00';
+      default:
+        return '12:00';
+    }
+  }
+
+  /// Obtient la catégorie d'une routine
+  String _getRoutineCategory(RoutineRow routine) {
+    final name = routine.nameFr.toLowerCase();
+    if (name.contains('prière') || name.contains('fajr')) {
+      return 'prayer';
+    } else if (name.contains('protection') || name.contains('ayat')) {
+      return 'protection';
+    } else if (name.contains('gratitude') || name.contains('soir')) {
+      return 'gratitude';
+    } else {
+      return 'general';
+    }
+  }
+
+  /// Navigation intelligente vers les routines
+  Future<void> _navigateToRoutines(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref.hapticLightTap();
+      final routineDao = ref.read(routineDaoProvider);
+      final routines = await routineDao.watchAll().first;
+
+      if (routines.isEmpty) {
+        // Aucune routine : aller à la page de création
+        context.go('/routines');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Créez votre première routine pour commencer'),
+              backgroundColor: ModernColors.info,
+            ),
+          );
+        }
+      } else if (routines.length == 1) {
+        // Une seule routine : aller directement à cette routine
+        context.go('/routines/${routines.first.id}');
+      } else {
+        // Plusieurs routines : aller à la liste
+        context.go('/routines');
+      }
+    } catch (e) {
+      // En cas d'erreur, navigation par défaut
+      context.go('/routines');
+    }
+  }
+
+  /// Navigation intelligente vers le lecteur
+  Future<void> _navigateToReader(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref.hapticLightTap();
+      final routineDao = ref.read(routineDaoProvider);
+      final sessionDao = ref.read(sessionDaoProvider);
+      
+      // Vérifier s'il y a une session active
+      final activeSession = await sessionDao.latestAnyActiveOrPaused();
+      
+      if (activeSession != null) {
+        // Session active : reprendre directement
+        context.go('/reader');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reprise de la session en cours...'),
+              backgroundColor: ModernColors.success,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Pas de session active : vérifier les routines disponibles
+      final routines = await routineDao.watchAll().first;
+      
+      if (routines.isEmpty) {
+        // Aucune routine : rediriger vers création
+        context.go('/routines');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Créez d\'abord une routine pour utiliser le lecteur'),
+              backgroundColor: ModernColors.warning,
+            ),
+          );
+        }
+      } else if (routines.length == 1) {
+        // Une seule routine : démarrer cette routine
+        final routine = routines.first;
+        context.go('/routines/${routine.id}');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Démarrage de "${routine.nameFr}"...'),
+              backgroundColor: ModernColors.info,
+            ),
+          );
+        }
+      } else {
+        // Plusieurs routines : aller à la sélection
+        context.go('/routines');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sélectionnez une routine à démarrer'),
+              backgroundColor: ModernColors.info,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // En cas d'erreur, navigation par défaut vers reader
+      context.go('/reader');
     }
   }
 }

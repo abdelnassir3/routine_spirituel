@@ -76,12 +76,13 @@ class WebInitializer {
         print('⚠️ Error checking themes: $e');
       }
       
-      // Créer un thème par défaut
+      // Créer un thème par défaut avec tous les champs requis
       await dao.upsertTheme(ThemesCompanion.insert(
         id: 'default-theme',
         nameFr: 'Lecture spirituelle',
         nameAr: 'القراءة الروحية',
         frequency: 'daily',
+        metadata: const Value('{}'), // JSON par défaut
       ));
       
       print('✓ Default theme created');
@@ -111,30 +112,36 @@ class WebInitializer {
       final themes = await ref.read(themeDaoProvider).watchAll().first;
       final themeId = themes.isNotEmpty ? themes.first.id : 'default-theme';
       
-      // Créer une routine par défaut
+      // Créer une routine par défaut avec tous les champs
       final routineId = 'default-routine';
       await routineDao.upsertRoutine(RoutinesCompanion.insert(
         id: routineId,
         themeId: themeId,
         nameFr: 'Ma routine quotidienne',
         nameAr: 'روتيني اليومي',
+        orderIndex: const Value(0), // Position dans la liste
+        isActive: const Value(true), // Routine active
       ));
       
-      // Créer une tâche exemple avec Value pour les champs optionnels
+      // Créer une tâche exemple avec tous les champs requis
       await taskDao.upsertTask(TasksCompanion(
-        id: Value('default-task'),
+        id: const Value('default-task'),
         routineId: Value(routineId),
         type: const Value('text'),
         category: const Value('dhikr'),
         defaultReps: const Value(33),
+        audioSettings: const Value('{}'),
+        displaySettings: const Value('{}'),
+        contentId: const Value.absent(), // nullable
         notesFr: const Value('Subhan Allah'),
         notesAr: const Value('سبحان الله'),
         orderIndex: const Value(0),
       ));
       
       print('✓ Default routine and task created');
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ Failed to create default routine: $e');
+      print('Stack trace: $stackTrace');
     }
   }
   

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:spiritual_routines/core/services/corpus_importer.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
 import 'package:spiritual_routines/core/services/database_seeder.dart';
+import 'package:spiritual_routines/core/services/database_reset_service.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
 import 'package:spiritual_routines/core/providers/tts_adapter_provider.dart';
@@ -26,6 +27,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:spiritual_routines/design_system/components/modern_navigation.dart';
 import 'package:spiritual_routines/design_system/components/modern_layouts.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
+
+/// Types de réinitialisation disponibles
+enum ResetType {
+  routines,
+  sessions,
+  all,
+}
 
 class ModernSettingsPage extends ConsumerStatefulWidget {
   const ModernSettingsPage({super.key});
@@ -1338,6 +1346,36 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
               ),
             ],
           ),
+
+        // Reset des données utilisateur
+        _buildSectionCard(
+          context,
+          title: 'Gestion des données',
+          icon: Icons.delete_sweep_rounded,
+          children: [
+            _buildActionTile(
+              title: 'Réinitialiser les routines',
+              subtitle: 'Supprimer toutes les routines et thèmes créés',
+              icon: Icons.playlist_remove_rounded,
+              onTap: () => _showResetDialog(context, ResetType.routines),
+            ),
+            const SizedBox(height: 8),
+            _buildActionTile(
+              title: 'Réinitialiser les sessions',
+              subtitle: 'Supprimer tout l\'historique de sessions',
+              icon: Icons.history_toggle_off_rounded,
+              onTap: () => _showResetDialog(context, ResetType.sessions),
+            ),
+            const SizedBox(height: 8),
+            _buildActionTile(
+              title: 'Réinitialiser toutes les données',
+              subtitle: 'Effacer complètement toutes les données (IRRÉVERSIBLE)',
+              icon: Icons.warning_rounded,
+              onTap: () => _showResetDialog(context, ResetType.all),
+            ),
+          ],
+        ),
+
         // Diacritizer section
         _buildSectionCard(
           context,
@@ -2377,5 +2415,165 @@ class _ModernSettingsPageState extends ConsumerState<ModernSettingsPage>
         ],
       ),
     );
+  }
+
+  /// Affiche le dialogue de confirmation pour la réinitialisation
+  Future<void> _showResetDialog(BuildContext context, ResetType resetType) async {
+    final theme = Theme.of(context);
+    final resetService = ref.read(databaseResetServiceProvider);
+    
+    String title, description, actionText;
+    Color actionColor;
+    IconData icon;
+
+    switch (resetType) {
+      case ResetType.routines:
+        title = 'Réinitialiser les routines';
+        description = 'Cette action supprimera définitivement :\n'
+            '• Toutes les routines créées\n'
+            '• Tous les thèmes personnalisés\n'
+            '• Toutes les tâches associées\n\n'
+            'Les sessions et préférences seront conservées.';
+        actionText = 'Supprimer les routines';
+        actionColor = Colors.orange;
+        icon = Icons.playlist_remove_rounded;
+        break;
+        
+      case ResetType.sessions:
+        title = 'Réinitialiser les sessions';
+        description = 'Cette action supprimera définitivement :\n'
+            '• Tout l\'historique des sessions\n'
+            '• Tous les progrès enregistrés\n'
+            '• Toutes les sauvegardes automatiques\n\n'
+            'Les routines et préférences seront conservées.';
+        actionText = 'Supprimer les sessions';
+        actionColor = Colors.blue;
+        icon = Icons.history_toggle_off_rounded;
+        break;
+        
+      case ResetType.all:
+        title = 'Réinitialiser toutes les données';
+        description = '⚠️ ATTENTION : Cette action supprimera DÉFINITIVEMENT :\n'
+            '• Toutes les routines et thèmes\n'
+            '• Tout l\'historique des sessions\n'
+            '• Tous les progrès et sauvegardes\n\n'
+            'Seules les préférences utilisateur seront conservées.\n\n'
+            'CETTE ACTION EST IRRÉVERSIBLE !';
+        actionText = 'TOUT SUPPRIMER';
+        actionColor = Colors.red;
+        icon = Icons.warning_rounded;
+        break;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          icon,
+          size: 48,
+          color: actionColor,
+        ),
+        title: Text(
+          title,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            description,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              height: 1.4,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: actionColor,
+            ),
+            child: Text(
+              actionText,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!confirmed || !context.mounted) return;
+
+    // Afficher indicateur de progression
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Réinitialisation en cours...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      ResetResult result;
+      
+      switch (resetType) {
+        case ResetType.routines:
+          result = await resetService.resetRoutinesOnly();
+          break;
+        case ResetType.sessions:
+          result = await resetService.resetSessionsOnly();
+          break;
+        case ResetType.all:
+          result = await resetService.resetAll();
+          break;
+      }
+
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Fermer dialogue de progression
+        
+        if (result.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Réinitialisation réussie : ${result.deletedCount} éléments supprimés',
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erreur : ${result.errorMessage}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Fermer dialogue de progression
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur inattendue : $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
   }
 }

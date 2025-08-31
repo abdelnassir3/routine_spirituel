@@ -16,6 +16,7 @@ import 'package:spiritual_routines/l10n/app_localizations.dart';
 import 'package:spiritual_routines/core/services/database_seeder.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/api_key_initializer.dart';
+import 'package:spiritual_routines/core/persistence/web_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,11 +81,27 @@ void main() async {
   ));
 }
 
-class SpiritualRoutinesApp extends ConsumerWidget {
+class SpiritualRoutinesApp extends ConsumerStatefulWidget {
   const SpiritualRoutinesApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SpiritualRoutinesApp> createState() => _SpiritualRoutinesAppState();
+}
+
+class _SpiritualRoutinesAppState extends ConsumerState<SpiritualRoutinesApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialiser les données Web après le premier frame
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await WebInitializer.initialize(ref);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
     final isDarkMode = ref.watch(modernThemeProvider);
 

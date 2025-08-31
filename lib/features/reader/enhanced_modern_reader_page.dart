@@ -1889,40 +1889,61 @@ class _EnhancedModernReaderPageState
       // IMPORTANT: Récupérer la routine à laquelle appartient la tâche sélectionnée
       String routineId = task.routineId;
 
-      // Vérifier que la routine existe
-      final allRoutines = await ref.read(routineDaoProvider).watchAll().first;
+      // Vérifier que la routine existe avec gestion d'erreur améliorée
+      List<RoutineRow> allRoutines = [];
+      try {
+        allRoutines = await ref.read(routineDaoProvider).watchAll().first;
+      } catch (e) {
+        print('⚠️ Erreur lors de la récupération des routines: $e');
+        // Continue avec une liste vide
+      }
+      
       final routine = allRoutines.where((r) => r.id == routineId).firstOrNull;
       if (routine == null) {
         // print('⚠️ Routine ${task.routineId} non trouvée, création d\'une routine temporaire');
         // Créer une routine temporaire si la routine n'existe pas
         routineId = DateTime.now().millisecondsSinceEpoch.toString();
 
-        // Créer ou utiliser un thème par défaut
-        final themes = await ref.read(themeDaoProvider).watchAll().first;
+        // Créer ou utiliser un thème par défaut avec gestion d'erreur
+        List<ThemeRow> themes = [];
+        try {
+          themes = await ref.read(themeDaoProvider).watchAll().first;
+        } catch (e) {
+          print('⚠️ Erreur lors de la récupération des thèmes: $e');
+        }
+        
         String themeId;
         if (themes.isNotEmpty) {
           themeId = themes.first.id;
         } else {
           // Créer un thème par défaut
           themeId = 'default-theme';
-          await ref.read(themeDaoProvider).upsertTheme(
-                ThemesCompanion.insert(
-                  id: themeId,
-                  nameFr: 'Lecture spirituelle',
-                  nameAr: 'القراءة الروحية',
-                  frequency: 'daily',
-                ),
-              );
+          try {
+            await ref.read(themeDaoProvider).upsertTheme(
+                  ThemesCompanion.insert(
+                    id: themeId,
+                    nameFr: 'Lecture spirituelle',
+                    nameAr: 'القراءة الروحية',
+                    frequency: 'daily',
+                  ),
+                );
+          } catch (e) {
+            print('⚠️ Erreur lors de la création du thème par défaut: $e');
+          }
         }
 
-        await ref.read(routineDaoProvider).upsertRoutine(
-              RoutinesCompanion.insert(
-                id: routineId,
-                themeId: themeId,
-                nameFr: 'Lecture temporaire',
-                nameAr: 'قراءة مؤقتة',
-              ),
-            );
+        try {
+          await ref.read(routineDaoProvider).upsertRoutine(
+                RoutinesCompanion.insert(
+                  id: routineId,
+                  themeId: themeId,
+                  nameFr: 'Lecture temporaire',
+                  nameAr: 'قراءة مؤقتة',
+                ),
+              );
+        } catch (e) {
+          print('⚠️ Erreur lors de la création de la routine temporaire: $e');
+        }
       } else {
         // print('✅ Routine ${task.routineId} trouvée: ${routine.nameFr}');
       }
@@ -1970,10 +1991,34 @@ class _EnhancedModernReaderPageState
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('🚨 Erreur lors du démarrage de la session: $e');
+      print('Stack trace: $stackTrace');
+      
       if (mounted) {
+        // Message d'erreur plus détaillé pour aider au débogage
+        String errorMessage = 'Erreur lors du démarrage';
+        if (e.toString().contains('null')) {
+          errorMessage = 'Erreur de configuration. Veuillez rafraîchir la page.';
+        } else {
+          errorMessage = 'Erreur: ${e.toString().substring(0, e.toString().length.clamp(0, 100))}';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur lors du démarrage: $e')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Réessayer',
+              textColor: Colors.white,
+              onPressed: () {
+                // Réinitialiser et réessayer
+                _isStartingSession = false;
+                _navigateToReadingSession(task);
+              },
+            ),
+          ),
         );
       }
     } finally {

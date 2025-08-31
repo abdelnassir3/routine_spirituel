@@ -14,29 +14,60 @@ class UserSettingsService {
   static const _defaultId = 'local';
 
   Future<UserSettingsRow> _getOrCreate() async {
-    final dao = _ref.read(userSettingsDaoProvider);
-    final existing = await dao.getById(_defaultId);
-    if (existing != null) return existing;
-    
-    // Create new user settings with default values
-    await dao.upsert(UserSettingsCompanion.insert(id: _defaultId));
-    
-    // Try to retrieve the newly created settings
-    final created = await dao.getById(_defaultId);
-    if (created != null) return created;
-    
-    // If still null (e.g., in web stub), return a default instance
-    return UserSettingsRow(
-      id: _defaultId,
-      userId: null,
-      language: 'fr',
-      rtlPref: false,
-      fontPrefs: '{}',
-      ttsVoice: null,
-      speed: 0.9,
-      haptics: true,
-      notifications: true,
-    );
+    try {
+      final dao = _ref.read(userSettingsDaoProvider);
+      
+      // Tentative de récupération
+      try {
+        final existing = await dao.getById(_defaultId);
+        if (existing != null) return existing;
+      } catch (e) {
+        print('⚠️ UserSettingsService: Error retrieving settings: $e');
+        // Continue avec la création
+      }
+      
+      // Create new user settings with default values
+      try {
+        await dao.upsert(UserSettingsCompanion.insert(
+          id: _defaultId,
+        ));
+        
+        // Try to retrieve the newly created settings
+        final created = await dao.getById(_defaultId);
+        if (created != null) return created;
+      } catch (e) {
+        print('⚠️ UserSettingsService: Error creating settings: $e');
+        // Continue avec le fallback
+      }
+      
+      // If still null (e.g., in web stub), return a default instance
+      print('🔧 UserSettingsService: Using fallback default settings');
+      return UserSettingsRow(
+        id: _defaultId,
+        userId: null,
+        language: 'fr',
+        rtlPref: false,
+        fontPrefs: '{}',
+        ttsVoice: null,
+        speed: 0.9,
+        haptics: true,
+        notifications: true,
+      );
+    } catch (e) {
+      // Fallback ultime en cas d'erreur critique
+      print('🚨 UserSettingsService: Critical error, using hardcoded defaults: $e');
+      return UserSettingsRow(
+        id: _defaultId,
+        userId: null,
+        language: 'fr',
+        rtlPref: false,
+        fontPrefs: '{}',
+        ttsVoice: null,
+        speed: 0.9,
+        haptics: true,
+        notifications: true,
+      );
+    }
   }
 
   Future<BilingualDisplay> getDisplayPreference() async {

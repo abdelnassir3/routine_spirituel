@@ -375,13 +375,48 @@ class WebStubExecutor extends QueryExecutor {
 
       // Normaliser les enregistrements retournés pour éviter les nulls inattendus
       if (tableName == 'user_settings') {
+        // Si aucun résultat, créer un enregistrement par défaut
+        if (results.isEmpty && statement.contains('WHERE') && statement.contains('id')) {
+          // Extraire l'ID demandé
+          final requestedId = args.isNotEmpty ? (args[0]?.toString() ?? 'local') : 'local';
+          print('🔧 WebStub: Creating default user_settings for id: $requestedId');
+          
+          // Créer un enregistrement par défaut complet
+          final defaultRecord = <String, Object?>{
+            'id': requestedId,
+            'user_id': null,
+            'language': 'fr',
+            'rtl_pref': false,
+            'font_prefs': '{}',
+            'tts_voice': null,
+            'speed': 0.9,
+            'haptics': true,
+            'notifications': true,
+            'created_at': _generateTimestamp(),
+            'updated_at': _generateTimestamp(),
+          };
+          
+          // Ajouter à la table pour les futures requêtes
+          _tables['user_settings']!.add(defaultRecord);
+          results = [defaultRecord];
+        }
+        
+        // S'assurer que tous les champs obligatoires sont présents
         for (final row in results) {
+          // Valeurs obligatoires non-nullables
+          row['id'] ??= 'local';
           row['language'] ??= 'fr';
           row['rtl_pref'] ??= false;
           row['font_prefs'] ??= '{}';
           row['speed'] ??= 0.9;
           row['haptics'] ??= true;
           row['notifications'] ??= true;
+          // Valeurs optionnelles (peuvent rester null)
+          // row['user_id'] - peut être null
+          // row['tts_voice'] - peut être null
+          // Timestamps
+          row['created_at'] ??= _generateTimestamp();
+          row['updated_at'] ??= _generateTimestamp();
         }
       }
 

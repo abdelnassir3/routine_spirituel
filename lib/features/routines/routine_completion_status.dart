@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
 import 'package:spiritual_routines/core/persistence/drift_schema.dart';
@@ -10,9 +12,19 @@ enum RoutineCompletionStatus {
 }
 
 /// Provider pour obtenir le statut de completion d'une routine
+/// Utilise autoDispose pour éviter les fuites mémoire et keepAlive pour le cache
 final routineCompletionStatusProvider =
-    FutureProvider.family<RoutineCompletionStatus, String>(
+    FutureProvider.family.autoDispose<RoutineCompletionStatus, String>(
         (ref, routineId) async {
+  // Cache pendant 30 secondes pour éviter les requêtes répétitives
+  ref.keepAlive();
+  
+  // Timer pour invalider le cache après 30 secondes
+  final timer = Timer(const Duration(seconds: 30), () {
+    ref.invalidateSelf();
+  });
+  ref.onDispose(() => timer.cancel());
+
   final sessionDao = ref.read(sessionDaoProvider);
   final themeDaoRef = ref.read(themeDaoProvider);
   final routineDaoRef = ref.read(routineDaoProvider);

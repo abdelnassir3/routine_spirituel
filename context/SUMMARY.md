@@ -1,52 +1,50 @@
-# Résumé Projet - Spiritual Routines (RISAQ)
+# RÉSUMÉ PROJET - Spiritual Routines (RISAQ)
 
-**Dernière mise à jour: 2025-08-31**
+**Dernière mise à jour: 2025-08-31 - PERSISTANCE RÉSOLUE**
 
 ## Vue d'ensemble
-• **Application Flutter** de routines spirituelles bilingue français-arabe
-• **Cible**: Pratiquants musulmans francophones et arabophones
-• **Mission**: Moderniser pratiques spirituelles avec technologie mobile
+• **Application Flutter** bilingue français-arabe pour routines spirituelles musulmanes  
+• **Architecture**: Drift + Isar persistance, Riverpod state management, offline-first  
+• **Public**: Pratiquants musulmans francophones et arabophones  
+• **Status**: Problème persistance routines **COMPLÈTEMENT RÉSOLU** (2025-08-31)  
+
+## Fonctionnalités Core
+• **Compteur persistant** avec feedback haptique et reprise après interruption  
+• **Lecteur bilingue** RTL/LTR avec surlignage audio synchronisé  
+• **TTS hybride** Edge-TTS/Coqui avec détection automatique contenu coranique  
+• **Mode mains-libres** auto-avance pendant pratique  
+• **Catégorisation** par thèmes (louange, protection, pardon)  
 
 ## Architecture Technique
-• **Framework**: Flutter 3.x avec Dart 3.x, null safety strict
-• **State Management**: Riverpod 2.5+ obligatoire
-• **Persistance**: Drift (SQL) + Isar (NoSQL) pour stockage hybride
-• **Audio**: just_audio + audio_service pour background
-• **Localisation**: Support RTL/LTR natif avec polices optimisées
+• **Framework**: Flutter 3.x + Dart null safety, Riverpod 2.5+  
+• **Persistance**: Drift (SQL) + Isar (NoSQL) + WebStub pour tests Web  
+• **Audio**: just_audio + audio_service, background support  
+• **Multilingue**: Support RTL/LTR natif, polices Noto Arabic + Inter  
+• **Web**: Expérimental (40%) avec WebStub fonctionnel  
 
-## Fonctionnalités Clés
-• **Compteur persistant**: Décrémenteur avec haptic feedback et reprise après interruption
-• **Lecteur bilingue**: Affichage RTL/LTR simultané avec surlignage audio synchronisé
-• **TTS intelligent**: Détection automatique contenu coranique → routage API spécialisée
-• **Mode mains-libres**: Auto-avance pour pratique pendant autres activités
-• **Mode offline-first**: Fonctionnement complet sans connexion
+## Serveurs & API
+• **Edge-TTS**: 168.231.112.71:8010 (principal, synthèse FR/AR)  
+• **Coqui XTTS**: 168.231.112.71:8001 (haute qualité, backup)  
+• **Quran APIs**: AlQuran.cloud + fallbacks pour récitations  
+• **Circuit breaker**: 5 échecs → fallback Flutter TTS local  
+• **Cache**: 7j/100MB TTS, 30j Quran, hit rate objectif 85%  
 
-## Infrastructure Serveur
-• **Edge-TTS**: 168.231.112.71:8010 (principal, synthèse FR/AR)
-• **Coqui XTTS-v2**: 168.231.112.71:8001 (haute qualité)
-• **APIs Quran**: AlQuran.cloud, Everyayah.com (récitations coraniques)
-• **Fallback**: Edge-TTS → Coqui → Flutter TTS → Mode silencieux
-• **Cache**: 7j/100MB TTS, 30j Quran, objectif hit rate 85%
+## Performance & Qualité
+• **KPI**: TTI <2s, latence UI <200ms, crash rate <0.1%  
+• **Tests**: 45+ tests unitaires créés, coverage 60% minimum  
+• **Sécurité**: OWASP Grade B, AES-256, authentification biométrique  
+• **Bundle**: <35MB, mémoire <150MB  
 
-## Contraintes Performance
-• **Latence UI**: <200ms pour toutes interactions
-• **Time to Interactive**: <2s au démarrage à froid
-• **Utilisation mémoire**: <150MB en fonctionnement
-• **Bundle size**: <35MB pour déploiement stores
-• **Crash rate**: <0.1% objectif production
+## RÉSOLUTION MAJEURE (2025-08-31)
+• **Problème persistance RÉSOLU**: WebInitializer corrigé - tous champs obligatoires fournis  
+• **Corrections**: TasksCompanion, ThemesCompanion, RoutinesCompanion avec Value() wrappers  
+• **Providers dynamiques**: ModernHomePage utilise StreamBuilder au lieu données codées  
+• **Service reset**: DatabaseResetService complet dans settings  
+• **Interface adaptée**: Gestion états vides quand aucune routine  
+• **Résultat**: ✅ Routine par défaut créée automatiquement sans erreur  
 
-## Support Plateformes
-• **iOS/Android**: Support production complet (95%)
-• **macOS**: Beta avec limitations background audio (60%)
-• **Web**: Expérimental avec stubs requis (40%)
-
-## État Actuel & Résolution Récente
-• **Infrastructure qualité**: ✅ 45 tests, CI/CD déployé, 72 dépendances mises à jour
-• **Problème Web résolu**: Boutons "Écouter"/"Mains libres" maintenant fonctionnels
-• **Correction appliquée**: Erreur "Unexpected null value" dans UserSettings corrigée via drift_web_stub.dart
-• **Navigation Web**: Transition enhanced_modern_reader_page → reading_session_page opérationnelle
-
-## Serveurs & APIs
-• **Timeout**: 15s par serveur avec circuit breaker (5 échecs)
-• **Sécurité**: AES-256 local, HTTPS production, pas de secrets en dur
-• **Environnement**: HTTP dev autorisé, HTTPS obligatoire production
+## État Infrastructure
+• **CI/CD**: GitHub Actions lint → test → build → deploy  
+• **Scripts**: lint.sh, test.sh déployés et testés  
+• **Dépendances**: 72 packages mis à jour, js package forcé v0.7.2  
+• **Design system**: colors.dart, typography.dart, shadows.dart réparés

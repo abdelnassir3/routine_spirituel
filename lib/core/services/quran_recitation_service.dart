@@ -186,9 +186,16 @@ class QuranRecitationService implements AudioTtsService {
         if (audioRecitations != null && audioRecitations.isNotEmpty) {
           final audioUrlPath = audioRecitations.first['url'] as String?;
 
-          if (audioUrlPath != null) {
+          if (audioUrlPath != null && audioUrlPath.isNotEmpty) {
             // Construire l'URL complète
             final fullAudioUrl = 'https://verses.quran.com/$audioUrlPath';
+            
+            TtsLogger.info('URL audio Quran trouvée', {
+              'surah': surah,
+              'ayah': ayah,
+              'reciter': reciter,
+              'url': fullAudioUrl,
+            });
 
             // Télécharger et cacher localement
             final localPath =
@@ -203,6 +210,13 @@ class QuranRecitationService implements AudioTtsService {
           }
         }
       }
+
+      TtsLogger.warning('API Quran.com échoué, passage au fallback', {
+        'statusCode': response.statusCode,
+        'hasData': response.data != null,
+        'surah': surah,
+        'ayah': ayah,
+      });
 
       // Fallback : utiliser une API alternative
       return await _getFallbackRecitationUrl(surah, ayah, reciter);
@@ -231,12 +245,32 @@ class QuranRecitationService implements AudioTtsService {
       final fallbackUrl =
           'https://everyayah.com/data/$reciterCode/$surahPadded$ayahPadded.mp3';
 
-      TtsLogger.info('Utilisation URL fallback', {
+      TtsLogger.info('Utilisation URL fallback Everyayah', {
         'url': fallbackUrl,
         'surah': surah,
         'ayah': ayah,
         'reciter': reciter,
+        'reciterCode': reciterCode,
       });
+
+      // Vérifier que l'URL est accessible
+      try {
+        final testResponse = await _dio.head(fallbackUrl);
+        if (testResponse.statusCode == 200) {
+          TtsLogger.info('URL fallback Everyayah validée');
+          return fallbackUrl;
+        } else {
+          TtsLogger.warning('URL fallback Everyayah inaccessible', {
+            'statusCode': testResponse.statusCode
+          });
+        }
+      } catch (headError) {
+        TtsLogger.warning('Test HEAD fallback Everyayah échoué', {
+          'error': headError.toString()
+        });
+        // Retourner l'URL quand même, elle pourrait fonctionner
+        return fallbackUrl;
+      }
 
       return fallbackUrl;
     } catch (e) {
@@ -292,12 +326,26 @@ class QuranRecitationService implements AudioTtsService {
   String _selectReciterFromVoice(String voice) {
     final voiceLower = voice.toLowerCase();
 
+    // Éviter de vocaliser les identifiants techniques
+    if (voiceLower.startsWith('v') && voiceLower.length <= 3) {
+      TtsLogger.warning('Identifiant technique détecté, utilisation récitateur par défaut', {
+        'voice': voice,
+        'fallback': 'AbdulBaset'
+      });
+      return 'AbdulBaset';
+    }
+
     if (voiceLower.contains('sudais')) return 'Sudais';
     if (voiceLower.contains('mishary')) return 'Mishary';
     if (voiceLower.contains('minshawi')) return 'Minshawi';
     if (voiceLower.contains('husary')) return 'Husary';
+    if (voiceLower.contains('basit') || voiceLower.contains('abdul')) return 'AbdulBaset';
 
     // Par défaut : Abdul Basit
+    TtsLogger.info('Voix non reconnue, utilisation récitateur par défaut', {
+      'voice': voice,
+      'fallback': 'AbdulBaset'
+    });
     return 'AbdulBaset';
   }
 
@@ -323,6 +371,36 @@ class QuranRecitationService implements AudioTtsService {
     } catch (e) {
       TtsLogger.error('Erreur stop récitation', {'error': e.toString()});
     }
+  }
+
+  @override
+  Future<void> pause() async {
+    try {
+      await _audioPlayer.pause();
+      TtsLogger.info('Récitation coranique mise en pause');
+    } catch (e) {
+      TtsLogger.error('Erreur pause récitation', {'error': e.toString()});
+    }
+  }
+
+  @override
+  Future<void> resume() async {
+    try {
+      await _audioPlayer.play();
+      TtsLogger.info('Récitation coranique reprise');
+    } catch (e) {
+      TtsLogger.error('Erreur resume récitation', {'error': e.toString()});
+    }
+  }
+
+  @override
+  bool get isPlaying {
+    return _audioPlayer.playing;
+  }
+
+  @override
+  bool get isPaused {
+    return !_audioPlayer.playing && _audioPlayer.duration != null;
   }
 
   @override

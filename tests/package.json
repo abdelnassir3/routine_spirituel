@@ -1,0 +1,19 @@
+{
+  "name": "spiritual-routines-ui-tests",
+  "version": "1.0.0",
+  "description": "Playwright UI tests for Flutter Spiritual Routines app",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "install-browsers": "playwright install",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

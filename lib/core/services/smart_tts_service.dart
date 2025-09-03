@@ -300,6 +300,48 @@ class SmartTtsService implements AudioTtsService {
   }
 
   @override
+  Future<void> pause() async {
+    try {
+      if (_edgeTtsService != null && _edgeTtsAvailable) {
+        await _edgeTtsService!.pause();
+      } else {
+        await _flutterTtsService.pause();
+      }
+    } catch (e) {
+      TtsLogger.error('Erreur pause smart TTS', null, e);
+    }
+  }
+
+  @override
+  Future<void> resume() async {
+    try {
+      if (_edgeTtsService != null && _edgeTtsAvailable) {
+        await _edgeTtsService!.resume();
+      } else {
+        await _flutterTtsService.resume();
+      }
+    } catch (e) {
+      TtsLogger.error('Erreur resume smart TTS', null, e);
+    }
+  }
+
+  @override
+  bool get isPlaying {
+    if (_edgeTtsService != null && _edgeTtsAvailable) {
+      return _edgeTtsService!.isPlaying;
+    }
+    return _flutterTtsService.isPlaying;
+  }
+
+  @override
+  bool get isPaused {
+    if (_edgeTtsService != null && _edgeTtsAvailable) {
+      return _edgeTtsService!.isPaused;
+    }
+    return _flutterTtsService.isPaused;
+  }
+
+  @override
   Stream<Duration> positionStream() {
     // Retourner le stream du service actif
     if (_edgeTtsService != null && _edgeTtsAvailable) {

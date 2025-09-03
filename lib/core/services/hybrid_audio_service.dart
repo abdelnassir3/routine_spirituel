@@ -40,12 +40,15 @@ class HybridAudioService implements AudioTtsService {
       'speed': speed,
     });
 
+    // Déclarer detection outside try block so it's available in catch
+    QuranDetectionResult? detection;
+
     try {
       // Arrêter tout audio en cours
       await stop();
 
       // Détecter le type de contenu
-      final detection = await QuranContentDetector.detectQuranContent(text);
+      detection = await QuranContentDetector.detectQuranContent(text);
 
       TtsLogger.info('🔍 Détection de contenu', {
         'isQuranic': detection.isQuranic,
@@ -112,170 +115,176 @@ class HybridAudioService implements AudioTtsService {
       if (_activeService == _quranRecitationService && allowFallback) {
         TtsLogger.warning('🔄 Fallback récitation -> TTS normal', {
           'reason': e.toString(),
+          'originalText': text.substring(0, text.length > 50 ? 50 : text.length) + '...',
         });
 
-        try {
-          _activeService = _smartTtsService;
-          await _smartTtsService.playText(
-            text,
-            voice: voice,
-            speed: speed,
-            pitch: pitch,
-            allowFallback: true,
-          );
-
-          TtsLogger.metric('hybrid.fallback.success', 1);
-          return;
-        } catch (fallbackError) {
-          TtsLogger.error('Échec fallback TTS', {
-            'error': fallbackError.toString(),
+        // NE PAS faire fallback pour le contenu coranique détecté
+        // Car le TTS normal ne peut pas lire correctement les versets
+        if (detection != null && detection.isQuranic && detection.confidence > 0.8) {
+          TtsLogger.error('❌ Échec récitation coranique - pas de fallback TTS pour préserver la qualité', {
+            'surah': detection.verse?.surah,
+            'ayah': detection.verse?.ayah,
+            'confidence': detection.confidence,
+            'reason': 'TTS normal inadequate for Quranic content'
           });
+          
+          // Pour le contenu coranique, échouer silencieusement plutot que de dégrader
+          TtsLogger.metric('hybrid.quran.fallback.blocked', 1);
+          return; // Ne pas faire de fallback
         }
-      }
 
-      TtsLogger.metric('hybrid.error', 1);
-      rethrow;
+        // OK pour faire fallback sur texte normal
+        _activeService = _smartTtsService;
+        await _smartTtsService.playText(
+          text,
+          voice: voice,
+          speed: speed,
+          pitch: pitch,
+          allowFallback: false, // Pas de fallback supplémentaire
+        );
+
+        TtsLogger.metric('hybrid.fallback.success', 1);
+      } else {
+        // Re-throw si pas de fallback possible
+        TtsLogger.metric('hybrid.fallback.failed', 1);
+        rethrow;
+      }
     } finally {
       timer.stop();
     }
   }
 
-  /// Ajuste la vitesse pour la récitation coranique
-  double _adjustSpeedForQuran(double originalSpeed) {
-    // La récitation coranique doit être plus lente que le TTS normal
-    // Mapper les vitesses : 0.5-1.5 -> 0.3-0.8
-    final adjustedSpeed = (originalSpeed * 0.6).clamp(0.3, 0.8);
-
-    TtsLogger.info('⚡ Ajustement vitesse récitation', {
-      'original': originalSpeed,
-      'adjusted': adjustedSpeed,
-    });
-
-    return adjustedSpeed;
-  }
-
-  /// Détecte si le texte contient de l'arabe
-  bool _isArabicText(String text) {
-    if (text.trim().isEmpty) return false;
-
-    final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
-    return arabicRegex.hasMatch(text);
+  @override
+  Future<void> speak(String text) async {
+    // Implementation simple: utilise playText avec voix par défaut
+    await playText(
+      text,
+      voice: 'fr-FR-DeniseNeural', // Voix par défaut
+      speed: 0.9,
+      pitch: 1.0,
+      allowFallback: true,
+    );
   }
 
   @override
   Future<void> stop() async {
     try {
-      // Arrêter tous les services
+      // Arrêter les deux services
       await Future.wait([
         _smartTtsService.stop(),
         _quranRecitationService.stop(),
       ]);
 
       _activeService = null;
-
-      TtsLogger.info('🛑 HybridAudioService arrêté');
+      TtsLogger.info('⏹️ HybridAudioService arrêté');
     } catch (e) {
-      TtsLogger.error('Erreur stop HybridAudioService', {
+      TtsLogger.error('Erreur lors de l\'arrêt HybridAudioService', {
         'error': e.toString(),
       });
     }
   }
 
+  @override
+  Future<void> pause() async {
+    if (_activeService != null) {
+      await _activeService!.pause();
+      TtsLogger.info('⏸️ HybridAudioService mis en pause');
+    }
+  }
+
+  @override
+  Future<void> resume() async {
+    if (_activeService != null) {
+      await _activeService!.resume();
+      TtsLogger.info('▶️ HybridAudioService repris');
+    }
+  }
+
+  @override
+  bool get isPlaying {
+    return _activeService?.isPlaying ?? false;
+  }
+
+  @override
+  bool get isPaused {
+    return _activeService?.isPaused ?? false;
+  }
+  
+  @override
+  Future<void> cacheIfNeeded(String text, {required String voice, double speed = 1.0}) async {
+    // Déléguer au service actif ou à SmartTTS par défaut
+    if (_activeService != null) {
+      await _activeService!.cacheIfNeeded(text, voice: voice, speed: speed);
+    } else {
+      await _smartTtsService.cacheIfNeeded(text, voice: voice, speed: speed);
+    }
+  }
+  
   @override
   Stream<Duration> positionStream() {
-    // Retourner le stream du service actif, sinon celui de smartTTS par défaut
-    if (_activeService != null) {
-      return _activeService!.positionStream();
-    }
-    return _smartTtsService.positionStream();
+    // Retourner le stream du service actif ou un stream vide
+    return _activeService?.positionStream() ?? const Stream.empty();
   }
 
-  @override
-  Future<void> cacheIfNeeded(
-    String text, {
-    required String voice,
-    double speed = 1.0,
-  }) async {
-    try {
-      // Détecter le type de contenu pour le pré-cache
-      final detection = await QuranContentDetector.detectQuranContent(text);
+  /// Ajuste la vitesse pour la récitation coranique
+  /// La récitation doit être plus lente pour être respectueuse
+  double _adjustSpeedForQuran(double originalSpeed) {
+    // Réduire la vitesse de 20% pour la récitation
+    final adjustedSpeed = originalSpeed * 0.8;
+    
+    // Garder dans les limites raisonnables (0.3 - 1.2)
+    return adjustedSpeed.clamp(0.3, 1.2);
+  }
 
-      if (detection.isQuranic && detection.confidence > 0.8) {
-        // Pré-cacher la récitation coranique
-        await _quranRecitationService.cacheIfNeeded(
-          text,
-          voice: voice,
-          speed: _adjustSpeedForQuran(speed),
-        );
-
-        TtsLogger.info('Pré-cache récitation initié', {
-          'surah': detection.verse?.surah,
-          'ayah': detection.verse?.ayah,
-        });
-      } else {
-        // Pré-cacher le TTS normal
-        await _smartTtsService.cacheIfNeeded(
-          text,
-          voice: voice,
-          speed: speed,
-        );
-
-        TtsLogger.info('Pré-cache TTS normal initié', {
-          'textLength': text.length,
-        });
+  /// Détecte si un texte contient principalement des caractères arabes
+  bool _isArabicText(String text) {
+    if (text.trim().isEmpty) return false;
+    
+    int arabicCount = 0;
+    int totalLetters = 0;
+    
+    for (int i = 0; i < text.length; i++) {
+      final codeUnit = text.codeUnitAt(i);
+      
+      // Vérifier si c'est une lettre (pas de ponctuation, espaces, etc.)
+      if ((codeUnit >= 0x0041 && codeUnit <= 0x005A) || // A-Z
+          (codeUnit >= 0x0061 && codeUnit <= 0x007A) || // a-z
+          (codeUnit >= 0x0600 && codeUnit <= 0x06FF) || // Arabic block
+          (codeUnit >= 0x0750 && codeUnit <= 0x077F) || // Arabic Supplement
+          (codeUnit >= 0x08A0 && codeUnit <= 0x08FF)) { // Arabic Extended-A
+        totalLetters++;
+        
+        // Vérifier si c'est un caractère arabe
+        if ((codeUnit >= 0x0600 && codeUnit <= 0x06FF) || // Arabic block
+            (codeUnit >= 0x0750 && codeUnit <= 0x077F) || // Arabic Supplement
+            (codeUnit >= 0x08A0 && codeUnit <= 0x08FF)) { // Arabic Extended-A
+          arabicCount++;
+        }
       }
-    } catch (e) {
-      TtsLogger.debug('Échec pré-cache hybride', {
-        'error': e.toString(),
-      });
     }
+    
+    if (totalLetters == 0) return false;
+    
+    // Si plus de 50% des lettres sont arabes, considérer comme texte arabe
+    return (arabicCount / totalLetters) > 0.5;
   }
 
-  /// Détecte le type de contenu d'un texte
-  Future<QuranDetectionResult> detectContentType(String text) async {
-    return await QuranContentDetector.detectQuranContent(text);
-  }
-
-  /// Obtient des informations sur le service actuellement actif
-  Map<String, dynamic> getActiveServiceInfo() {
-    return {
-      'activeService': _activeService?.runtimeType.toString() ?? 'none',
-      'smartTtsAvailable': true,
-      'quranServiceAvailable': true,
-    };
-  }
-
-  void dispose() {
-    try {
-      _quranRecitationService.dispose();
-      // Note: ne pas disposer _smartTtsService car il peut être partagé
-    } catch (e) {
-      TtsLogger.error('Erreur dispose HybridAudioService', {
-        'error': e.toString(),
-      });
-    }
-  }
+  /// Méthodes pour compatibilité avec l'interface
+  String get currentVoice => _activeService?.toString() ?? 'HybridService';
+  double get currentSpeed => 0.9; // Vitesse par défaut
+  double get currentPitch => 1.0; // Pitch par défaut
 }
 
-/// Provider Riverpod pour HybridAudioService
+/// Provider pour le service hybride
 final hybridAudioServiceProvider = Provider<HybridAudioService>((ref) {
-  final smartTts = ref.watch(smartTtsServiceProvider);
+  final smartTtsService = ref.watch(smartTtsServiceProvider);
   final quranService = ref.watch(quranRecitationServiceProvider);
-
-  final hybridService = HybridAudioService(
-    smartTtsService: smartTts,
+  
+  return HybridAudioService(
+    smartTtsService: smartTtsService,
     quranRecitationService: quranService,
   );
-
-  ref.onDispose(() {
-    hybridService.dispose();
-  });
-
-  return hybridService;
 });
 
-/// Provider principal pour remplacer audioTtsServiceProvider
-/// Utilise HybridAudioService pour router intelligemment le contenu
-final audioTtsServiceHybridProvider = Provider<AudioTtsService>((ref) {
-  return ref.watch(hybridAudioServiceProvider);
-});
+/// Alias pour la compatibilité avec le code existant
+final audioTtsServiceHybridProvider = hybridAudioServiceProvider;

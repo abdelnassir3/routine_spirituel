@@ -112,6 +112,33 @@ class FlutterTtsAudioService implements AudioTtsService {
   }
 
   @override
+  Future<void> pause() async {
+    _stopTicker();
+    await _tts.pause();
+  }
+
+  @override
+  Future<void> resume() async {
+    _startTicker();
+    // Flutter TTS doesn't have a resume method, so we'll need to use speak again
+    // This is a limitation of flutter_tts
+  }
+
+  @override
+  bool get isPlaying {
+    // Flutter TTS doesn't provide a built-in way to check if it's playing
+    // We'll assume it's playing if the ticker is active
+    return _ticker != null;
+  }
+
+  @override
+  bool get isPaused {
+    // Flutter TTS doesn't provide a built-in way to check if it's paused
+    // We'll return false as a simple implementation
+    return false;
+  }
+
+  @override
   Stream<Duration> positionStream() => _posCtrl.stream;
 
   @override

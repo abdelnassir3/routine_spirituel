@@ -11,10 +11,21 @@ class AudioApiConfig {
   static const String edgeTtsVoicesEndpoint = '$edgeTtsBaseUrl/voices';
 
   // Configuration APIs Coraniques (publiques)
-  static const String alQuranBaseUrl =
-      'https://cdn.alquran.cloud/media/audio/ayah';
-  static const String everyayahBaseUrl = 'https://everyayah.com/data';
-  static const String quranComBaseUrl = 'https://verses.quran.com';
+  // Utilise proxy CORS en développement pour éviter les erreurs CORS
+  static const String _corsProxyUrl = 'http://localhost:3000';
+  static const bool _useCorsProxy = true; // Set to false for production
+  
+  static String get alQuranBaseUrl => _useCorsProxy 
+    ? '$_corsProxyUrl/?url=https://cdn.alquran.cloud/media/audio/ayah'
+    : 'https://cdn.alquran.cloud/media/audio/ayah';
+    
+  static String get everyayahBaseUrl => _useCorsProxy
+    ? '$_corsProxyUrl/?url=https://everyayah.com/data' 
+    : 'https://everyayah.com/data';
+    
+  static String get quranComBaseUrl => _useCorsProxy
+    ? '$_corsProxyUrl/?url=https://verses.quran.com'
+    : 'https://verses.quran.com';
 
   // Timeouts et limites
   static const Duration defaultTimeout = Duration(seconds: 30);
@@ -54,6 +65,8 @@ class AudioApiConfig {
     print('🔧 Configuration Audio API:');
     print('  Edge-TTS: $edgeTtsBaseUrl');
     print('  API Key: ${edgeTtsApiKey.substring(0, 8)}...');
+    print('  AlQuran: $alQuranBaseUrl');
+    print('  Proxy CORS: $_useCorsProxy');
     print('  Configuré: $isEdgeTtsConfigured');
     print('  Valide: $isConfigurationValid');
   }

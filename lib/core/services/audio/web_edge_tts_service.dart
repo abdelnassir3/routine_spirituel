@@ -264,7 +264,7 @@ class WebEdgeTtsService implements AudioTtsService {
   }
 
   @override
-  bool get isSpeaking => _isSpeaking;
+  bool get isPlaying => _isSpeaking;
 
   @override
   bool get isPaused => _currentAudio?.paused ?? false;

@@ -240,6 +240,36 @@ class EdgeTtsAdapterService implements AudioTtsService {
   }
 
   @override
+  Future<void> pause() async {
+    try {
+      await _audioPlayer.pause();
+      TtsLogger.info('Audio Edge-TTS mis en pause');
+    } catch (e) {
+      TtsLogger.error('Erreur pause Edge-TTS', null, e);
+    }
+  }
+
+  @override
+  Future<void> resume() async {
+    try {
+      await _audioPlayer.play();
+      TtsLogger.info('Audio Edge-TTS repris');
+    } catch (e) {
+      TtsLogger.error('Erreur resume Edge-TTS', null, e);
+    }
+  }
+
+  @override
+  bool get isPlaying {
+    return _audioPlayer.playing;
+  }
+
+  @override
+  bool get isPaused {
+    return !_audioPlayer.playing && _audioPlayer.duration != null;
+  }
+
+  @override
   Stream<Duration> positionStream() {
     return _positionController.stream;
   }

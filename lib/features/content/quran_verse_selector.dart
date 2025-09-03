@@ -68,6 +68,37 @@ class _QuranVerseSelectorState extends ConsumerState<QuranVerseSelector> {
     super.dispose();
   }
 
+  /// Retourne les sourates valides (non-nulles et sans doublons)
+  List<Map<String, dynamic>> _getValidSurahs() {
+    if (_surahsMetadata.isEmpty) return [];
+    
+    // Filtrer les éléments valides et supprimer les doublons
+    final validSurahs = <Map<String, dynamic>>[];
+    final seenNumbers = <int>{};
+    
+    for (final surah in _surahsMetadata) {
+      // Vérifier que l'élément a un numéro valide
+      final number = surah['number'];
+      if (number == null || number is! int || number <= 0 || number > 114) {
+        continue;
+      }
+      
+      // Éviter les doublons
+      if (seenNumbers.contains(number)) {
+        continue;
+      }
+      
+      seenNumbers.add(number);
+      validSurahs.add(surah);
+    }
+    
+    // Trier par numéro de sourate
+    validSurahs.sort((a, b) => (a['number'] as int).compareTo(b['number'] as int));
+    
+    print('🔧 DEBUG: ${validSurahs.length} sourates valides sur ${_surahsMetadata.length}');
+    return validSurahs;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -138,11 +169,11 @@ class _QuranVerseSelectorState extends ConsumerState<QuranVerseSelector> {
               labelText: 'Sourate',
               border: OutlineInputBorder(),
             ),
-            items: _surahsMetadata.map((surah) {
+            items: _getValidSurahs().map((surah) {
               return DropdownMenuItem(
                 value: surah['number'] as int,
                 child: Text(
-                  '${surah['number']}. ${surah['frenchName'] ?? surah['name']}',
+                  '${surah['number']}. ${surah['frenchName'] ?? surah['name'] ?? 'Sourate ${surah['number']}'}',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -185,11 +216,11 @@ class _QuranVerseSelectorState extends ConsumerState<QuranVerseSelector> {
             labelText: 'Sourate',
             border: OutlineInputBorder(),
           ),
-          items: _surahsMetadata.map((surah) {
+          items: _getValidSurahs().map((surah) {
             return DropdownMenuItem(
               value: surah['number'] as int,
               child: Text(
-                '${surah['number']}. ${surah['frenchName'] ?? surah['name']}',
+                '${surah['number']}. ${surah['frenchName'] ?? surah['name'] ?? 'Sourate ${surah['number']}'}',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),

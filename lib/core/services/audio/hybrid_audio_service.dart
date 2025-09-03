@@ -263,8 +263,8 @@ class HybridAudioSettings {
   final bool enableDiacritization;
 
   const HybridAudioSettings({
-    this.quranicProvider = QuranicAudioProvider.alQuran,
-    this.preferredReciter = 'ar.sudais',
+    this.quranicProvider = QuranicAudioProvider.everyayah,
+    this.preferredReciter = 'AbdulSamad_64kbps_QuranExplorer.Com',
     this.arabicVoice = EdgeTtsVoice.arabicHamed,
     this.frenchVoice = EdgeTtsVoice.frenchDenise,
     this.useQuranicApiForDuas = true,
@@ -278,8 +278,8 @@ class HybridAudioSettings {
 
   factory HybridAudioSettings.highQuality() {
     return const HybridAudioSettings(
-      quranicProvider: QuranicAudioProvider.alQuran,
-      preferredReciter: 'ar.sudais',
+      quranicProvider: QuranicAudioProvider.everyayah,
+      preferredReciter: 'Alafasy_128kbps',
       arabicVoice: EdgeTtsVoice.arabicZariyah,
       frenchVoice: EdgeTtsVoice.frenchHenri,
       enableDiacritization: true, // Activé par défaut pour haute qualité
@@ -289,8 +289,8 @@ class HybridAudioSettings {
   /// Paramètres optimisés pour performance (sans diacritisation)
   factory HybridAudioSettings.performance() {
     return const HybridAudioSettings(
-      quranicProvider: QuranicAudioProvider.alQuran,
-      preferredReciter: 'Alafasy_128kbps',
+      quranicProvider: QuranicAudioProvider.everyayah,
+      preferredReciter: 'AbdulSamad_64kbps_QuranExplorer.Com',
       arabicVoice: EdgeTtsVoice.arabicHamed,
       frenchVoice: EdgeTtsVoice.frenchDenise,
       enableDiacritization: false, // Désactivé pour performance

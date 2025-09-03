@@ -7,6 +7,10 @@ abstract class AudioTtsService {
     bool allowFallback = false,
   });
   Future<void> stop();
+  Future<void> pause();
+  Future<void> resume();
+  bool get isPlaying;
+  bool get isPaused;
   Stream<Duration> positionStream();
   Future<void> cacheIfNeeded(String text,
       {required String voice, double speed = 1.0});

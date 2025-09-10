@@ -21,3 +21,7 @@ node_modules/
 *.key
 *.pem
 secrets/
+
+# Swarm/AI tool data directories
+.swarm/
+data/cipher-sessions.db*

@@ -677,12 +677,16 @@ class _ModernHomePageState extends ConsumerState<ModernHomePage>
                                       size: 24,
                                     ),
                                     const SizedBox(width: 12),
-                                    Text(
-                                      'Créer une nouvelle routine',
-                                      style:
-                                          theme.textTheme.titleMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
+                                    Flexible(
+                                      child: Text(
+                                        'Créer une nouvelle routine',
+                                        style:
+                                            theme.textTheme.titleMedium?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
                                     ),
                                   ],

@@ -1,84 +1,43 @@
-import 'package:flutter/foundation.dart';
-import 'tts_adapter.dart';
-
-/// Stub TTS pour Web - Compatible avec compilation mobile
-/// Cette classe permet au code de compiler sur mobile sans erreurs
-class WebTtsAdapter implements TtsAdapter {
-  bool _isSpeaking = false;
-  bool _isPaused = false;
-  VoidCallback? _completionCallback;
-
-  @override
-  Future<void> speak(
-    String text, {
-    required String voice,
-    double speed = 0.55,
+/// Stub pour les adaptateurs TTS Web sur plateformes non-web
+class TtsWebStub {
+  bool get isSupported => false;
+  
+  Future<List<String>> getVoices() async => [];
+  
+  Future<void> speak(String text, {
+    String? voice,
+    double rate = 1.0,
     double pitch = 1.0,
-    bool allowFallback = true,
   }) async {
-    if (kDebugMode) {
-      debugPrint('🔇 Web TTS Stub: Simulation (mobile platform)');
-    }
-    
-    _isSpeaking = true;
-    _isPaused = false;
-
-    // Simulation basée sur longueur du texte
-    final estimatedDuration = Duration(
-      milliseconds: (text.length * 50 / speed).round(),
-    );
-
-    await Future.delayed(estimatedDuration);
-
-    _isSpeaking = false;
-    _completionCallback?.call();
+    // No-op pour tests sur plateformes non-web
   }
+  
+  Future<void> stop() async {}
+  Future<void> pause() async {}
+  Future<void> resume() async {}
+  void dispose() {}
+}
 
-  @override
-  Future<void> stop() async {
-    _isSpeaking = false;
-    _isPaused = false;
+/// Stub pour WebEdgeTtsService sur plateformes non-web  
+class WebEdgeTtsServiceStub {
+  bool get isSupported => false;
+  
+  Future<List<String>> getAvailableVoices() async => [
+    'fr-FR-DeniseNeural',
+    'ar-SA-HamedNeural'
+  ];
+  
+  Future<void> speak(String text, {
+    String? voice,
+    double rate = 1.0,
+    double pitch = 1.0,
+  }) async {
+    // Simulation pour tests
+    await Future.delayed(const Duration(milliseconds: 100));
   }
-
-  @override
-  Future<void> pause() async {
-    _isPaused = true;
-  }
-
-  @override
-  Future<void> resume() async {
-    _isPaused = false;
-  }
-
-  @override
-  bool get isSpeaking => _isSpeaking;
-
-  @override
-  bool get isPaused => _isPaused;
-
-  @override
-  Future<List<String>> getAvailableVoices() async {
-    return [
-      'fr-FR-DeniseNeural',
-      'ar-SA-HamedNeural',
-      'en-US-AriaNeural',
-    ];
-  }
-
-  @override
-  Future<bool> isVoiceAvailable(String voice) async {
-    final voices = await getAvailableVoices();
-    return voices.contains(voice);
-  }
-
-  @override
-  void setCompletionCallback(VoidCallback? callback) {
-    _completionCallback = callback;
-  }
-
-  @override
-  Future<void> dispose() async {
-    await stop();
-    _completionCallback = null;
-  }
+  
+  Future<void> stop() async {}
+  Future<void> pause() async {}
+  Future<void> resume() async {}
+  void dispose() {}
 }

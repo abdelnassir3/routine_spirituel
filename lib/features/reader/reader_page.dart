@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
+import 'dart:io' show Platform, File if (dart.library.html) 'package:spiritual_routines/core/platform/platform_stub.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:spiritual_routines/core/providers/haptic_provider.dart';
@@ -7,8 +7,8 @@ import 'package:spiritual_routines/core/services/progress_service.dart';
 import 'package:spiritual_routines/core/services/content_service.dart';
 import 'package:spiritual_routines/features/reader/current_progress.dart';
 import 'package:spiritual_routines/features/session/session_state.dart';
-import 'package:spiritual_routines/features/counter/hands_free_controller.dart';
-import 'package:spiritual_routines/features/reader/highlight_controller.dart';
+import 'package:spiritual_routines/features/counter/hands_free_controller.dart' as hands_free;
+import 'package:spiritual_routines/features/reader/highlight_controller.dart' as highlight;
 import 'package:spiritual_routines/features/reader/focus_mode.dart';
 import 'package:spiritual_routines/features/reader/reading_prefs.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
@@ -699,7 +699,7 @@ class _ReadingPane extends ConsumerWidget {
               // Récupérer le contenu de la tâche pour afficher le titre
               final contentTitle = ref.watch(_contentTitleProvider(p.taskId));
               final content = ref.watch(_contentForTaskProvider(p.taskId));
-              final highlight = ref.watch(highlightControllerProvider);
+              final highlightState = ref.watch(highlight.highlightControllerProvider);
 
               return Column(
                 children: [
@@ -765,7 +765,7 @@ class _ReadingPane extends ConsumerWidget {
                         final Widget arBox =
                             _TextBox(title: 'AR', text: arText, isArabic: true);
                         final Widget frBox = _HighlightBox(
-                            title: 'FR', text: frText, index: highlight.index);
+                            title: 'FR', text: frText, index: highlightState.index);
                         switch (mode) {
                           case BilingualDisplay.arOnly:
                             return arBox;
@@ -1691,17 +1691,17 @@ class _CounterBar extends ConsumerWidget {
                 Expanded(
                   child: FilledButton.icon(
                     icon: Consumer(builder: (context, ref, _) {
-                      final running = ref.watch(handsFreeControllerProvider);
+                      final running = ref.watch(hands_free.handsFreeControllerProvider);
                       return Icon(running
                           ? Icons.pause_rounded
                           : Icons.play_arrow_rounded);
                     }),
                     label: Consumer(builder: (context, ref, _) {
-                      final running = ref.watch(handsFreeControllerProvider);
+                      final running = ref.watch(hands_free.handsFreeControllerProvider);
                       return Text(running ? 'Pause' : 'Mains libres');
                     }),
                     onPressed: () async {
-                      final running = ref.read(handsFreeControllerProvider);
+                      final running = ref.read(hands_free.handsFreeControllerProvider);
                       if (!running) {
                         // Choose TTS language from display preference
                         final mode = ref.read(bilingualDisplayProvider);
@@ -1721,10 +1721,10 @@ class _CounterBar extends ConsumerWidget {
                           final frText = pair.$2;
                           if (frText != null && frText.trim().isNotEmpty) {
                             ref
-                                .read(highlightControllerProvider.notifier)
+                                .read(highlight.highlightControllerProvider.notifier)
                                 .setText(frText);
                             ref
-                                .read(highlightControllerProvider.notifier)
+                                .read(highlight.highlightControllerProvider.notifier)
                                 .start(msPerWord: 300);
                           }
                         } else {
@@ -1736,7 +1736,7 @@ class _CounterBar extends ConsumerWidget {
                           return;
                         }
                         await ref
-                            .read(handsFreeControllerProvider.notifier)
+                            .read(hands_free.handsFreeControllerProvider.notifier)
                             .start(sessionId,
                                 language: ttsLang,
                                 speed: ttsSpeed,
@@ -1750,9 +1750,9 @@ class _CounterBar extends ConsumerWidget {
                         }
                       } else {
                         await ref
-                            .read(handsFreeControllerProvider.notifier)
+                            .read(hands_free.handsFreeControllerProvider.notifier)
                             .stop();
-                        ref.read(highlightControllerProvider.notifier).stop();
+                        ref.read(highlight.highlightControllerProvider.notifier).stop();
                         ref.hapticSelection();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -1863,13 +1863,13 @@ class _StopAndCompleteBar extends ConsumerWidget {
                     onPressed: () async {
                       // Stop one-shot TTS and hands-free if any
                       await ref.read(audioTtsServiceProvider).stop();
-                      final running = ref.read(handsFreeControllerProvider);
+                      final running = ref.read(hands_free.handsFreeControllerProvider);
                       if (running) {
                         await ref
-                            .read(handsFreeControllerProvider.notifier)
+                            .read(hands_free.handsFreeControllerProvider.notifier)
                             .stop();
                       }
-                      ref.read(highlightControllerProvider.notifier).stop();
+                      ref.read(highlight.highlightControllerProvider.notifier).stop();
                       ref.hapticSelection();
                     },
                     icon: const Icon(Icons.stop_rounded),

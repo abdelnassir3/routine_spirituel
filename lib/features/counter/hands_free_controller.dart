@@ -6,10 +6,10 @@ import 'package:spiritual_routines/core/persistence/dao_providers.dart';
 import 'package:spiritual_routines/features/session/session_state.dart';
 import 'package:spiritual_routines/core/services/user_settings_service.dart';
 import 'package:spiritual_routines/core/services/hybrid_audio_service.dart';
+import 'package:spiritual_routines/features/reader/reading_prefs.dart';
 
 // Stub classes pour éviter les erreurs de compilation
 enum HandsFreeStatus { idle, starting, playing, paused, error }
-enum BilingualDisplay { arOnly, frOnly, both }
 
 class HandsFreeState {
   final HandsFreeStatus status;

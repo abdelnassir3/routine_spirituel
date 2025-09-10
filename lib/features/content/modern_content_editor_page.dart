@@ -114,11 +114,11 @@ class _ModernContentEditorPageState
 
       if (mounted) {
         setState(() {
-          _rawCtrlFR.text = fr.$1 ?? '';
-          _correctedCtrlFR.text = fr.$2 ?? '';
-          _rawCtrlAR.text = ar.$1 ?? '';
-          _correctedCtrlAR.text = ar.$2 ?? '';
-          _diacritizedCtrlAR.text = ar.$3 ?? '';
+          _rawCtrlFR.text = fr?['raw'] ?? '';
+          _correctedCtrlFR.text = fr?['corrected'] ?? '';
+          _rawCtrlAR.text = ar?['raw'] ?? '';
+          _correctedCtrlAR.text = ar?['corrected'] ?? '';
+          _diacritizedCtrlAR.text = ar?['diacritized'] ?? '';
         });
       }
 
@@ -1365,9 +1365,9 @@ class _ModernContentEditorPageState
             await content.putContent(
               taskId: widget.taskId,
               locale: language,
+              content: versesText,
               kind: 'verses',
               title: versesRefs,
-              body: versesText,
             );
 
             // Feedback utilisateur
@@ -1480,22 +1480,22 @@ class _ModernContentEditorPageState
                                 Icon(
                                   _getImportIcon(),
                                   color: Colors.white,
-                                  size: 24,
+                                  size: 20,
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 8),
                                 Flexible(
                                   child: Text(
                                     _getImportLabel(),
                                     style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
+                          ),
                     ),
                   ),
                 ),
@@ -2158,9 +2158,9 @@ class _ModernContentEditorPageState
     await content.putContent(
       taskId: widget.taskId,
       locale: language,
+      content: text,
       kind: kind,
       title: _lastImportedTitle,
-      body: text,
     );
 
     if (mounted) {

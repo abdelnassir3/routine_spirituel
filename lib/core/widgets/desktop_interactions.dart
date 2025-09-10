@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 
 /// Widget that adds desktop-specific interactions like hover effects,
 /// right-click support, and keyboard focus

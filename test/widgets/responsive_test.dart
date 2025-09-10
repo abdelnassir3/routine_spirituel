@@ -264,10 +264,7 @@ void main() {
   // Clean up after tests
   tearDown(() {
     // Reset to default test size
-    TestWidgetsFlutterBinding.ensureInitialized().window.physicalSizeTestValue =
-        null;
-    TestWidgetsFlutterBinding.ensureInitialized()
-        .window
-        .devicePixelRatioTestValue = null;
+    final binding = TestWidgetsFlutterBinding.ensureInitialized();
+    binding.platformDispatcher.clearAllTestValues();
   });
 }

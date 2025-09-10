@@ -16,8 +16,8 @@ class WebHapticStub implements HapticAdapter {
   void _initializeVibration() {
     try {
       // Vérifier support de l'API Vibration
-      _isVibrationSupported = js.context.hasProperty('navigator') &&
-          js.context['navigator'].hasProperty('vibrate');
+      _isVibrationSupported = js.context.hasProperty('navigator') == true &&
+          js.context['navigator'].hasProperty('vibrate') == true;
 
       if (kDebugMode) {
         debugPrint('📳 Web Vibration API supported: $_isVibrationSupported');
@@ -154,7 +154,7 @@ class WebHapticStub implements HapticAdapter {
       if (!js.context.hasProperty('AudioContext')) return;
 
       // Créer contexte audio temporaire
-      final audioContext = js.JsObject(js.context['AudioContext']);
+      final audioContext = js.JsObject(js.context['AudioContext'] as js.JsFunction);
       final oscillator = audioContext.callMethod('createOscillator');
       final gainNode = audioContext.callMethod('createGain');
 

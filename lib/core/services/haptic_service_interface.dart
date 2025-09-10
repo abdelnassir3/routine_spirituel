@@ -27,6 +27,9 @@ abstract class HapticServiceInterface {
   Future<void> longPress();
   Future<void> notification();
   
+  // Vibration personnalisée
+  Future<void> customVibration(int milliseconds);
+  
   // Test
   Future<void> testHaptic();
   

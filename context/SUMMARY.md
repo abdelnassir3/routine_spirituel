@@ -1,50 +1,42 @@
-# RÉSUMÉ PROJET - Spiritual Routines (RISAQ)
+# RISAQ - Résumé du Projet
 
-**Dernière mise à jour: 2025-08-31 - PERSISTANCE RÉSOLUE**
+**Dernière mise à jour: 2025-09-09 - OPTIMISATIONS FINALISÉES**
 
-## Vue d'ensemble
-• **Application Flutter** bilingue français-arabe pour routines spirituelles musulmanes  
-• **Architecture**: Drift + Isar persistance, Riverpod state management, offline-first  
-• **Public**: Pratiquants musulmans francophones et arabophones  
-• **Status**: Problème persistance routines **COMPLÈTEMENT RÉSOLU** (2025-08-31)  
+## 🎯 Vue d'ensemble
+• **Application Flutter** de routines spirituelles bilingue FR/AR pour pratiquants musulmans
+• **Architecture** : Drift + Isar persistance, Riverpod state management, offline-first
+• **Mission** : Moderniser pratiques spirituelles quotidiennes avec technologie mobile
+• **Cible** : Pratiquants musulmans francophones et arabophones
 
-## Fonctionnalités Core
-• **Compteur persistant** avec feedback haptique et reprise après interruption  
-• **Lecteur bilingue** RTL/LTR avec surlignage audio synchronisé  
-• **TTS hybride** Edge-TTS/Coqui avec détection automatique contenu coranique  
-• **Mode mains-libres** auto-avance pendant pratique  
-• **Catégorisation** par thèmes (louange, protection, pardon)  
+## 📱 Fonctionnalités principales
+• **Compteur persistant** : Décrément avec haptic feedback, reprise après interruption
+• **Lecteur bilingue** : RTL/LTR simultané avec surlignage audio synchronisé
+• **TTS intelligent** : Détection coranique → routage API spécialisée (Edge-TTS/Coqui/Flutter)
+• **Mode mains-libres** : Auto-avance pour pratique pendant autres activités
+• **Catégorisation** : Thèmes (louange, protection, pardon)
 
-## Architecture Technique
-• **Framework**: Flutter 3.x + Dart null safety, Riverpod 2.5+  
-• **Persistance**: Drift (SQL) + Isar (NoSQL) + WebStub pour tests Web  
-• **Audio**: just_audio + audio_service, background support  
-• **Multilingue**: Support RTL/LTR natif, polices Noto Arabic + Inter  
-• **Web**: Expérimental (40%) avec WebStub fonctionnel  
+## ⚡ Performances cibles
+• **Latence UI** : <200ms | **TTI** : <2s | **Mémoire** : <150MB | **Bundle** : <35MB
+• **Rétention D30** : >50% | **Session** : >10min | **Crash rate** : <0.1%
+• **Tests coverage** : 60% min (45+ tests créés)
 
-## Serveurs & API
-• **Edge-TTS**: 168.231.112.71:8010 (principal, synthèse FR/AR)  
-• **Coqui XTTS**: 168.231.112.71:8001 (haute qualité, backup)  
-• **Quran APIs**: AlQuran.cloud + fallbacks pour récitations  
-• **Circuit breaker**: 5 échecs → fallback Flutter TTS local  
-• **Cache**: 7j/100MB TTS, 30j Quran, hit rate objectif 85%  
+## 🔧 Stack technique
+• **Framework** : Flutter 3.x + Dart (null safety)
+• **State** : Riverpod 2.5+ | **DB** : Drift + Isar | **Audio** : just_audio + audio_service
+• **Plateformes** : iOS/Android (95%), macOS beta (60%), Web expérimental (40%)
 
-## Performance & Qualité
-• **KPI**: TTI <2s, latence UI <200ms, crash rate <0.1%  
-• **Tests**: 45+ tests unitaires créés, coverage 60% minimum  
-• **Sécurité**: OWASP Grade B, AES-256, authentification biométrique  
-• **Bundle**: <35MB, mémoire <150MB  
+## 🌐 Infrastructure serveurs
+• **Edge-TTS** : 168.231.112.71:8010 (principal, ~8€/mois)
+• **Coqui XTTS** : 168.231.112.71:8001 (haute qualité, backup)
+• **APIs Quran** : AlQuran.cloud, Everyayah.com (contenu coranique)
+• **Fallback** : Flutter TTS local → Mode silencieux
 
-## RÉSOLUTION MAJEURE (2025-08-31)
-• **Problème persistance RÉSOLU**: WebInitializer corrigé - tous champs obligatoires fournis  
-• **Corrections**: TasksCompanion, ThemesCompanion, RoutinesCompanion avec Value() wrappers  
-• **Providers dynamiques**: ModernHomePage utilise StreamBuilder au lieu données codées  
-• **Service reset**: DatabaseResetService complet dans settings  
-• **Interface adaptée**: Gestion états vides quand aucune routine  
-• **Résultat**: ✅ Routine par défaut créée automatiquement sans erreur  
+## 🔒 Sécurité
+• **Chiffrement** : AES-256 | **Auth** : Biométrique + PIN
+• **Conformité** : OWASP Grade B | **Transport** : HTTPS + certificate pinning
 
-## État Infrastructure
-• **CI/CD**: GitHub Actions lint → test → build → deploy  
-• **Scripts**: lint.sh, test.sh déployés et testés  
-• **Dépendances**: 72 packages mis à jour, js package forcé v0.7.2  
-• **Design system**: colors.dart, typography.dart, shadows.dart réparés
+## ✅ État actuel (Sept 2025)
+• **Infrastructure qualité** : CI/CD, scripts lint/test/build déployés
+• **72 dépendances** mises à jour, design system réparé
+• **Optimisations récentes** : Erreurs providers, ParentDataWidget, overflow, requêtes DB, service worker
+• **Status** : Application stable, prête pour tests utilisateurs

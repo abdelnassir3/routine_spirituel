@@ -46,7 +46,7 @@ class VpsConnectionTest {
       final response = await _dio.get(
         AudioApiConfig.edgeTtsBaseUrl,
         options: Options(
-          timeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
           validateStatus: (status) => status != null && status < 500,
         ),
       );
@@ -71,7 +71,7 @@ class VpsConnectionTest {
       final response = await _dio.get(
         AudioApiConfig.edgeTtsHealthEndpoint,
         options: Options(
-          timeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
           validateStatus: (status) => status != null,
         ),
       );
@@ -92,7 +92,7 @@ class VpsConnectionTest {
       final response = await _dio.post(
         '${AudioApiConfig.edgeTtsBaseUrl}/test',
         options: Options(
-          timeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
           headers: AudioApiConfig.edgeTtsHeaders,
           validateStatus: (status) => status != null,
         ),
@@ -156,15 +156,24 @@ class VpsTestResult {
   int latency = 0;
   int sampleAudioSize = 0;
   List<String> errors = [];
+  VpsTestStatus _overallStatus = VpsTestStatus.failed;
 
   VpsTestStatus get overallStatus {
-    if (synthesisWorking && basicConnection) {
-      return VpsTestStatus.success;
-    } else if (basicConnection) {
-      return VpsTestStatus.partial;
-    } else {
-      return VpsTestStatus.failed;
+    // Auto-calculate if not explicitly set
+    if (_overallStatus == VpsTestStatus.failed) {
+      if (synthesisWorking && basicConnection) {
+        return VpsTestStatus.success;
+      } else if (basicConnection) {
+        return VpsTestStatus.partial;
+      } else {
+        return VpsTestStatus.failed;
+      }
     }
+    return _overallStatus;
+  }
+
+  set overallStatus(VpsTestStatus status) {
+    _overallStatus = status;
   }
 
   String get summary {

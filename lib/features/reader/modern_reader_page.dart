@@ -95,16 +95,6 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
 
     // Charger les préférences d'affichage lecteur
     _loadReaderPrefs();
-
-    // Appliquer préférences spécifiques (contenu > routine) quand la tâche courante change
-    ref.listen<TaskRow?>(readerCurrentTaskProvider, (prev, next) async {
-      final task = next;
-      if (task == null) return;
-      final appliedContent = await _applyPerContentPrefs(task.id);
-      if (!appliedContent) {
-        await _applyRoutinePrefs(task.routineId);
-      }
-    });
   }
 
   @override
@@ -263,6 +253,16 @@ class _ModernReaderPageState extends ConsumerState<ModernReaderPage>
     final language = ref.watch(readerLanguageProvider);
     final handsFree = ref.watch(readerHandsFreeProvider);
     final theme = Theme.of(context);
+
+    // Listen to task changes for preferences application
+    ref.listen<TaskRow?>(readerCurrentTaskProvider, (prev, next) async {
+      final task = next;
+      if (task == null) return;
+      final appliedContent = await _applyPerContentPrefs(task.id);
+      if (!appliedContent) {
+        await _applyRoutinePrefs(task.routineId);
+      }
+    });
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,

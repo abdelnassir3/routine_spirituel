@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spiritual_routines/core/adapters/tts_web.dart';
+import '../../stubs/web_tts_stub.dart';
 
 void main() {
   group('Web TTS Adapter', () {
@@ -18,7 +17,7 @@ void main() {
         tts.speak(
           'Bonjour, ceci est un test de synthèse.',
           voice: 'fr-FR-DeniseNeural',
-          speed: 0.6,
+          speed: 1,
           pitch: 1.0,
         ),
         completes,

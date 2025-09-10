@@ -18,6 +18,9 @@ void main() {
         ),
         surfaceSize: GoldenTestHelper.phoneSize,
       );
+      
+      // Attendre que tous les timers se terminent
+      await tester.pumpAndSettle();
     });
 
     testGoldens('modern_home_page dark theme', (tester) async {
@@ -29,6 +32,9 @@ void main() {
         ),
         surfaceSize: GoldenTestHelper.phoneSize,
       );
+      
+      // Attendre que tous les timers se terminent
+      await tester.pumpAndSettle();
     });
 
     testGoldens('modern_home_page tablet size', (tester) async {
@@ -39,6 +45,9 @@ void main() {
         ),
         surfaceSize: GoldenTestHelper.tabletSize,
       );
+      
+      // Attendre que tous les timers se terminent
+      await tester.pumpAndSettle();
     });
   });
 }

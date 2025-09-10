@@ -51,19 +51,20 @@ class AudioWrapper {
     if (_platform.isDesktop) {
       // Sur desktop, utiliser les voix système par défaut
       final voices = await _tts.getVoices;
-      if (voices != null && voices.isNotEmpty) {
+      if (voices != null && (voices as List).isNotEmpty) {
+        final voicesList = voices as List<dynamic>;
         // Chercher une voix française et arabe
-        final frVoice = voices.firstWhere(
-          (voice) => voice['locale']?.contains('fr') ?? false,
-          orElse: () => voices.first,
+        final frVoice = voicesList.firstWhere(
+          (voice) => (voice as Map<String, dynamic>)['locale']?.toString().contains('fr') == true,
+          orElse: () => voicesList.first,
         );
-        final arVoice = voices.firstWhere(
-          (voice) => voice['locale']?.contains('ar') ?? false,
-          orElse: () => voices.first,
+        final arVoice = voicesList.firstWhere(
+          (voice) => (voice as Map<String, dynamic>)['locale']?.toString().contains('ar') == true,
+          orElse: () => voicesList.first,
         );
 
-        debugPrint('Voix FR disponible: ${frVoice['name']}');
-        debugPrint('Voix AR disponible: ${arVoice['name']}');
+        debugPrint('Voix FR disponible: ${(frVoice as Map<String, dynamic>)['name']}');
+        debugPrint('Voix AR disponible: ${(arVoice as Map<String, dynamic>)['name']}');
       }
     }
   }

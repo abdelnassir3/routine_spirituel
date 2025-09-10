@@ -13,7 +13,7 @@ void main() {
 
         if (key == 'assets/corpus/quran_full.json') {
           // Return a minimal valid Quran corpus for testing
-          return Uint8List.fromList('''[
+          return ByteData.view(Uint8List.fromList('''[
   {
     "surah": 1,
     "ayah": 1,
@@ -33,7 +33,7 @@ void main() {
     "textFr": "Alif, Lam, Mim."
   }
 ]'''
-              .codeUnits);
+              .codeUnits).buffer);
         }
 
         return null;
@@ -41,16 +41,13 @@ void main() {
     });
 
     test('should initialize with complete corpus', () async {
-      // Reset initialization state for testing
-      QuranContentDetector._isInitialized = false;
-      QuranContentDetector._quranIndex = null;
-
+      // Test initialization by calling public method
       await QuranContentDetector.initialize();
 
-      // Verify initialization
-      expect(QuranContentDetector._isInitialized, true);
-      expect(QuranContentDetector._quranIndex, isNotNull);
-      expect(QuranContentDetector._quranIndex!.length, greaterThan(0));
+      // Verify initialization by testing detection functionality
+      final result = await QuranContentDetector.detectContent('بسم الله الرحمن الرحيم');
+      expect(result.confidence, greaterThan(0.5));
+      expect(result.isQuranVerse, isTrue);
     });
 
     test('should detect Quranic content with high confidence', () async {

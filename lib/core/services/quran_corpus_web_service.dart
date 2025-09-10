@@ -44,16 +44,16 @@ class QuranCorpusWebService {
     
     final verses = _versesData!
         .where((v) => 
-            v['surah'] == surah && 
-            v['ayah'] >= start && 
-            v['ayah'] <= end)
+            (v['surah'] as int) == surah && 
+            (v['ayah'] as int) >= start && 
+            (v['ayah'] as int) <= end)
         .map((v) {
           final verse = VerseDoc();
-          verse.id = (v['surah'] * 1000 + v['ayah']);
-          verse.surah = v['surah'];
-          verse.ayah = v['ayah'];
-          verse.textAr = v['textAr'];
-          verse.textFr = v['textFr'];
+          verse.id = ((v['surah'] as int) * 1000 + (v['ayah'] as int));
+          verse.surah = v['surah'] as int;
+          verse.ayah = v['ayah'] as int;
+          verse.textAr = v['textAr'] as String;
+          verse.textFr = v['textFr'] as String;
           return verse;
         })
         .toList();
@@ -71,14 +71,14 @@ class QuranCorpusWebService {
     }
 
     final verses = _versesData!
-        .where((v) => v['surah'] == surah)
+        .where((v) => (v['surah'] as int) == surah)
         .map((v) {
           final verse = VerseDoc();
-          verse.id = (v['surah'] * 1000 + v['ayah']);
-          verse.surah = v['surah'];
-          verse.ayah = v['ayah'];
-          verse.textAr = v['textAr'];
-          verse.textFr = v['textFr'];
+          verse.id = ((v['surah'] as int) * 1000 + (v['ayah'] as int));
+          verse.surah = v['surah'] as int;
+          verse.ayah = v['ayah'] as int;
+          verse.textAr = v['textAr'] as String;
+          verse.textFr = v['textFr'] as String;
           return verse;
         })
         .toList();

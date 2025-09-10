@@ -1,0 +1,29 @@
+# Configuration des tests - exclusions plateforme
+# Ce fichier configure les tests à exclure selon la plateforme
+
+# Tests d'intégration nécessitant dart:html (web uniquement)
+web_only_tests:
+  - test/integration/desktop_interaction_test.dart
+  - test/integration/responsive_integration_test.dart
+
+# Tests nécessitant des plugins spécifiques
+plugin_tests:
+  - test/integration/pwa_integration_test.dart
+
+# Tests connus pour échouer sur certaines plateformes
+known_failures:
+  vm:
+    - "PWA Configuration Integration Tests Web app can be installed as PWA"
+    - "PWA Configuration Integration Tests Performance optimizations are in place"
+
+# Commandes de test recommandées
+recommended_commands:
+  unit_tests: "flutter test test/unit/"
+  widget_tests: "flutter test test/widgets/" 
+  service_tests: "flutter test test/services/"
+  safe_integration: "flutter test test/integration/pwa_integration_test.dart"
+  
+# Tests à éviter sur plateformes non-web  
+avoid_on_vm:
+  - "*desktop_interaction*"
+  - "*responsive_integration*"

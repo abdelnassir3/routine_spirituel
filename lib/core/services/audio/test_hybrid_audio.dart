@@ -31,8 +31,8 @@ class HybridAudioTest {
         '{{V:1:1}} بسم الله الرحمن الرحيم {{V:1:2}} الحمد لله رب العالمين';
 
     // Analyser avant lecture
-    final analysis = tts.analyzeContent(quranicText);
-    debugPrint('📊 Analyse: ${tts.previewContentType(quranicText)}');
+    final analysis = await tts.analyzeContent(quranicText);
+    debugPrint('📊 Analyse: ${await tts.previewContentType(quranicText)}');
     debugPrint('🎯 Type détecté: ${analysis.contentType}');
     debugPrint('📜 Versets trouvés: ${analysis.verses.length}');
 
@@ -51,8 +51,8 @@ class HybridAudioTest {
     const frenchText =
         'Bonjour, ceci est un test de synthèse vocale en français avec Edge-TTS.';
 
-    final analysis = tts.analyzeContent(frenchText);
-    debugPrint('📊 Analyse: ${tts.previewContentType(frenchText)}');
+    final analysis = await tts.analyzeContent(frenchText);
+    debugPrint('📊 Analyse: ${await tts.previewContentType(frenchText)}');
     debugPrint('🎯 Type détecté: ${analysis.contentType}');
     debugPrint(
         '🗣️ Ratio français: ${(analysis.languageRatio.french * 100).round()}%');
@@ -71,8 +71,8 @@ class HybridAudioTest {
     const duaText =
         'بسم الله الرحمن الرحيم، الحمد لله رب العالمين، أستغفر الله العظيم';
 
-    final analysis = tts.analyzeContent(duaText);
-    debugPrint('📊 Analyse: ${tts.previewContentType(duaText)}');
+    final analysis = await tts.analyzeContent(duaText);
+    debugPrint('📊 Analyse: ${await tts.previewContentType(duaText)}');
     debugPrint('🎯 Type détecté: ${analysis.contentType}');
 
     try {
@@ -89,8 +89,8 @@ class HybridAudioTest {
     const mixedText =
         'Voici une invocation: بسم الله الرحمن الرحيم - Au nom d\'Allah, le Tout Miséricordieux';
 
-    final analysis = tts.analyzeContent(mixedText);
-    debugPrint('📊 Analyse: ${tts.previewContentType(mixedText)}');
+    final analysis = await tts.analyzeContent(mixedText);
+    debugPrint('📊 Analyse: ${await tts.previewContentType(mixedText)}');
     debugPrint('🎯 Type détecté: ${analysis.contentType}');
     debugPrint(
         '🌐 Ratio AR/FR: ${(analysis.languageRatio.arabic * 100).round()}% / ${(analysis.languageRatio.french * 100).round()}%');

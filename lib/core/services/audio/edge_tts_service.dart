@@ -265,6 +265,68 @@ class EdgeTtsService {
       debugPrint('⚠️ Erreur nettoyage cache Edge-TTS: $e');
     }
   }
+
+  // === Instance methods for compatibility ===
+  
+  /// Instance method for playing text
+  Future<void> playText(
+    String text, {
+    required String voice,
+    double speed = 1.0,
+    double pitch = 1.0,
+    bool allowFallback = false,
+  }) async {
+    try {
+      // Map voice string to EdgeTtsVoice
+      EdgeTtsVoice? selectedVoice;
+      if (voice.contains('ar') || voice.toLowerCase().contains('arabic')) {
+        selectedVoice = EdgeTtsVoice.arabicHamed;
+      } else if (voice.contains('en') || voice.toLowerCase().contains('english')) {
+        selectedVoice = EdgeTtsVoice.englishAria;
+      } else {
+        selectedVoice = EdgeTtsVoice.frenchDenise;
+      }
+
+      // Detect language from text
+      String language = 'fr-FR';
+      if (text.contains(RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]'))) {
+        language = 'ar-SA';
+        selectedVoice = EdgeTtsVoice.arabicHamed;
+      }
+
+      final audioBytes = await synthesizeText(
+        text,
+        language: language,
+        voice: selectedVoice,
+        rate: speed,
+        pitch: pitch,
+      );
+
+      if (audioBytes != null) {
+        debugPrint('✅ EdgeTtsService: Audio synthesized (${audioBytes.length} bytes)');
+        // Note: This is a simplified implementation. In a real app, you would 
+        // need to play the audio bytes using an audio player
+      } else {
+        debugPrint('❌ EdgeTtsService: Failed to synthesize audio');
+      }
+    } catch (e) {
+      debugPrint('❌ EdgeTtsService playText error: $e');
+      rethrow;
+    }
+  }
+
+  /// Instance method for stopping playback
+  Future<void> stop() async {
+    // Note: This is a stub implementation
+    // In a real implementation, you would stop the audio playback
+    debugPrint('🛑 EdgeTtsService: Stop called');
+  }
+
+  /// Instance method for cleanup
+  Future<void> dispose() async {
+    // Clean up resources
+    debugPrint('🧹 EdgeTtsService: Dispose called');
+  }
 }
 
 /// Voix Edge-TTS disponibles (utilise les ShortNames de l'API)

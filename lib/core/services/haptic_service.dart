@@ -109,6 +109,28 @@ class HapticService implements HapticServiceInterface {
     await _platformService?.selectionClick();
   }
 
+  // ===== Méthodes additionnelles pour compatibilité =====
+
+  Future<void> lightTap() async {
+    await lightImpact();
+  }
+
+  Future<void> selection() async {
+    await selectionClick();
+  }
+
+  Future<void> impact() async {
+    await mediumImpact();
+  }
+
+  Future<void> success() async {
+    await prayerComplete();
+  }
+
+  Future<void> error() async {
+    await heavyImpact();
+  }
+
   // ===== Méthodes gestures =====
 
   @override
@@ -124,6 +146,11 @@ class HapticService implements HapticServiceInterface {
   @override
   Future<void> notification() async {
     await _platformService?.notification();
+  }
+
+  @override
+  Future<void> customVibration(int milliseconds) async {
+    await _platformService?.customVibration(milliseconds);
   }
 
   // ===== Test et nettoyage =====

@@ -158,7 +158,7 @@ class AnalyticsService {
     final metricsJson = prefs.getString('${_keyDailyMetrics}_$key');
 
     if (metricsJson != null) {
-      return DailyMetrics.fromJson(json.decode(metricsJson));
+      return DailyMetrics.fromJson(json.decode(metricsJson) as Map<String, dynamic>);
     }
 
     return DailyMetrics(date: date);
@@ -274,7 +274,7 @@ class AnalyticsService {
     final statsJson = prefs.getString(_keyAllTimeMetrics);
 
     if (statsJson != null) {
-      return AllTimeStats.fromJson(json.decode(statsJson));
+      return AllTimeStats.fromJson(json.decode(statsJson) as Map<String, dynamic>);
     }
 
     return AllTimeStats();
@@ -295,7 +295,7 @@ class AnalyticsService {
     final streakJson = prefs.getString(_keyStreakData);
 
     if (streakJson != null) {
-      final streak = StreakData.fromJson(json.decode(streakJson));
+      final streak = StreakData.fromJson(json.decode(streakJson) as Map<String, dynamic>);
 
       // Vérifier si le streak est toujours valide
       final today = DateTime.now();
@@ -353,7 +353,7 @@ class AnalyticsService {
     final milestonesJson = prefs.getStringList(_keyMilestones) ?? [];
 
     return milestonesJson
-        .map((json) => Milestone.fromJson(jsonDecode(json)))
+        .map((json) => Milestone.fromJson(jsonDecode(json) as Map<String, dynamic>))
         .toList()
       ..sort((a, b) => b.achievedAt.compareTo(a.achievedAt));
   }
@@ -573,11 +573,11 @@ class DailyMetrics {
       };
 
   factory DailyMetrics.fromJson(Map<String, dynamic> json) => DailyMetrics(
-        date: DateTime.parse(json['date']),
-        sessionsStarted: json['sessionsStarted'] ?? 0,
-        sessionsCompleted: json['sessionsCompleted'] ?? 0,
-        totalRepetitions: json['totalRepetitions'] ?? 0,
-        totalDuration: json['totalDuration'] ?? 0,
+        date: DateTime.parse(json['date'] as String),
+        sessionsStarted: (json['sessionsStarted'] as int?) ?? 0,
+        sessionsCompleted: (json['sessionsCompleted'] as int?) ?? 0,
+        totalRepetitions: (json['totalRepetitions'] as int?) ?? 0,
+        totalDuration: (json['totalDuration'] as int?) ?? 0,
       );
 }
 
@@ -631,14 +631,14 @@ class AllTimeStats {
 
   factory AllTimeStats.fromJson(Map<String, dynamic> json) {
     final stats = AllTimeStats();
-    stats.totalSessions = json['totalSessions'] ?? 0;
-    stats.totalRepetitions = json['totalRepetitions'] ?? 0;
-    stats.totalDuration = json['totalDuration'] ?? 0;
+    stats.totalSessions = (json['totalSessions'] as int?) ?? 0;
+    stats.totalRepetitions = (json['totalRepetitions'] as int?) ?? 0;
+    stats.totalDuration = (json['totalDuration'] as int?) ?? 0;
     stats.firstSessionDate = DateTime.parse(
-        json['firstSessionDate'] ?? DateTime.now().toIso8601String());
+        (json['firstSessionDate'] as String?) ?? DateTime.now().toIso8601String());
     stats.lastSessionDate = DateTime.parse(
-        json['lastSessionDate'] ?? DateTime.now().toIso8601String());
-    stats.totalDays = json['totalDays'] ?? 0;
+        (json['lastSessionDate'] as String?) ?? DateTime.now().toIso8601String());
+    stats.totalDays = (json['totalDays'] as int?) ?? 0;
     return stats;
   }
 }
@@ -659,10 +659,10 @@ class StreakData {
 
   factory StreakData.fromJson(Map<String, dynamic> json) {
     final streak = StreakData();
-    streak.currentStreak = json['currentStreak'] ?? 0;
-    streak.longestStreak = json['longestStreak'] ?? 0;
+    streak.currentStreak = (json['currentStreak'] as int?) ?? 0;
+    streak.longestStreak = (json['longestStreak'] as int?) ?? 0;
     streak.lastActivityDate = DateTime.parse(
-        json['lastActivityDate'] ?? DateTime.now().toIso8601String());
+        (json['lastActivityDate'] as String?) ?? DateTime.now().toIso8601String());
     return streak;
   }
 }
@@ -689,10 +689,10 @@ class Milestone {
       };
 
   factory Milestone.fromJson(Map<String, dynamic> json) => Milestone(
-        type: json['type'],
-        value: json['value'],
-        description: json['description'],
-        achievedAt: DateTime.parse(json['achievedAt']),
+        type: json['type'] as String,
+        value: json['value'] as int,
+        description: json['description'] as String,
+        achievedAt: DateTime.parse(json['achievedAt'] as String),
       );
 }
 

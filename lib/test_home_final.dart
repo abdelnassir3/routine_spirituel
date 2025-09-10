@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:spiritual_routines/core/adapters/adapters.dart';
 
 void main() {
   runApp(const MyApp());

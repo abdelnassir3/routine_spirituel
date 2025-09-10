@@ -2,14 +2,26 @@ import 'package:flutter/foundation.dart';
 import 'package:spiritual_routines/core/services/audio_tts_flutter.dart';
 import 'package:spiritual_routines/core/services/audio/edge_tts_service.dart';
 import 'package:spiritual_routines/core/services/coqui_tts_service.dart';
+import 'package:spiritual_routines/core/services/tts_config_service.dart';
+import 'package:spiritual_routines/core/services/secure_tts_cache_service.dart';
 import 'tts_adapter.dart';
 
 /// Implémentation mobile unifiée du TTS (iOS/Android)
 /// Utilise la hiérarchie Edge TTS → Coqui TTS → Flutter TTS
 class MobileTtsAdapter implements TtsAdapter {
   final EdgeTtsService _edgeTts = EdgeTtsService();
-  final CoquiTtsService _coquiTts = CoquiTtsService();
+  late final CoquiTtsService _coquiTts;
   final FlutterTtsAudioService _flutterTts = FlutterTtsAudioService();
+  
+  MobileTtsAdapter() {
+    // Initialize CoquiTtsService with required parameters
+    final config = TtsConfigService(
+      coquiEndpoint: 'http://168.231.112.71:8001',
+      coquiApiKey: '', // Empty for now, can be configured later
+    );
+    final cache = SecureTtsCacheService.instance;
+    _coquiTts = CoquiTtsService(config: config, cache: cache);
+  }
 
   VoidCallback? _completionCallback;
   bool _isSpeaking = false;
@@ -181,9 +193,15 @@ class MobileTtsAdapter implements TtsAdapter {
 
     // Disposer les ressources des services
     await Future.wait([
-      _edgeTts.dispose().catchError((_) {}),
-      _coquiTts.dispose().catchError((_) {}),
-      _flutterTts.dispose().catchError((_) {}),
+      _edgeTts.dispose(),
+      _flutterTts.dispose(),
     ]);
+    
+    // CoquiTtsService has a void dispose method, call it separately
+    try {
+      _coquiTts.dispose();
+    } catch (_) {
+      // Ignore disposal errors
+    }
   }
 }

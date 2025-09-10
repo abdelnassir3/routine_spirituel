@@ -129,6 +129,13 @@ class HapticServiceWeb implements HapticServiceInterface {
   }
 
   @override
+  Future<void> customVibration(int milliseconds) async {
+    if (kDebugMode) {
+      print('🌐 HapticServiceWeb: customVibration ${milliseconds}ms (stub - no vibration)');
+    }
+  }
+
+  @override
   void dispose() {
     _instance = null;
     if (kDebugMode) {

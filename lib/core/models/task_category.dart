@@ -5,6 +5,7 @@ enum TaskCategory {
   guidance('Guidance', '🌟'),
   gratitude('Gratitude', '🙏'),
   healing('Guérison', '💚'),
+  dhikr('Dhikr', '🔄'),
   custom('Personnalisé', '✨');
 
   final String label;

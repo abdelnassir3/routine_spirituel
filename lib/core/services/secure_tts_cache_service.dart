@@ -14,6 +14,13 @@ import 'tts_logger_service.dart';
 class SecureTtsCacheService {
   static const _cacheVersion = 'v2'; // Pour invalider ancien cache SHA1
   static const _manifestName = 'manifest.encrypted';
+  
+  // Singleton instance
+  static SecureTtsCacheService? _instance;
+  static SecureTtsCacheService get instance {
+    _instance ??= SecureTtsCacheService();
+    return _instance!;
+  }
 
   // Chiffrement AES-256
   late final Key _encryptionKey;
@@ -81,7 +88,7 @@ class SecureTtsCacheService {
       // Vérifier TTL
       final metadata = await _getMetadata(key);
       if (metadata != null) {
-        final timestamp = DateTime.tryParse(metadata['timestamp'] ?? '');
+        final timestamp = DateTime.tryParse((metadata['timestamp'] as String?) ?? '');
         if (timestamp != null) {
           final age = DateTime.now().difference(timestamp);
           const maxAge = Duration(days: 7); // TTL configurable
@@ -262,8 +269,8 @@ class SecureTtsCacheService {
 
       for (final entry in manifest.entries) {
         final metadata = entry.value as Map<String, dynamic>;
-        final timestamp = DateTime.tryParse(metadata['timestamp'] ?? '');
-        final size = metadata['encryptedSize'] as int? ?? 0;
+        final timestamp = DateTime.tryParse((metadata['timestamp'] as String?) ?? '');
+        final size = (metadata['encryptedSize'] as int?) ?? 0;
 
         totalSize += size;
 
@@ -282,9 +289,9 @@ class SecureTtsCacheService {
         final sortedEntries = manifest.entries.toList()
           ..sort((a, b) {
             final aTime =
-                DateTime.tryParse(a.value['timestamp'] ?? '') ?? DateTime(2000);
+                DateTime.tryParse((a.value['timestamp'] as String?) ?? '') ?? DateTime(2000);
             final bTime =
-                DateTime.tryParse(b.value['timestamp'] ?? '') ?? DateTime(2000);
+                DateTime.tryParse((b.value['timestamp'] as String?) ?? '') ?? DateTime(2000);
             return aTime.compareTo(bTime);
           });
 
@@ -322,7 +329,7 @@ class SecureTtsCacheService {
           fileCount++;
           totalSize += (metadata['encryptedSize'] as int? ?? 0);
 
-          final timestamp = DateTime.tryParse(metadata['timestamp'] ?? '');
+          final timestamp = DateTime.tryParse((metadata['timestamp'] as String?) ?? '');
           if (timestamp != null) {
             if (oldestFile == null || timestamp.isBefore(oldestFile)) {
               oldestFile = timestamp;

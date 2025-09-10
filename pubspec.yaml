@@ -68,8 +68,15 @@ dev_dependencies:
   device_preview: ^1.2.0
   golden_toolkit: ^0.15.0
   build_runner: ^2.4.12
+  flutter_gen_runner: ^5.7.0  # Génération assets type-safe
   freezed: ^3.2.0
   drift_dev: ^2.17.0
+  patrol: ^3.11.0  # Tests E2E multi-plateforme
+  test: ^1.25.15
+  mockito: ^5.4.4  # Pour les tests avec mocks
+  mocktail: ^1.0.4  # Alternative moderne à mockito
+  integration_test:
+    sdk: flutter
   # isar_generator: ^3.1.0+1  # Incompatible avec freezed 3.2.0 (source_gen conflict)
 
 dependency_overrides:

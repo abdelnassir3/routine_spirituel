@@ -503,14 +503,14 @@ class LogEntry {
       };
 
   factory LogEntry.fromJson(Map<String, dynamic> json) => LogEntry(
-        timestamp: DateTime.parse(json['timestamp']),
-        level: LogLevel.values.firstWhere((e) => e.name == json['level']),
-        message: json['message'],
-        data: json['data'],
+        timestamp: DateTime.parse(json['timestamp'] as String),
+        level: LogLevel.values.firstWhere((e) => e.name == (json['level'] as String)),
+        message: json['message'] as String,
+        data: json['data'] as Map<String, dynamic>?,
         stackTrace: json['stackTrace'] != null
-            ? StackTrace.fromString(json['stackTrace'])
+            ? StackTrace.fromString(json['stackTrace'] as String)
             : null,
-        environment: json['environment'],
-        sessionId: json['sessionId'],
+        environment: json['environment'] as String,
+        sessionId: json['sessionId'] as String,
       );
 }

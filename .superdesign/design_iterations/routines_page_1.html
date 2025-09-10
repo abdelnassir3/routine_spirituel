@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routine Spirituelle - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="theme_clarte_energisante_1.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            font-family: var(--font-sans);
+        }
+        .card {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 9999px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: oklch(0.75 0.2 30); /* Slightly lighter primary */
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .nav-icon {
+            color: var(--muted-foreground);
+            transition: color 0.2s ease;
+        }
+        .nav-icon.active, .nav-icon:hover {
+            color: var(--primary);
+        }
+        .progress-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        .progress-circle.completed {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+            border: 2px solid var(--accent);
+        }
+        .progress-circle.pending {
+            background-color: transparent;
+            color: var(--muted-foreground);
+            border: 2px solid var(--border);
+        }
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-in-up {
+            animation: fade-in-up 0.6s ease-out forwards;
+        }
+        .fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in-up:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in-up:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in-up:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="max-w-lg mx-auto">
+
+    <div class="pb-24">
+        <!-- Header -->
+        <header class="flex justify-between items-center p-4 pt-6 fade-in-up">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                    <i data-lucide="user" class="w-5 h-5 text-muted-foreground"></i>
+                </div>
+                <h1 class="text-xl font-semibold" style="font-family: 'Outfit', sans-serif;">Bonjour, Alex!</h1>
+            </div>
+            <button class="w-10 h-10 bg-card rounded-full flex items-center justify-center shadow-sm border border-border">
+                <i data-lucide="bell" class="w-5 h-5 text-muted-foreground"></i>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-4 space-y-8">
+            <!-- Pratique du jour -->
+            <section class="card p-6 text-center fade-in-up" style="animation-delay: 0.2s;">
+                <h2 class="text-sm font-semibold text-muted-foreground tracking-wider uppercase">VOTRE PRATIQUE DU JOUR</h2>
+                <p class="font-serif text-2xl my-3" style="font-family: 'Outfit', sans-serif;">Méditation matinale</p>
+                <p class="text-muted-foreground mb-5">10 minutes pour commencer la journée avec clarté.</p>
+                <button class="btn-primary inline-flex items-center gap-2">
+                    <i data-lucide="play" class="w-5 h-5"></i>
+                    Commencer
+                </button>
+            </section>
+
+            <!-- Vos Routines -->
+            <section class="fade-in-up" style="animation-delay: 0.3s;">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold" style="font-family: 'Outfit', sans-serif;">Vos Routines</h2>
+                    <button class="flex items-center gap-1 text-primary font-semibold text-sm">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Ajouter
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <div class="card p-4 flex justify-between items-center">
+                        <p class="font-semibold">Gratitude Matinale</p>
+                        <i data-lucide="chevron-right" class="text-muted-foreground"></i>
+                    </div>
+                    <div class="card p-4 flex justify-between items-center">
+                        <p class="font-semibold">Réflexion du Soir</p>
+                        <i data-lucide="chevron-right" class="text-muted-foreground"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progrès de la semaine -->
+            <section class="fade-in-up" style="animation-delay: 0.4s;">
+                <h2 class="text-lg font-bold mb-3" style="font-family: 'Outfit', sans-serif;">Progrès de la semaine</h2>
+                <div class="card p-4 flex justify-around">
+                    <div class="text-center">
+                        <div class="progress-circle completed">L</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle completed">M</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle pending">M</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle completed">J</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle pending">V</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle pending">S</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="progress-circle pending">D</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-card/80 backdrop-blur-sm border-t border-border max-w-lg mx-auto flex justify-around items-center">
+        <a href="#" class="text-center">
+            <i data-lucide="home" class="nav-icon active mx-auto"></i>
+            <span class="text-xs font-medium nav-icon active">Accueil</span>
+        </a>
+        <a href="#" class="text-center">
+            <i data-lucide="book-open" class="nav-icon mx-auto"></i>
+            <span class="text-xs font-medium nav-icon">Biblio.</span>
+        </a>
+        <a href="#" class="text-center">
+            <i data-lucide="bar-chart-3" class="nav-icon mx-auto"></i>
+            <span class="text-xs font-medium nav-icon">Progrès</span>
+        </a>
+        <a href="#" class="text-center">
+            <i data-lucide="settings" class="nav-icon mx-auto"></i>
+            <span class="text-xs font-medium nav-icon">Paramètres</span>
+        </a>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

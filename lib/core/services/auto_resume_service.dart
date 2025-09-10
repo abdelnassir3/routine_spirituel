@@ -300,7 +300,10 @@ class AutoResumeService with WidgetsBindingObserver {
       final stateJson = prefs.getString(_keyResumeState);
 
       if (stateJson != null) {
-        _pendingResume = ResumeState.fromJson(json.decode(stateJson));
+        final decoded = json.decode(stateJson);
+        if (decoded is Map<String, dynamic>) {
+          _pendingResume = ResumeState.fromJson(decoded);
+        }
 
         // Vérifier l'expiration
         if (_pendingResume!.isExpired) {
@@ -421,11 +424,11 @@ class ResumeState {
 
   factory ResumeState.fromJson(Map<String, dynamic> json) {
     return ResumeState(
-      sessionId: json['sessionId'],
-      type: json['type'],
-      timestamp: DateTime.parse(json['timestamp']),
-      data: Map<String, dynamic>.from(json['data']),
-      progress: json['progress'] ?? 0,
+      sessionId: json['sessionId'] as String,
+      type: json['type'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      data: json['data'] is Map ? Map<String, dynamic>.from(json['data'] as Map) : <String, dynamic>{},
+      progress: (json['progress'] as num?)?.toInt() ?? 0,
     );
   }
 }

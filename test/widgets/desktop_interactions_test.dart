@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spiritual_routines/core/widgets/desktop_interactions.dart';
 
@@ -287,7 +288,7 @@ void main() {
       // Simulate right click
       await tester.tapAt(
         tester.getCenter(find.text('Right click me')),
-        buttons: kSecondaryMouseButton,
+        buttons: kSecondaryButton,
       );
       await tester.pumpAndSettle();
 

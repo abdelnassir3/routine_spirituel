@@ -90,7 +90,7 @@ class _HybridAudioTestPageState extends ConsumerState<HybridAudioTestPage> {
       final ttsService = ref.read(smartTtsEnhancedProvider);
 
       // Analyser le contenu
-      final analysis = ttsService.analyzeContent(text);
+      final analysis = await ttsService.analyzeContent(text);
       final preview = ttsService.previewContentType(text);
 
       _addLog('📊 $preview');

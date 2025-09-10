@@ -23,8 +23,17 @@ linter:
     sized_box_for_whitespace: true
     avoid_function_literals_in_foreach_calls: true
     prefer_const_constructors_in_immutables: true
+    
+    # Accessibility
+    use_decorated_box: true  # Performance + a11y
+    use_colored_box: true    # Performance + a11y
 
 analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - "tools/**"
+    - "tool/**"
+    - "scripts/**"
+    - "dev_scripts/**"
+    - "test_*.dart"

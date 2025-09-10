@@ -292,4 +292,21 @@ class AppLogger {
       if (alternative != null) 'alternative': alternative,
     });
   }
+
+  // ===== Direct Logging Methods =====
+
+  /// Log a generic error message
+  static void error(String message, [Map<String, dynamic>? data]) {
+    _logger.error(message, data);
+  }
+
+  /// Log a warning message
+  static void warning(String message, [Map<String, dynamic>? data]) {
+    _logger.warning(message, data);
+  }
+
+  /// Log haptic feedback events
+  static void haptic(String message, [Map<String, dynamic>? data]) {
+    _logger.debug('Haptic: $message', data);
+  }
 }

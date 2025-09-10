@@ -1,6 +1,34 @@
-# Projet Spiritual Routines
+# Spiritual Routines (RISAQ)
 
 Application mobile de routines spirituelles bilingue français-arabe développée avec Flutter.
+
+## 🚀 Dev Setup & Conventions
+
+### Prerequisites
+- Flutter 3.24.5 LTS (via FVM)
+- Very Good CLI: `dart pub global activate very_good_cli`
+- FVM: `dart pub global activate fvm`
+
+### Setup
+```bash
+fvm install
+fvm use
+fvm flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+```
+
+### Development with DevicePreview
+```bash
+# Enable DevicePreview (hot reload OK)
+fvm flutter run --dart-define=DEVICE_PREVIEW=true -d chrome
+```
+
+### Quality Commands
+- Lint: `bash scripts/lint.sh`
+- Test: `bash scripts/test.sh`
+- Goldens: `bash scripts/goldens.sh [test|update|clean]`
+
+---
 
 ## 🚀 Quick Start
 

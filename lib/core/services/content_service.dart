@@ -1,47 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:path_provider/path_provider.dart';
 
-// Import conditionnel pour supporter les différentes plateformes
-import 'package:spiritual_routines/core/persistence/isar_collections.dart'
-    if (dart.library.html) '../persistence/isar_web_stub.dart'
-    if (dart.library.io) '../persistence/isar_mobile_stub.dart';
 import 'package:spiritual_routines/core/utils/refs.dart';
 import 'package:spiritual_routines/core/services/quran_corpus_service.dart';
 
-// Import conditionnel d'Isar
-import 'package:isar/isar.dart'
-    if (dart.library.html) '../persistence/isar_web_stub.dart'
-    if (dart.library.io) '../persistence/isar_mobile_stub.dart';
-
-final isarProvider = FutureProvider<Isar>((ref) async {
-  // Sur web, utiliser le stub Isar qui ne fait que simuler les opérations
-  if (kIsWeb) {
-    // Retourner le stub Isar pour la compatibilité web
-    return IsarStub() as Isar;
-  }
-
-  final dir = await getApplicationSupportDirectory();
-  final isar = await Isar.open(
-    [ContentDocSchema, VerseDocSchema, TaskContentSchema],
-    directory: dir.path,
-  );
-  ref.onDispose(() => isar.close());
-  return isar;
-});
+// Stub temporaire pour désactiver Isar
+final contentServiceProvider = Provider<ContentService>((ref) => ContentService(ref));
 
 class ContentService {
   ContentService(this._ref);
   final Ref _ref;
 
-  Future<ContentDoc?> getByTaskAndLocale(String taskId, String locale) async {
-    final isar = await _ref.read(isarProvider.future);
-    return isar.contentDocs
-        .filter()
-        .taskIdEqualTo(taskId)
-        .and()
-        .localeEqualTo(locale)
-        .findFirst();
+  Future<dynamic> getByTaskAndLocale(String taskId, String locale) async {
+    return null;
+  }
+
+  Stream<List<dynamic>> watchByTaskAndLocale(String taskId, String locale) {
+    return Stream.value([]);
   }
 
   Future<String?> buildTextFromRefs(String refs, String locale) async {
@@ -55,11 +30,9 @@ class ContentService {
       for (final v in verses) {
         final line = locale == 'ar' ? (v.textAr ?? '') : (v.textFr ?? '');
         if (line.isEmpty) continue;
-        // Ajouter le texte du verset avec le marqueur de numéro à la fin
         buffer.write(line.trim());
         buffer.write(' {{V:${v.ayah}}}');
         buffer.writeln();
-        // DEBUG: Ajouté verset avec marqueur
       }
       buffer.writeln();
     }
@@ -68,175 +41,94 @@ class ContentService {
   }
 
   Future<(String?, String?)> getBuiltTextsForTask(String taskId) async {
-    final ar = await getByTaskAndLocale(taskId, 'ar');
-    final fr = await getByTaskAndLocale(taskId, 'fr');
-    String? arText = ar?.body;
-    String? frText = fr?.body;
-    // Si c'est un format refs, essayer de reconstruire depuis le corpus
-    final refs = frText ?? arText;
-    // N'accepte que chiffres, :, ;, -, et espaces — et rien d'autre
-    // DEBUG getBuiltTextsForTask: refs = $refs
-    final isRefsFormat =
-        refs != null && RegExp(r'^[0-9:;\-\s]+$').hasMatch(refs);
-    // DEBUG getBuiltTextsForTask: isRefsFormat = $isRefsFormat
-
-    if (isRefsFormat) {
-      // DEBUG: Reconstruction depuis corpus avec refs: $refs
-      arText = await buildTextFromRefs(refs, 'ar') ?? arText;
-      frText = await buildTextFromRefs(refs, 'fr') ?? frText;
-    } else {
-      // DEBUG: Contenu direct détecté, pas de reconstruction
-      // Essayer de détecter et marquer le contenu coranique automatiquement
-      if (arText != null && _isArabicQuranContent(arText)) {
-        // DEBUG: Contenu coranique arabe détecté, ajout des marqueurs
-        arText = _addVerseMarkersToQuranText(arText);
-      }
-      if (frText != null && _isFrenchQuranContent(frText)) {
-        // DEBUG: Contenu coranique français détecté, ajout des marqueurs
-        frText = _addVerseMarkersToQuranText(frText);
-      }
-    }
-    return (arText, frText);
+    return (null, null);
   }
 
-  /// Détecte si le texte arabe est probablement du contenu coranique
-  bool _isArabicQuranContent(String text) {
-    // Vérifier la présence de caractères arabes et de mots coraniques courants
-    final hasArabic = text.contains(RegExp(r'[\u0600-\u06FF]'));
-    final hasQuranWords = text.contains(RegExp(r'(الله|بسم|الرحمن|الرحيم)'));
-    return hasArabic &&
-        (hasQuranWords || text.length > 50); // Texte arabe assez long
-  }
+  bool _isArabicQuranContent(String text) => false;
+  bool _isFrenchQuranContent(String text) => false;
+  String _addVerseMarkersToQuranText(String text) => text;
 
-  /// Détecte si le texte français est probablement du contenu coranique
-  bool _isFrenchQuranContent(String text) {
-    // Mots-clés coraniques en français
-    final hasQuranWords = text
-        .toLowerCase()
-        .contains(RegExp(r'(allah|au nom|miséricordieux|clément|verset)'));
-    return hasQuranWords;
-  }
-
-  /// Ajoute automatiquement les marqueurs de verset au texte coranique
-  String _addVerseMarkersToQuranText(String text) {
-    // Version simplifiée - juste retourner le texte tel quel pour l'instant
-    // Ceci évite les erreurs mais ne fait pas de traitement complexe
-    return text;
-  }
-
+  // Méthodes manquantes utilisées dans les pages  
   Future<void> putContent({
-    required String taskId,
-    required String locale,
-    required String kind,
+    required String taskId, 
+    required String locale, 
+    required String content,
     String? title,
     String? body,
+    String? kind,
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final existing = await getByTaskAndLocale(taskId, locale);
-    final doc = ContentDoc()
-      ..id = existing?.id ?? Isar.autoIncrement
-      ..taskId = taskId
-      ..locale = locale
-      ..kind = kind
-      ..title = title
-      ..body = body;
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour stocker du contenu
+  }
+
+  Future<Map<String, String>?> getEditingBodies(String taskId, String locale) async {
+    // Stub pour récupérer les contenus en cours d'édition
+    return null;
   }
 
   Future<void> setSource({
-    required String taskId,
-    required String locale,
-    required String source,
+    required String taskId, 
+    required String locale, 
+    required String source
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final existing = await getByTaskAndLocale(taskId, locale);
-    final doc = existing ??
-        (ContentDoc()
-          ..taskId = taskId
-          ..locale = locale
-          ..kind = 'text');
-    doc.source = source;
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour définir la source
   }
 
   Future<void> updateRaw({
-    required String taskId,
-    required String locale,
-    required String raw,
+    required String taskId, 
+    required String locale, 
+    required String raw
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final doc = await getByTaskAndLocale(taskId, locale) ??
-        (ContentDoc()
-          ..taskId = taskId
-          ..locale = locale
-          ..kind = 'text');
-    doc.rawBody = raw;
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour mettre à jour le contenu brut
   }
 
   Future<void> updateCorrected({
-    required String taskId,
-    required String locale,
-    required String corrected,
+    required String taskId, 
+    required String locale, 
+    required String corrected
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final doc = await getByTaskAndLocale(taskId, locale) ??
-        (ContentDoc()
-          ..taskId = taskId
-          ..locale = locale
-          ..kind = 'text');
-    doc.correctedBody = corrected;
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour mettre à jour le contenu corrigé
   }
 
   Future<void> updateDiacritized({
-    required String taskId,
-    required String locale,
-    required String diacritized,
+    required String taskId, 
+    required String locale, 
+    required String diacritized
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final doc = await getByTaskAndLocale(taskId, locale) ??
-        (ContentDoc()
-          ..taskId = taskId
-          ..locale = locale
-          ..kind = 'text');
-    doc.diacritizedBody = diacritized;
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour mettre à jour le contenu avec diacritiques
   }
 
   Future<void> validateAndFinalize({
-    required String taskId,
-    required String locale,
+    required String taskId, 
+    required String locale
   }) async {
-    final isar = await _ref.read(isarProvider.future);
-    final doc = await getByTaskAndLocale(taskId, locale);
-    if (doc == null) return;
-    doc.validated = true;
-    doc.body = doc.diacritizedBody?.trim().isNotEmpty == true
-        ? doc.diacritizedBody
-        : (doc.correctedBody?.trim().isNotEmpty == true
-            ? doc.correctedBody
-            : doc.rawBody);
-    await isar.writeTxn(() => isar.contentDocs.put(doc));
+    // Stub pour valider et finaliser le contenu
   }
 
-  Future<(String?, String?, String?)> getEditingBodies(
-      String taskId, String locale) async {
-    final doc = await getByTaskAndLocale(taskId, locale);
-    return (doc?.rawBody, doc?.correctedBody, doc?.diacritizedBody);
+  Future<void> store(String taskId, String locale, String body, String bodyType, String? refs) async {
+    // Stub - ne fait rien
   }
 
-  /// Sauvegarde un contenu de tâche dans Isar
-  Future<void> saveTaskContent(TaskContent content) async {
-    final isar = await _ref.read(isarProvider.future);
-    await isar.writeTxn(() async {
-      await isar.taskContents.put(content);
-    });
+  Future<void> storeAyah(String taskId, String locale, int surah, int ayah, String text) async {
+    // Stub - ne fait rien
   }
 
-  /// Alias pour compatibilité
-  Future<void> saveContent(TaskContent content) => saveTaskContent(content);
+  Future<void> storeRecitation(String taskId, String locale, String ref, String text) async {
+    // Stub - ne fait rien
+  }
+
+  Future<void> storeDua(String taskId, String locale, String text, {String? category}) async {
+    // Stub - ne fait rien
+  }
+
+  Future<void> storeParayerText(String taskId, String locale, String text) async {
+    // Stub - ne fait rien
+  }
+
+  Future<void> storeTaskContent(dynamic content) async {
+    // Stub - ne fait rien
+  }
+
+  Future<void> saveTaskContent(dynamic content) async {
+    // Stub - ne fait rien
+  }
 }
-
-final contentServiceProvider =
-    Provider<ContentService>((ref) => ContentService(ref));

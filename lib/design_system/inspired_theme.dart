@@ -479,6 +479,11 @@ class SpiritualCategories {
     'reflection': Icons.psychology,
     'protection': Icons.shield,
     'gratitude': Icons.favorite_border,
+    'louange': Icons.auto_awesome,
+    'pardon': Icons.healing,
+    'guidance': Icons.explore,
+    'healing': Icons.medical_services,
+    'custom': Icons.star,
   };
 }
 

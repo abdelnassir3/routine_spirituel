@@ -292,6 +292,21 @@ class SessionDao extends DatabaseAccessor<AppDatabase> with _$SessionDaoMixin {
       ..orderBy([(s) => OrderingTerm.desc(s.startedAt)]));
     return q.get();
   }
+
+  /// Get all sessions for multiple routines at once for better performance
+  Future<List<SessionRow>> getAllByRoutines(List<String> routineIds) {
+    final q = (select(sessions)
+      ..where((s) => s.routineId.isIn(routineIds))
+      ..orderBy([(s) => OrderingTerm.desc(s.startedAt)]));
+    return q.get();
+  }
+
+  /// Get all sessions without filter for statistics calculations
+  Future<List<SessionRow>> getAllSessions() {
+    final q = (select(sessions)
+      ..orderBy([(s) => OrderingTerm.desc(s.startedAt)]));
+    return q.get();
+  }
 }
 
 @DriftAccessor(tables: [TaskProgress])

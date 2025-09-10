@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
 
@@ -145,8 +146,8 @@ class CoquiTtsService implements AudioTtsService {
       }
 
       // Déterminer langue et type de voix
-      final language = _detectLanguage(text, voice);
-      final voiceType = _getVoiceType(voice);
+      final language = detectLanguage(text, voice);
+      final voiceType = getVoiceType(voice);
 
       TtsLogger.info('Synthèse TTS Coqui', {
         'language': language,
@@ -294,7 +295,7 @@ class CoquiTtsService implements AudioTtsService {
 
     try {
       // Convertir vitesse en format API
-      final rate = _speedToRate(speed);
+      final rate = speedToRate(speed);
 
       // Calculer un timeout dynamique basé sur la longueur du texte
       // Estimation généreuse: 20 caractères/seconde + 40 secondes de marge
@@ -400,6 +401,31 @@ class CoquiTtsService implements AudioTtsService {
   }
 
   @override
+  Future<void> pause() async {
+    try {
+      await _audioPlayer.pause();
+    } catch (e) {
+      TtsLogger.error('Erreur pause audio', null, e);
+    }
+  }
+
+  @override
+  Future<void> resume() async {
+    try {
+      await _audioPlayer.play();
+    } catch (e) {
+      TtsLogger.error('Erreur resume audio', null, e);
+    }
+  }
+
+  @override
+  bool get isPlaying => _audioPlayer.playing;
+
+  @override
+  bool get isPaused => _audioPlayer.processingState == ProcessingState.ready && 
+                      !_audioPlayer.playing;
+
+  @override
   Stream<Duration> positionStream() => _positionController.stream;
 
   @override
@@ -409,8 +435,8 @@ class CoquiTtsService implements AudioTtsService {
     double speed = 1.0,
   }) async {
     try {
-      final language = _detectLanguage(text, voice);
-      final voiceType = _getVoiceType(voice);
+      final language = detectLanguage(text, voice);
+      final voiceType = getVoiceType(voice);
       final cacheKey = await _cache.generateKey(
         provider: 'coqui',
         text: text,
@@ -438,7 +464,8 @@ class CoquiTtsService implements AudioTtsService {
   }
 
   /// Détecte la langue du texte ou utilise la voix spécifiée
-  String _detectLanguage(String text, String voice) {
+  @visibleForTesting
+  String detectLanguage(String text, String voice) {
     // Détection simple basée sur les caractères arabes
     final arabicPattern = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
     final hasArabic = arabicPattern.hasMatch(text);
@@ -462,7 +489,8 @@ class CoquiTtsService implements AudioTtsService {
   }
 
   /// Détermine le type de voix (male/female)
-  String _getVoiceType(String voice) {
+  @visibleForTesting
+  String getVoiceType(String voice) {
     final voiceLower = voice.toLowerCase();
     if (voiceLower.contains('female') || voiceLower.contains('femme')) {
       return 'female';
@@ -471,7 +499,8 @@ class CoquiTtsService implements AudioTtsService {
   }
 
   /// Convertit la vitesse en format rate pour l'API
-  String _speedToRate(double speed) {
+  @visibleForTesting
+  String speedToRate(double speed) {
     if (speed > 1.0) {
       return '+${((speed - 1.0) * 100).toInt()}%';
     } else if (speed < 1.0) {

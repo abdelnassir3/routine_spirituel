@@ -25,10 +25,10 @@ class QuranContentDetector {
       for (final verse in quranData) {
         if (verse is Map<String, dynamic>) {
           final quranVerse = QuranVerse(
-            surah: verse['surah'] ?? 0,
-            ayah: verse['ayah'] ?? 0,
-            textAr: verse['textAr'] ?? '',
-            textFr: verse['textFr'] ?? '',
+            surah: (verse['surah'] as int?) ?? 0,
+            ayah: (verse['ayah'] as int?) ?? 0,
+            textAr: (verse['textAr'] as String?) ?? '',
+            textFr: (verse['textFr'] as String?) ?? '',
           );
 
           // Indexer par le texte arabe nettoyé
@@ -57,6 +57,11 @@ class QuranContentDetector {
       _quranIndex = {};
       _isInitialized = true;
     }
+  }
+
+  /// Alias pour detectQuranContent - méthode attendue par les tests
+  static Future<QuranDetectionResult> detectContent(String text) async {
+    return detectQuranContent(text);
   }
 
   /// Détecte si un texte est un verset coranique
@@ -251,6 +256,9 @@ class QuranDetectionResult {
   final QuranVerse? verse;
   final MatchType matchType;
   final List<QuranVerse>? partialMatches;
+
+  /// Alias pour isQuranic - compatibilité tests
+  bool get isQuranVerse => isQuranic;
 
   QuranDetectionResult({
     required this.isQuranic,

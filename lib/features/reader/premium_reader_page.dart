@@ -7,7 +7,7 @@ import 'package:spiritual_routines/core/services/progress_service.dart';
 import 'package:spiritual_routines/core/services/content_service.dart';
 import 'package:spiritual_routines/features/reader/current_progress.dart';
 import 'package:spiritual_routines/features/session/session_state.dart';
-import 'package:spiritual_routines/features/counter/hands_free_controller.dart';
+import 'package:spiritual_routines/features/counter/hands_free_controller.dart' as hands_free;
 import 'package:spiritual_routines/features/reader/highlight_controller.dart';
 import 'package:spiritual_routines/features/reader/focus_mode.dart';
 import 'package:spiritual_routines/features/reader/reading_prefs.dart';
@@ -18,6 +18,7 @@ import 'package:spiritual_routines/core/services/audio_player_service.dart';
 import 'package:spiritual_routines/features/settings/user_settings_service.dart'
     as secure;
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
+import 'package:spiritual_routines/core/persistence/drift_schema.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:spiritual_routines/core/services/tts_cache_service.dart';
 import 'package:spiritual_routines/core/services/task_audio_prefs.dart';
@@ -32,7 +33,7 @@ import 'package:spiritual_routines/design_system/advanced_theme.dart';
 import 'package:spiritual_routines/design_system/components/premium_card.dart';
 import 'package:spiritual_routines/design_system/components/premium_buttons.dart';
 import 'package:spiritual_routines/design_system/animations/premium_animations.dart';
-import 'package:spiritual_routines/design_system/tokens/colors.dart';
+import 'package:spiritual_routines/design_system/tokens/colors.dart' as colors;
 import 'package:spiritual_routines/design_system/tokens/typography.dart';
 import 'package:spiritual_routines/design_system/tokens/shadows.dart';
 
@@ -63,7 +64,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
     super.initState();
 
     _pageController = AnimationController(
-      duration: PremiumAnimations.Durations.normal,
+      duration: AnimationDurations.normal,
       vsync: this,
     );
 
@@ -145,12 +146,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
             colors: isDark
                 ? [
                     const Color(0xFF0A0A0A),
-                    const Color(0xFF0A0A0A).withOpacity(0.95),
+                    const Color(0xFF0A0A0A).withValues(alpha: 0.95),
                     Colors.transparent,
                   ]
                 : [
                     const Color(0xFFFAFAFA),
-                    const Color(0xFFFAFAFA).withOpacity(0.95),
+                    const Color(0xFFFAFAFA).withValues(alpha: 0.95),
                     Colors.transparent,
                   ],
           ),
@@ -167,7 +168,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
         delay: const Duration(milliseconds: 200),
         child: Text(
           'Lecture Spirituelle',
-          style: AdvancedTypography.SpecialTextStyles.counterDisplay.copyWith(
+          style: SpecialTextStyles.counterDisplay.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: colorScheme.onSurface,
@@ -193,7 +194,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Contenu principal premium
   Widget _buildPremiumContent(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     BilingualDisplay bilingualDisplay,
     bool focusMode,
     bool isDark,
@@ -240,7 +241,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Header premium avec informations de progression
   Widget _buildPremiumHeader(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     bool isDark,
   ) {
     final taskAsync = ref.watch(taskRowProvider(progress.taskId));
@@ -253,14 +254,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
                 padding: const EdgeInsets.all(20),
                 borderRadius: 20,
                 elevation: 1,
-                gradient: isDark
-                    ? AdvancedColors.Gradients.cardDark
-                    : AdvancedColors.Gradients.cardLight,
+                color: Theme.of(context).cardColor,  // Temporary fix
                 child: Column(
                   children: [
                     // Titre de la tâche
                     Text(
-                      task.title,
+                      task.category,
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
@@ -293,13 +292,13 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Barre de progression avancée
   Widget _buildAdvancedProgressBar(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     TaskRow task,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentCount = task.targetRepetitions - progress.repetitionsLeft;
-    final progressValue = currentCount / task.targetRepetitions;
+    final currentCount = task.defaultReps - progress.remainingReps;
+    final progressValue = currentCount / task.defaultReps;
 
     return Column(
       children: [
@@ -313,13 +312,13 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: AnimatedContainer(
-              duration: PremiumAnimations.Durations.normal,
-              curve: PremiumAnimations.Curves.easeOut,
+              duration: AnimationDurations.normal,
+              curve: AnimationCurves.easeOut,
               width: MediaQuery.of(context).size.width * progressValue,
               decoration: BoxDecoration(
-                gradient: AdvancedColors.Gradients.spiritualPrimary,
+                color: Theme.of(context).primaryColor,  // Temporary fix
                 borderRadius: BorderRadius.circular(4),
-                boxShadow: AdvancedShadows.Shadows.colored(
+                boxShadow: Shadows.colored(
                   colorScheme.primary,
                   opacity: 0.3,
                 ),
@@ -345,12 +344,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Statistiques de progression
   Widget _buildProgressStats(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     TaskRow task,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentCount = task.targetRepetitions - progress.repetitionsLeft;
+    final currentCount = task.defaultReps - progress.remainingReps;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -360,19 +359,19 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
           'Complété',
           '$currentCount',
           Icons.check_circle_outline_rounded,
-          AdvancedColors.Semantic.success,
+          colors.Neutral.gray600,  // Temporal fix
         ),
         _buildStatItem(
           context,
           'Restant',
-          '${progress.repetitionsLeft}',
+          '${progress.remainingReps}',
           Icons.pending_outlined,
           colorScheme.primary,
         ),
         _buildStatItem(
           context,
           'Total',
-          '${task.targetRepetitions}',
+          '${task.defaultReps}',
           Icons.flag_outlined,
           colorScheme.secondary,
         ),
@@ -426,10 +425,10 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.withOpacity(0.5),
+          color: colorScheme.surfaceContainer.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: colorScheme.outline.withOpacity(0.2),
+            color: colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -483,14 +482,14 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
     final colorScheme = theme.colorScheme;
 
     return AnimatedContainer(
-      duration: PremiumAnimations.Durations.fast,
-      curve: PremiumAnimations.Curves.easeOut,
+      duration: AnimationDurations.fast,
+      curve: AnimationCurves.easeOut,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: isSelected ? colorScheme.primary : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         boxShadow: isSelected
-            ? AdvancedShadows.Shadows.colored(colorScheme.primary, opacity: 0.3)
+            ? Shadows.colored(colorScheme.primary, opacity: 0.3)
             : null,
       ),
       child: Material(
@@ -531,7 +530,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Zone de texte principale premium
   Widget _buildPremiumTextArea(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     BilingualDisplay bilingualDisplay,
     bool focusMode,
     bool isDark,
@@ -544,9 +543,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
         elevation: focusMode ? 3 : 1,
         glowColor: focusMode ? Theme.of(context).colorScheme.primary : null,
         gradient: focusMode
-            ? (isDark
-                ? AdvancedColors.Gradients.cardDark
-                : AdvancedColors.Gradients.cardLight)
+            ? Theme.of(context).cardColor  // Temporary fix
             : null,
         child: Container(
           width: double.infinity,
@@ -592,7 +589,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Contenu textuel avec support des versets
   Widget _buildTextContent(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     BilingualDisplay bilingualDisplay,
   ) {
     final contentAr = ref.watch(contentProvider((progress.taskId, 'ar')));
@@ -642,7 +639,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
       width: double.infinity,
       child: Text(
         text,
-        style: AdvancedTypography.SpecialTextStyles.arabicLarge.copyWith(
+        style: SpecialTextStyles.arabicLarge.copyWith(
           color: colorScheme.onSurface,
           height: 2.0,
         ),
@@ -698,7 +695,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
       if (match.start > lastMatch) {
         spans.add(TextSpan(
           text: text.substring(lastMatch, match.start),
-          style: AdvancedTypography.SpecialTextStyles.arabicLarge.copyWith(
+          style: SpecialTextStyles.arabicLarge.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ));
@@ -721,7 +718,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
     if (lastMatch < text.length) {
       spans.add(TextSpan(
         text: text.substring(lastMatch),
-        style: AdvancedTypography.SpecialTextStyles.arabicLarge.copyWith(
+        style: SpecialTextStyles.arabicLarge.copyWith(
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ));
@@ -740,7 +737,7 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// Contrôles de navigation premium
   Widget _buildPremiumNavigationControls(
     BuildContext context,
-    ProgressRow progress,
+    TaskProgressRow progress,
     bool isDark,
   ) {
     final theme = Theme.of(context);
@@ -753,8 +750,8 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
         borderRadius: 20,
         elevation: 1,
         backgroundColor: isDark
-            ? colorScheme.surfaceContainer.withOpacity(0.8)
-            : colorScheme.surface.withOpacity(0.9),
+            ? colorScheme.surfaceContainer.withValues(alpha: 0.8)
+            : colorScheme.surface.withValues(alpha: 0.9),
         child: Row(
           children: [
             // Bouton Précédent
@@ -777,8 +774,8 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '${progress.repetitionsLeft}',
-                style: AdvancedTypography.SpecialTextStyles.counterDisplay
+                '${progress.remainingReps}',
+                style: SpecialTextStyles.counterDisplay
                     .copyWith(
                   fontSize: 32,
                   color: colorScheme.onPrimaryContainer,
@@ -807,10 +804,10 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   /// FABs premium
   Widget _buildPremiumFABs(
     BuildContext context,
-    AsyncValue<ProgressRow?> currentProgress,
+    AsyncValue<TaskProgressRow?> currentProgress,
     ColorScheme colorScheme,
   ) {
-    final handsFree = ref.watch(handsFreeControllerProvider);
+    final handsFree = ref.watch(hands_free.handsFreeControllerProvider(widget.sessionId));
 
     return ScaleAnimation(
       delay: const Duration(milliseconds: 1000),
@@ -835,17 +832,26 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
           // FAB Mode Mains Libres
           FloatingActionButton(
             heroTag: 'handsfree',
-            onPressed: handsFree
-                ? () => ref.read(handsFreeControllerProvider.notifier).stop()
+            onPressed: handsFree.maybeWhen(
+                data: (state) => state.isEnabled,
+                orElse: () => false,
+              )
+                ? () => ref.read(hands_free.handsFreeControllerProvider(widget.sessionId).notifier).stop()
                 : () => ref
-                    .read(handsFreeControllerProvider.notifier)
+                    .read(hands_free.handsFreeControllerProvider(widget.sessionId).notifier)
                     .start(widget.sessionId),
-            backgroundColor:
-                handsFree ? colorScheme.error : colorScheme.primary,
-            foregroundColor:
-                handsFree ? colorScheme.onError : colorScheme.onPrimary,
-            child: handsFree
-                ? const Icon(Icons.stop_rounded)
+            backgroundColor: handsFree.maybeWhen(
+                data: (state) => state.isEnabled,
+                orElse: () => false,
+              ) ? colorScheme.error : colorScheme.primary,
+            foregroundColor: handsFree.maybeWhen(
+                data: (state) => state.isEnabled,
+                orElse: () => false,
+              ) ? colorScheme.onError : colorScheme.onPrimary,
+            child: handsFree.maybeWhen(
+                data: (state) => state.isEnabled,
+                orElse: () => false,
+              ) ? const Icon(Icons.stop_rounded)
                 : const Icon(Icons.play_arrow_rounded),
           ),
         ],
@@ -868,12 +874,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
           colors: isDark
               ? [
                   Colors.transparent,
-                  const Color(0xFF0A0A0A).withOpacity(0.95),
+                  const Color(0xFF0A0A0A).withValues(alpha: 0.95),
                   const Color(0xFF0A0A0A),
                 ]
               : [
                   Colors.transparent,
-                  const Color(0xFFFAFAFA).withOpacity(0.95),
+                  const Color(0xFFFAFAFA).withValues(alpha: 0.95),
                   const Color(0xFFFAFAFA),
                 ],
         ),
@@ -1048,12 +1054,12 @@ class _PremiumReaderPageState extends ConsumerState<PremiumReaderPage>
   }
 
   // Méthodes d'interaction
-  void _goToPrevious(BuildContext context, ProgressRow progress) {
+  void _goToPrevious(BuildContext context, TaskProgressRow progress) {
     ref.read(progressServiceProvider).advanceToPrevious(widget.sessionId);
     ref.hapticLightTap();
   }
 
-  void _goToNext(BuildContext context, ProgressRow progress) {
+  void _goToNext(BuildContext context, TaskProgressRow progress) {
     ref.read(progressServiceProvider).decrementCurrent(widget.sessionId);
     ref.hapticLightTap();
   }
@@ -1093,9 +1099,9 @@ class _VerseIndicator extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        gradient: AdvancedColors.Gradients.spiritualPrimary,
+        color: Theme.of(context).primaryColor,  // Temporary fix
         shape: BoxShape.circle,
-        boxShadow: AdvancedShadows.Shadows.colored(
+        boxShadow: Shadows.colored(
           colorScheme.primary,
           opacity: 0.3,
         ),

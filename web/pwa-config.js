@@ -1,27 +1,19 @@
 // PWA Configuration for RISAQ
 // This file extends Flutter's default service worker with advanced PWA features
 
-const CACHE_NAME = 'risaq-cache-v1';
+const CACHE_NAME = 'risaq-cache-v2';
 const OFFLINE_URL = '/offline.html';
+const CACHE_TIMEOUT = 10000; // 10 second timeout for cache operations
 
-// Assets to cache for offline use
+// Critical assets to cache for offline use (only essential files)
 const STATIC_CACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/flutter.js',
-  '/flutter_bootstrap.js',
   '/favicon.png',
   '/icons/Icon-192.png',
   '/icons/Icon-512.png',
-  // Add fonts
-  '/assets/fonts/Inter-Regular.ttf',
-  '/assets/fonts/Inter-Bold.ttf',
-  '/assets/fonts/NotoNaskhArabic-Regular.ttf',
-  '/assets/fonts/NotoNaskhArabic-Bold.ttf',
-  // Add critical assets
-  '/assets/images/app_logo.png',
-  '/assets/corpus/quran_combined.json',
+  '/offline.html'
 ];
 
 // Dynamic cache configuration
@@ -44,12 +36,36 @@ const CACHE_STRATEGIES = {
   ],
 };
 
-// Install event - cache static assets
+// Install event - cache static assets with timeout protection
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[PWA] Caching static assets');
-      return cache.addAll(STATIC_CACHE_URLS);
+    Promise.race([
+      caches.open(CACHE_NAME).then(async (cache) => {
+        console.log('[PWA] Caching critical assets');
+        
+        // Cache assets individually with error handling
+        const cachePromises = STATIC_CACHE_URLS.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              await cache.put(url, response);
+              console.log(`[PWA] Cached: ${url}`);
+            }
+          } catch (error) {
+            console.warn(`[PWA] Failed to cache ${url}:`, error);
+            // Don't fail the entire install for optional assets
+          }
+        });
+        
+        await Promise.allSettled(cachePromises);
+        console.log('[PWA] Install completed');
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Install timeout')), CACHE_TIMEOUT)
+      )
+    ]).catch((error) => {
+      console.warn('[PWA] Install warning:', error);
+      // Don't fail install completely, continue with what we have
     })
   );
   self.skipWaiting();
@@ -72,68 +88,101 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - implement cache strategies
+// Fetch event - implement cache strategies with timeout protection
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip cross-origin requests
-  if (url.origin !== location.origin) {
+  // Skip cross-origin requests and special protocols
+  if (url.origin !== location.origin || url.protocol === 'chrome-extension:') {
     return;
   }
 
-  // Cache first strategy
+  // Skip if it's a range request (partial content)
+  if (request.headers.get('range')) {
+    return;
+  }
+
+  // Cache first strategy with timeout
   if (CACHE_STRATEGIES.cacheFirst.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
-      caches.match(request).then((response) => {
-        return response || fetch(request).then((fetchResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, fetchResponse.clone());
+      Promise.race([
+        caches.match(request).then((response) => {
+          if (response) return response;
+          
+          return fetch(request).then((fetchResponse) => {
+            if (fetchResponse.ok) {
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(request, fetchResponse.clone()).catch(() => {
+                  // Ignore cache errors
+                });
+              });
+            }
             return fetchResponse;
           });
-        });
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Fetch timeout')), CACHE_TIMEOUT)
+        )
+      ]).catch(() => {
+        // Fallback to network or cached offline page
+        return caches.match(OFFLINE_URL) || new Response('Offline', { status: 503 });
       })
     );
     return;
   }
 
-  // Network first strategy
+  // Network first strategy with timeout
   if (CACHE_STRATEGIES.networkFirst.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, response.clone());
-            return response;
-          });
-        })
-        .catch(() => {
-          return caches.match(request);
-        })
+      Promise.race([
+        fetch(request).then((response) => {
+          if (response.ok) {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, response.clone()).catch(() => {
+                // Ignore cache errors
+              });
+            });
+          }
+          return response;
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Network timeout')), CACHE_TIMEOUT)
+        )
+      ]).catch(() => {
+        return caches.match(request) || new Response('Network Error', { status: 503 });
+      })
     );
     return;
   }
 
-  // Stale while revalidate strategy
+  // Stale while revalidate strategy (simplified)
   if (CACHE_STRATEGIES.staleWhileRevalidate.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
-        const fetchPromise = fetch(request).then((networkResponse) => {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, networkResponse.clone());
-          });
-          return networkResponse;
+        // Always try to update cache in background
+        fetch(request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, networkResponse.clone()).catch(() => {
+                // Ignore cache errors
+              });
+            });
+          }
+        }).catch(() => {
+          // Ignore network errors for background updates
         });
-        return cachedResponse || fetchPromise;
+        
+        return cachedResponse || fetch(request);
       })
     );
     return;
   }
 
-  // Default: network with cache fallback
+  // Default: simple network with cache fallback
   event.respondWith(
     fetch(request).catch(() => {
-      return caches.match(request);
+      return caches.match(request) || caches.match(OFFLINE_URL);
     })
   );
 });

@@ -13,22 +13,25 @@ class GoldenTestHelper {
     bool isDark = false,
     ProviderContainer? container,
   }) {
-    return MaterialApp(
-      theme: isDark ? InspiredTheme.dark : InspiredTheme.light,
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      locale: const Locale('fr', 'FR'),
-      home: container != null
-          ? UncontrolledProviderScope(
-              container: container,
-              child: Scaffold(body: child),
-            )
-          : Scaffold(body: child),
+    return ProviderScope(
+      overrides: [],
+      child: MaterialApp(
+        theme: isDark ? InspiredTheme.dark : InspiredTheme.light,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        locale: const Locale('fr', 'FR'),
+        home: container != null
+            ? UncontrolledProviderScope(
+                container: container,
+                child: Scaffold(body: child),
+              )
+            : Scaffold(body: child),
+      ),
     );
   }
 
@@ -47,7 +50,7 @@ class GoldenTestHelper {
 extension GoldenTestExtension on Widget {
   /// Test golden avec thème light
   Future<void> testGoldenLight(String name) async {
-    await testGoldens(
+    return testGoldens(
       name,
       (tester) async {
         await tester.pumpWidgetBuilder(
@@ -60,7 +63,7 @@ extension GoldenTestExtension on Widget {
 
   /// Test golden avec thème dark
   Future<void> testGoldenDark(String name) async {
-    await testGoldens(
+    return testGoldens(
       '${name}_dark',
       (tester) async {
         await tester.pumpWidgetBuilder(

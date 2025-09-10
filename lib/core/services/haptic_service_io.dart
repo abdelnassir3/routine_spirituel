@@ -342,6 +342,21 @@ class HapticServiceIO implements HapticServiceInterface {
   }
 
   @override
+  Future<void> customVibration(int milliseconds) async {
+    if (!_canVibrate || !_isEnabled) return;
+    
+    try {
+      AppLogger.haptic('Vibration personnalisée: ${milliseconds}ms');
+      
+      // Utiliser l'amplitude normale pour la vibration personnalisée
+      final amplitude = _getAmplitude();
+      await _vibrate(duration: milliseconds, amplitude: amplitude);
+    } catch (e) {
+      AppLogger.error('Erreur vibration personnalisée: $e');
+    }
+  }
+
+  @override
   void dispose() {
     _instance = null;
     AppLogger.haptic('Service haptique libéré');

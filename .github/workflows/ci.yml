@@ -14,7 +14,12 @@ jobs:
     
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.32.8'
+        channel: 'stable'
+    
+    - name: Setup FVM
+      run: |
+        dart pub global activate fvm
+        fvm install
         
     - name: Install dependencies
       run: flutter pub get
@@ -30,6 +35,9 @@ jobs:
       
     - name: Run tests
       run: flutter test --reporter=github --coverage
+      
+    - name: Test goldens
+      run: bash scripts/goldens.sh test
       
     - name: Upload coverage
       uses: codecov/codecov-action@v3
@@ -62,7 +70,12 @@ jobs:
     
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.32.8'
+        channel: 'stable'
+    
+    - name: Setup FVM
+      run: |
+        dart pub global activate fvm
+        fvm install
         
     - name: Install dependencies
       run: flutter pub get

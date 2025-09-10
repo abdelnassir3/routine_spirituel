@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:spiritual_routines/core/platform/platform_service.dart';
 
 // Imports conditionnels des implémentations
-import 'haptic.dart';
-import 'storage.dart';
+import 'package:spiritual_routines/core/adapters/haptic.dart';
+import 'package:spiritual_routines/core/adapters/storage.dart';
 // Interfaces
-import 'haptic_adapter.dart';
-import 'tts_adapter.dart';
-import 'storage_adapter.dart';
+import 'package:spiritual_routines/core/adapters/haptic_adapter.dart';
+import 'package:spiritual_routines/core/adapters/tts_adapter.dart';
+import 'package:spiritual_routines/core/adapters/storage_adapter.dart';
 // Platform factories
 import 'tts_factory_io.dart' if (dart.library.html) 'tts_factory_web.dart'
     as tts_factory;
@@ -30,9 +30,9 @@ class AdapterFactories {
     }
 
     if (_platform.isMobile) {
-      _hapticInstance = MobileHapticAdapter();
+      _hapticInstance = HapticAdapterMobile();
     } else {
-      _hapticInstance = WebHapticStub();
+      _hapticInstance = HapticAdapterWeb();
     }
 
     if (kDebugMode) {

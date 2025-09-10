@@ -58,6 +58,31 @@ class AudioPlayerService {
     await _player.stop();
   }
 
+  // ===== Méthodes de contrôle audio =====
+
+  Future<void> pause() async {
+    await _player.pause();
+  }
+
+  Future<void> resume() async {
+    await _player.play();
+  }
+
+  // ===== Propriétés et streams =====
+
+  Stream<Duration> get positionStream => _player.positionStream;
+
+  Stream<bool> get isPlayingStream => _player.playerStateStream
+      .map((state) => state.playing);
+
+  bool get isPlaying => _player.playing;
+
+  bool get isPaused => _player.processingState != ProcessingState.idle && !_player.playing;
+
+  Duration get duration => _player.duration ?? Duration.zero;
+
+  Duration get position => _player.position;
+
   void dispose() {
     _player.dispose();
   }

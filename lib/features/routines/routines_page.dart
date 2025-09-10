@@ -1323,10 +1323,12 @@ Future<void> _seedExample(WidgetRef ref) async {
     kind: 'text',
     title: 'Gratitude',
     body: 'Merci pour cette nouvelle journée.',
+    content: 'Merci pour cette nouvelle journée.',
   );
   await content.putContent(
     taskId: t1,
     locale: 'ar',
+    content: 'الحمد لله على هذا اليوم الجديد.',
     kind: 'text',
     title: 'الشكر',
     body: 'الحمد لله على هذا اليوم الجديد.',

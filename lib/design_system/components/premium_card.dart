@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:spiritual_routines/design_system/tokens/shadows.dart';
 import 'package:spiritual_routines/design_system/tokens/colors.dart';
 
@@ -138,15 +139,15 @@ class _PremiumCardState extends State<PremiumCard>
     List<BoxShadow> shadows = [];
     if (widget.elevation > 0) {
       shadows = isDark
-          ? AdvancedShadows.DarkMode.medium
-          : AdvancedShadows.fromElevation(widget.elevation);
+          ? Shadows.medium
+          : Shadows.medium;
     }
 
     // Add glow effect if specified
     if (widget.glowColor != null && (_isHovered || _isPressed)) {
       shadows = [
         ...shadows,
-        ...AdvancedShadows.Shadows.glow(widget.glowColor!),
+        ...Shadows.glow(widget.glowColor!),
       ];
     }
 
@@ -426,7 +427,7 @@ class PremiumTaskCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Icon(
                     Icons.check_circle,
-                    color: AdvancedColors.Semantic.success,
+                    color: const Color(0xFF10B981),
                     size: 24,
                   ),
                 ],

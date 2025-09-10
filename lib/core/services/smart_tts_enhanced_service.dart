@@ -176,8 +176,8 @@ extension SmartTtsEnhancedExtension on SmartTtsEnhancedService {
   }
 
   /// Prévisualise l'analyse de contenu
-  String previewContentType(String text) {
-    final analysis = analyzeContent(text);
+  Future<String> previewContentType(String text) async {
+    final analysis = await analyzeContent(text);
 
     switch (analysis.contentType) {
       case ContentType.quranicVerse:

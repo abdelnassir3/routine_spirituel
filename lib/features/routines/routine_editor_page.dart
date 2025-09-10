@@ -1622,12 +1622,12 @@ Future<void> _showTaskDialog(
             final fr = (snap.data as List?)?[0];
             final ar = (snap.data as List?)?[1];
             if (fr != null) {
-              titleFrCtrl.text = fr.title ?? '';
-              bodyFrCtrl.text = fr.body ?? '';
+              titleFrCtrl.text = (fr.title as String?) ?? '';
+              bodyFrCtrl.text = (fr.body as String?) ?? '';
             }
             if (ar != null) {
-              titleArCtrl.text = ar.title ?? '';
-              bodyArCtrl.text = ar.body ?? '';
+              titleArCtrl.text = (ar.title as String?) ?? '';
+              bodyArCtrl.text = (ar.body as String?) ?? '';
             }
           }
           return Form(
@@ -1665,6 +1665,7 @@ Future<void> _showTaskDialog(
                     DropdownMenuItem(
                         value: 'gratitude', child: Text('Gratitude')),
                     DropdownMenuItem(value: 'healing', child: Text('Guérison')),
+                    DropdownMenuItem(value: 'dhikr', child: Text('Dhikr')),
                     DropdownMenuItem(
                         value: 'custom', child: Text('Personnalisé')),
                   ],
@@ -1786,9 +1787,9 @@ Future<void> _showTaskDialog(
                           await content.putContent(
                             taskId: taskId,
                             locale: 'fr',
+                            content: bodyFrCtrl.text.trim(),
                             kind: type,
                             title: titleFrCtrl.text.trim(),
-                            body: bodyFrCtrl.text.trim(),
                           );
                         }
                         if (titleArCtrl.text.trim().isNotEmpty ||
@@ -1796,9 +1797,9 @@ Future<void> _showTaskDialog(
                           await content.putContent(
                             taskId: taskId,
                             locale: 'ar',
+                            content: bodyArCtrl.text.trim(),
                             kind: type,
                             title: titleArCtrl.text.trim(),
-                            body: bodyArCtrl.text.trim(),
                           );
                         }
 
@@ -1811,9 +1812,9 @@ Future<void> _showTaskDialog(
                             await content.putContent(
                               taskId: taskId,
                               locale: 'fr',
+                              content: refs,
                               kind: type,
                               title: 'Références',
-                              body: refs,
                             );
                           }
                           if (bodyArCtrl.text.trim().isEmpty &&
@@ -1821,9 +1822,9 @@ Future<void> _showTaskDialog(
                             await content.putContent(
                               taskId: taskId,
                               locale: 'ar',
+                              content: refs,
                               kind: type,
                               title: 'المراجع',
-                              body: refs,
                             );
                           }
                         }

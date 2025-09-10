@@ -879,9 +879,9 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, TaskRow> {
       defaultReps: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}default_reps'])!,
       audioSettings: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}audio_settings']) ?? '{}',
+          .read(DriftSqlType.string, data['${effectivePrefix}audio_settings'])!,
       displaySettings: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}display_settings']) ?? '{}',
+          DriftSqlType.string, data['${effectivePrefix}display_settings'])!,
       contentId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content_id']),
       notesFr: attachedDatabase.typeMapping

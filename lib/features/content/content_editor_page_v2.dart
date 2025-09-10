@@ -68,11 +68,11 @@ class _ContentEditorPageV2State extends ConsumerState<ContentEditorPageV2> {
     if (!mounted) return;
 
     setState(() {
-      _rawCtrlFR.text = fr.$1 ?? '';
-      _correctedCtrlFR.text = fr.$2 ?? '';
-      _rawCtrlAR.text = ar.$1 ?? '';
-      _correctedCtrlAR.text = ar.$2 ?? '';
-      _diacritizedCtrlAR.text = ar.$3 ?? '';
+      _rawCtrlFR.text = fr?['raw'] ?? '';
+      _correctedCtrlFR.text = fr?['corrected'] ?? '';
+      _rawCtrlAR.text = ar?['raw'] ?? '';
+      _correctedCtrlAR.text = ar?['corrected'] ?? '';
+      _diacritizedCtrlAR.text = ar?['diacritized'] ?? '';
       _isLoading = false;
     });
   }

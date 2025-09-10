@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spiritual_routines/core/adapters/haptic_web.dart';
+import '../../stubs/web_haptic_stub.dart';
 
 void main() {
   group('WebHapticStub', () {

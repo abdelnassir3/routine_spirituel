@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/haptic_service.dart';
+import '../../core/services/haptic_service_interface.dart';
 import '../../core/providers/haptic_provider.dart';
 import '../../core/widgets/haptic_wrapper.dart';
 

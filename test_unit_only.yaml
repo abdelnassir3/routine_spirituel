@@ -1,0 +1,6 @@
+# Configuration pour exécuter uniquement les tests unitaires (non-web)
+# Utilisation: flutter test --plain-name-regexp ".*unit.*" --dart-define=FLUTTER_TEST_PLATFORM=vm
+exclude:
+  - "**/integration/**" 
+  - "**/web_*_test.dart"
+  - "**/tts_web_*_test.dart"

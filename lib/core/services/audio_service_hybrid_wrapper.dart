@@ -621,6 +621,24 @@ class AudioServiceHybridWrapper implements AudioTtsService {
       }
     }
   }
+
+  // ===== Méthodes abstraites manquantes =====
+
+  @override
+  Future<void> pause() async {
+    await _audioPlayer.pause();
+  }
+
+  @override
+  Future<void> resume() async {
+    await _audioPlayer.play();
+  }
+
+  @override
+  bool get isPlaying => _audioPlayer.playing;
+
+  @override
+  bool get isPaused => _audioPlayer.processingState != ProcessingState.idle && !_audioPlayer.playing;
 }
 
 /// Provider Riverpod pour le wrapper hybride

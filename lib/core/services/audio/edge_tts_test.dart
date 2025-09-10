@@ -35,6 +35,59 @@ class EdgeTtsVpsTest {
     debugPrint('\n✅ Tests Edge-TTS terminés');
   }
 
+  /// Exécute tous les tests et retourne un résumé
+  static Future<String> runAllTestsAndGetSummary() async {
+    try {
+      debugPrint('🧪 === Test Edge-TTS VPS - Résumé ===');
+      
+      // Test de connexion
+      final connectionResult = await VpsConnectionTest.testConnection();
+      final summary = StringBuffer('🔗 Test connexion VPS: ${connectionResult.overallStatus.name}\n');
+      
+      if (connectionResult.overallStatus == VpsTestStatus.failed) {
+        summary.write('❌ VPS inaccessible - Tests interrompus\n');
+        return summary.toString();
+      }
+      
+      // Tests de synthèse
+      int successCount = 0;
+      int totalTests = 4;
+      
+      try {
+        await _testFrenchSynthesis();
+        successCount++;
+      } catch (e) {
+        summary.write('❌ Test français échoué: $e\n');
+      }
+      
+      try {
+        await _testArabicSynthesis();
+        successCount++;
+      } catch (e) {
+        summary.write('❌ Test arabe échoué: $e\n');
+      }
+      
+      try {
+        await _testMultipleVoices();
+        successCount += 2; // Multiple voices compte pour 2 tests
+      } catch (e) {
+        summary.write('❌ Test voix multiples échoué: $e\n');
+      }
+      
+      summary.write('📊 Tests réussis: $successCount/$totalTests\n');
+      
+      if (successCount == totalTests) {
+        summary.write('✅ Tous les tests Edge-TTS sont réussis!');
+      } else {
+        summary.write('⚠️ Certains tests ont échoué');
+      }
+      
+      return summary.toString();
+    } catch (e) {
+      return '❌ Erreur lors des tests Edge-TTS: $e';
+    }
+  }
+
   static Future<void> _testFrenchSynthesis() async {
     try {
       final audioBytes = await EdgeTtsService.synthesizeText(

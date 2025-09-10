@@ -1,0 +1,34 @@
+# Configuration des tests pour exclure les tests web sur plateformes non-web
+test_on: "vm || chrome || firefox"
+
+# Exclure les tests web sur les plateformes non-web
+tags:
+  web:
+    description: "Tests nécessitant la plateforme web"
+    skip: "vm && !chrome && !firefox"
+  
+  mobile:
+    description: "Tests spécifiques aux plateformes mobiles"
+    skip: "browser"
+
+# Tests d'intégration desktop - seulement sur VM
+integration_tests:
+  desktop_interaction_test.dart:
+    platforms: [vm]
+  
+  responsive_integration_test.dart:
+    platforms: [vm, chrome]
+
+# Tests unitaires - toutes plateformes sauf spécifications
+unit_tests:
+  web_haptic_stub_test.dart:
+    platforms: [vm]
+  
+  tts_web_test.dart:
+    platforms: [chrome, firefox]
+
+# Configuration par défaut
+default:
+  timeout: "30s"
+  retry: 1
+  concurrency: 4

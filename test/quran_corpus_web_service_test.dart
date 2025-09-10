@@ -45,7 +45,7 @@ void main() {
       expect(verses[0].surah, equals(7));
       expect(verses[0].ayah, equals(2));
       expect(verses[0].textAr, contains('كِتَٰبٌ أُنزِلَ إِلَيْكَ'));
-      expect(verses[0].textFr, contains('C'est un Livre qui t'a été descendu'));
+      expect(verses[0].textFr, contains('Livre qui'));
       expect(verses[1].surah, equals(7));
       expect(verses[1].ayah, equals(3));
       

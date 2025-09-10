@@ -296,7 +296,19 @@
       console.log('Loading screen removed (fallback timer)');
     }, 3000);
     
-    // Service worker bootstrapping is handled by flutter.js
+    // Register custom service worker if available
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/pwa-config.js')
+          .then(function(registration) {
+            console.log('[PWA] Custom service worker registered:', registration.scope);
+          })
+          .catch(function(error) {
+            console.log('[PWA] Custom service worker registration failed:', error);
+            // Fall back to Flutter's default service worker
+          });
+      });
+    }
   </script>
   <script src="flutter.js" defer></script>
   <!-- sql.js for Drift: DISABLED - Using IndexedDB instead -->

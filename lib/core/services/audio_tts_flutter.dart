@@ -251,6 +251,34 @@ class FlutterTtsAudioService implements AudioTtsService {
       return requested;
     }
   }
+
+  /// Get available voices for the TTS engine
+  Future<List<Map<String, String>>> getAvailableVoices() async {
+    try {
+      final voices = await _tts.getVoices as List<dynamic>;
+      return voices.map((voice) {
+        final voiceMap = voice as Map<String, dynamic>;
+        return {
+          'name': voiceMap['name']?.toString() ?? '',
+          'locale': voiceMap['locale']?.toString() ?? '',
+        };
+      }).toList();
+    } catch (e) {
+      // Return empty list if voices are not available
+      return [];
+    }
+  }
+
+  /// Dispose resources and cleanup
+  Future<void> dispose() async {
+    try {
+      await stop();
+      _stopTicker();
+      await _posCtrl.close();
+    } catch (e) {
+      // Ignore disposal errors
+    }
+  }
 }
 
 // Shared TTS service instance for on-demand playback

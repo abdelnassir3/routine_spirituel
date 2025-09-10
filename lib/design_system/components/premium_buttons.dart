@@ -173,8 +173,8 @@ class _PremiumButtonState extends ConsumerState<PremiumButton>
             : null,
         boxShadow: isEnabled && widget.elevation > 0
             ? (isDark
-                ? AdvancedShadows.DarkMode.medium
-                : AdvancedShadows.Semantic.button)
+                ? DarkModeShadows.medium
+                : SemanticShadows.button)
             : null,
       ),
       child: Material(

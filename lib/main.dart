@@ -73,7 +73,8 @@ void main() async {
   }
 
   runApp(DevicePreview(
-    enabled: !kReleaseMode && kIsWeb,
+    // Activer Device Preview en mode debug pour web ou avec variable d'environnement
+    enabled: !kReleaseMode && (kIsWeb || const bool.fromEnvironment('DEVICE_PREVIEW', defaultValue: false)),
     builder: (context) => UncontrolledProviderScope(
       container: container,
       child: const SpiritualRoutinesApp(),

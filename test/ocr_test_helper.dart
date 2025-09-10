@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spiritual_routines/services/ocr/ocr_service.dart';
-import 'package:spiritual_routines/services/ocr/ocr_wrapper.dart';
+import 'package:spiritual_routines/core/services/ocr_service.dart';
+import 'package:spiritual_routines/core/platform/ocr_wrapper.dart';
 
 /// Helper pour tester les fonctionnalités OCR
 class OCRTestHelper {

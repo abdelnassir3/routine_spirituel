@@ -23,25 +23,22 @@ void main() {
       // Should be parsable as integer
       expect(() => int.parse(id), returnsNormally);
 
-      // Should be a valid timestamp (microseconds since epoch)
-      final timestamp = int.parse(id);
-      expect(timestamp, greaterThan(0));
+      // Should be a valid counter number
+      final number = int.parse(id);
+      expect(number, greaterThan(0));
 
-      // Should be a reasonable timestamp (after 2020)
-      final year2020Microseconds = DateTime(2020).microsecondsSinceEpoch;
-      expect(timestamp, greaterThan(year2020Microseconds));
+      // Should be a reasonable counter (starts from 1000+)
+      expect(number, greaterThan(1000));
     });
 
-    test('newId() should generate IDs in ascending order', () async {
+    test('newId() should generate IDs in ascending order', () {
       final id1 = newId();
-      // Small delay to ensure different timestamp
-      await Future.delayed(const Duration(microseconds: 1));
       final id2 = newId();
 
-      final timestamp1 = int.parse(id1);
-      final timestamp2 = int.parse(id2);
+      final number1 = int.parse(id1);
+      final number2 = int.parse(id2);
 
-      expect(timestamp2, greaterThanOrEqualTo(timestamp1));
+      expect(number2, greaterThan(number1));
     });
 
     test('newId() performance test - should be fast', () {
@@ -83,9 +80,9 @@ void main() {
         // Should be numeric string
         expect(() => int.parse(id), returnsNormally);
 
-        // Should have reasonable length (timestamp in microseconds)
-        expect(id.length, greaterThanOrEqualTo(16)); // Year 2023+ timestamp
-        expect(id.length, lessThan(20)); // Reasonable upper bound
+        // Should have reasonable length (counter number)
+        expect(id.length, greaterThanOrEqualTo(4)); // At least 4 digits (1000+)
+        expect(id.length, lessThan(10)); // Reasonable upper bound
 
         // Should contain only digits
         expect(RegExp(r'^\d+$').hasMatch(id), isTrue);

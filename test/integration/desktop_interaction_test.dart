@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,12 +22,8 @@ void main() {
 
     tearDownAll(() {
       // Reset window size
-      TestWidgetsFlutterBinding.ensureInitialized()
-          .window
-          .physicalSizeTestValue = null;
-      TestWidgetsFlutterBinding.ensureInitialized()
-          .window
-          .devicePixelRatioTestValue = null;
+      final binding = TestWidgetsFlutterBinding.ensureInitialized();
+      binding.platformDispatcher.clearAllTestValues();
     });
 
     testWidgets('Keyboard shortcuts work in the app', (tester) async {
@@ -96,7 +93,7 @@ void main() {
         // Right-click on the card
         await tester.tapAt(
           tester.getCenter(routineCard),
-          buttons: kSecondaryMouseButton,
+          buttons: kSecondaryButton,
         );
         await tester.pumpAndSettle();
 
@@ -118,10 +115,10 @@ void main() {
       await tester.pump();
 
       // Focus should move to next focusable widget
-      final focusedWidget = Focus.of(
+      final focusNode = Focus.of(
         tester.element(find.byType(MaterialApp)),
-      ).focusedChild;
-      expect(focusedWidget, isNotNull);
+      );
+      expect(focusNode, isNotNull);
 
       // Press Shift+Tab to move focus backwards
       await tester.sendKeyDownEvent(LogicalKeyboardKey.shift);

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:spiritual_routines/core/persistence/dao_providers.dart';
 import 'package:spiritual_routines/core/persistence/drift_schema.dart';
+import 'package:spiritual_routines/core/services/content_service.dart';
 
 final progressListProvider =
     StreamProvider.family<List<TaskProgressRow>, String>((ref, sessionId) {
@@ -62,4 +63,11 @@ final currentProgressProvider =
 
     yield current;
   }
+});
+
+final contentProvider =
+    FutureProvider.family<dynamic, (String, String)>((ref, params) async {
+  final (taskId, locale) = params;
+  final contentService = ref.read(contentServiceProvider);
+  return contentService.getByTaskAndLocale(taskId, locale);
 });

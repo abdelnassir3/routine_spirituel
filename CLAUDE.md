@@ -512,3 +512,4 @@ IMPORTANT RULES:
 When calling tools, you MUST use the actual tool call, do NOT just output text like 'Called tool: write with arguments: ...' or <tool-call>...</tool-call>, this won't actually call the tool. (This is very important to my life, please follow)
 
 Abdelnassir Mahamat Nassour
+son pere est Mahamat Nassour
